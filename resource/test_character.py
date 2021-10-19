@@ -8,9 +8,9 @@ PC_BOO = 4
 PC_PIRANHA_PLANT = 5
 
 IMAGE_LOCATES = [
-    'resource\\characters\\Mario_Small.png', 'resource\\characters\\Mario_Super.png',
-    'resource\\characters\\Dry_Bones.png', 'resource\\characters\\Goomba.png',
-    'resource\\characters\\Boo.png', 'resource\\characters\\Piranha_Plant.png'
+    'characters\\mario_small.png', 'characters\\mario_super.png',
+    'characters\\dry_bones.png', 'characters\\goomba.png',
+    'characters\\boo.png', 'characters\\piranha_plant.png'
 ]
 
 SPRITES_MARIO_SUPER = [

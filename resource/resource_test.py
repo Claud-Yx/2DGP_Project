@@ -6,7 +6,7 @@ DISPLAY_H = 720
 
 open_canvas(DISPLAY_W, DISPLAY_H)
 
-bg = load_image('resource\\background\\castle_1.png')
+bg = load_image('background\\castle1.png')
 tester = Test()
 
 Running = True
