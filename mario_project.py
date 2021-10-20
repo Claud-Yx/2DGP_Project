@@ -8,9 +8,9 @@ player = Player(400, 100)
 background = load_image('resource\\background\\castle1.png')
 
 Running = True
-# Main Loop:
 
-while True:
+# Main Loop:
+while Running:
     clear_canvas()
 
     background.draw(400, 300)
@@ -20,8 +20,7 @@ while True:
     player.frame_update()
 
     update_canvas()
-    if not player.handle_event():
-        Running = False
+    Running = player.handle_event()
     delay(0.05)
 
 close_canvas()
