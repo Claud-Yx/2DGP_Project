@@ -1,4 +1,5 @@
 from player import *
+from enemy_goomba import *
 from pico2d import *
 import test_keyboard
 
@@ -6,6 +7,8 @@ open_canvas()
 
 # Initialization:
 player = Player(400, 100, PS_SUPER)
+goomba = enGoomba(400, 300)
+
 background = load_image('resource\\background\\castle1.png')
 test_keyboard.keyboard_init()
 
@@ -20,6 +23,10 @@ while Running:
     player.update()
     player.clip_draw()
     player.frame_update()
+
+    goomba.update()
+    goomba.clip_draw()
+    goomba.frame_update()
 
     events = get_events()
 

@@ -4,7 +4,6 @@ from character_object import *
 PS_SMALL = 0
 PS_SUPER = 1
 
-
 class Player( Character_Object ):
     def __init__(self, x, y, s = PS_SMALL):
         super(Player, self).__init__()
