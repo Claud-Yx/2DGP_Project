@@ -116,11 +116,16 @@ class Character_Object:
         self.frames = (self.frames + 1) % self.frame_count + self.frame_begin
 
     def set_clip( self , a = ""):
+        if a == self.action:
+            return
+
         if a != "":
             self.action = a
 
         self.stop_animation = False
         self.image = load_image( IMAGE_LOCATION[self.image_id] )
+
+        print("set clip: ", self.direction, self.action)
 
         if self.image_id == CO_MARIO_SMALL:
             if self.action == "stay" and self.direction == D_RIGHT:
