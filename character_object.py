@@ -71,6 +71,7 @@ class Character_Object:
 
         # Animation Direction
         self.direction = D_RIGHT
+        self.prev_direction = self.direction
 
         # Sprite image
         self.image_id = CO_NONE
@@ -86,46 +87,41 @@ class Character_Object:
 
         # Animation control value
         self.loop_animation = False
-        self.stop_animation = False
 
     def draw( self ):
         self.image.draw(self.x, self.y)
 
     def clip_draw( self ):
         if self.frame_count == 1:
-            self.frames = 1
+            self.frames = 0
 
-        self.image.clip_draw(self.frames * self.l, self.b, self.w, self.h, self.x, self.y)
+        self.image.clip_draw((self.frames + self.frame_begin) * self.l, self.b,
+                             self.w, self.h, self.x, self.y)
 
     def frame_update( self ):
         if self.frame_count == 0:
             self.frame_count = 1
             print("count value error")
 
-        if not self.loop_animation:
-            self.loop_animation = True
-            self.stop_animation = True
-
-        if self.stop_animation:
-            if self.frames == self.frame_count + self.frame_begin - 1:
-                return
-
         if self.frame_count == 1:
             return
 
-        self.frames = (self.frames + 1) % self.frame_count + self.frame_begin
+        if not self.loop_animation:
+            if self.frames + 1 == self.frame_count:
+                return
+
+        self.frames = (self.frames + 1) % self.frame_count
 
     def set_clip( self , a = ""):
-        if a == self.action:
+        if a == self.action and self.prev_direction == self.direction:
             return
+
+        self.prev_direction = self.direction
 
         if a != "":
             self.action = a
 
-        self.stop_animation = False
         self.image = load_image( IMAGE_LOCATION[self.image_id] )
-
-        print("set clip: ", self.direction, self.action)
 
         if self.image_id == CO_MARIO_SMALL:
             if self.action == "stay" and self.direction == D_RIGHT:
@@ -237,11 +233,11 @@ class Character_Object:
                 self.loop_animation = True
             elif self.action == "crawl" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 9, 50, 100
-                self.frame_count, self.frame_begin = 3, 27
+                self.frame_count, self.frame_begin = 1, 29
                 self.loop_animation = False
             elif self.action == "crawl" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 8, 50, 100
-                self.frame_count, self.frame_begin = 3, 27
+                self.frame_count, self.frame_begin = 1, 29
                 self.loop_animation = False
             elif self.action == "jump_up" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 100, 100 * 7, 100, 100

@@ -81,7 +81,7 @@ class Player( Character_Object ):
                 else:
                     self.x += self.speed * self.moving_dir
 
-        print("update move: ", self.direction, self.moving_dir, self.action)
+        # print("update move: ", self.direction, self.moving_dir, self.action)
 
     def update( self ):
         self.update_state()
