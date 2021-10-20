@@ -4,7 +4,7 @@ from pico2d import *
 open_canvas()
 
 # Initialization:
-player = Player(400, 100)
+player = Player(400, 100, PS_SUPER)
 background = load_image('resource\\background\\castle1.png')
 
 Running = True

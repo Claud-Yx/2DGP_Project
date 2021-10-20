@@ -115,7 +115,10 @@ class Character_Object:
 
         self.frames = (self.frames + 1) % self.frame_count + self.frame_begin
 
-    def set_clip( self ):
+    def set_clip( self , a = ""):
+        if a != "":
+            self.action = a
+
         self.stop_animation = False
         self.image = load_image( IMAGE_LOCATION[self.image_id] )
 
