@@ -13,7 +13,7 @@ class Player( Character_Object ):
         self.action = "stay"
         self.direction = D_RIGHT
         self.moving_dir = 0
-        self.speed = 5
+        self.speed = 6
         self.acceleration = 3
         self.state = s
         self.update_state()
