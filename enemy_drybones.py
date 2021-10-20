@@ -9,7 +9,7 @@ class enDryBones( Character_Object ):
         # self.px, self.py = self.x, self.y
         self.image_id = CO_DRY_BONES
         self.direction = D_LEFT
-        self.speed = 3
+        self.speed = 2
         self.set_clip("walk")
 
         self.is_walk = True

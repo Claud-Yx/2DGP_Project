@@ -78,6 +78,11 @@ class Player( Character_Object ):
                 else:
                     self.x += self.speed * self.moving_dir
 
+        if self.x < 0:
+            self.x = 0
+        elif self.x >= 800:
+            self.x = 800-1
+
         # print("update move: ", self.direction, self.moving_dir, self.action)
 
     def update( self ):
