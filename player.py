@@ -51,20 +51,18 @@ class Player( Character_Object ):
             self.image_id = CO_MARIO_SUPER
 
     def update_animation( self ):
-        if self.is_crawl:
-            self.set_clip('crawl')
-        elif self.is_walk:
+
+        if self.is_walk:
             if self.is_run:
                 self.set_clip('run')
             else:
                 self.set_clip('walk')
+        elif self.is_crawl:
+            self.set_clip('crawl')
         elif self.is_stay:
             self.set_clip('stay')
 
     def update_move( self ):
-        if self.is_crawl:
-            return
-
         if self.moving_dir == D_NONE:
             if not self.is_stay:
                 self.switch_stay()
@@ -88,9 +86,8 @@ class Player( Character_Object ):
         self.update_move()
         self.update_animation()
 
-    def handle_event( self ):
-
-        events = get_events()
+    def handle_event( self, events ):
+        # events = get_events()
 
         for event in events:
             if event.type == SDL_QUIT:
@@ -114,7 +111,7 @@ class Player( Character_Object ):
                     if self.state != PS_SMALL:
                         self.switch_crawl()
 
-                elif event.key == SDLK_x:
+                elif event.key == SDLK_z:
                     self.switch_run()
 
             elif event.type == SDL_KEYUP:
@@ -129,7 +126,7 @@ class Player( Character_Object ):
                     if self.state != PS_SMALL:
                         self.switch_crawl(False)
 
-                elif event.key == SDLK_x:
+                elif event.key == SDLK_z:
                     self.switch_run(False)
 
         return True

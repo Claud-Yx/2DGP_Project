@@ -233,11 +233,11 @@ class Character_Object:
                 self.loop_animation = True
             elif self.action == "crawl" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 9, 50, 100
-                self.frame_count, self.frame_begin = 1, 29
+                self.frame_count, self.frame_begin = 1, 27
                 self.loop_animation = False
             elif self.action == "crawl" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 8, 50, 100
-                self.frame_count, self.frame_begin = 1, 29
+                self.frame_count, self.frame_begin = 1, 27
                 self.loop_animation = False
             elif self.action == "jump_up" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 100, 100 * 7, 100, 100
