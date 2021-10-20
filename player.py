@@ -1,17 +1,73 @@
 from pico2d import *
+from character import *
 
-SPRITES_MARIO_SUPER = [
-    "stayR", "stayL", "walkR", "walkL", "runR", "runL", "swimR", "swimL",
-    "hang", "climb", "jumpR_up", "jumpR_down", "jumpL_up", "jumpL_down",
-    "crawlR", "crawlL"
-]
+PS_SMALL = 0
+PS_SUPER = 1
 
-SPRITES_MARIO_SMALL = [
-    "stayR", "stayL", "walkR", "walkL", "runR", "runL", "swimR", "swimL",
-    "hang", "climb", "jumpR_up", "jumpR_down", "jumpL_up", "jumpL_down",
-    "die"
-]
+class Player(Character):
+    def __init__(self, x, y, s = PS_SMALL):
+        super(Player, self).__init__()
+        self.x, self.y = x, y
+        self.px, self.py = self.x, self.y
+        self.sprite = "stay"
+        self.dir = D_RIGHT
+        self.p_sprite = ""
+        self.speed = 5
+        self.state = s
+        self.set_clip()
+
+    def change_state( self ):
+        if self.state == PS_SMALL:
+            self.image_id = CO_MARIO_SMALL
+        elif self.state == PS_SUPER:
+            self.image_id = CO_MARIO_SUPER
+
+    def update( self ):
+        self.change_state()
 
 
-class Player:
-    pass
+    def handle_event( self ):
+
+        events = get_events()
+
+        for event in events:
+            if event.type == SDL_QUIT:
+                return False
+
+            elif event.type == SDL_KEYDOWN:
+                if event.key == SDLK_ESCAPE:
+                    return False
+
+                elif event.key == SDLK_RIGHT:
+                    self.dir = D_RIGHT
+                    self.x += self.speed
+                    self.sprite = "walk"
+                    self.set_clip()
+                elif event.key == SDLK_LEFT:
+                    self.dir = D_LEFT
+                    self.x -= self.speed
+                    self.sprite = "walk"
+                    self.set_clip()
+                elif event.key == SDLK_UP:
+                    pass
+                elif event.key == SDLK_DOWN:
+                    if self.state != PS_SMALL:
+                        self.image_sprite_id = "crawl"
+                        self.set_clip()
+
+            elif event.type == SDL_KEYUP:
+
+                if event.key == SDLK_RIGHT:
+                    self.sprite = "stay"
+                    self.set_clip()
+                elif event.key == SDLK_LEFT:
+                    self.sprite = "stay"
+                    self.set_clip()
+                elif event.key == SDLK_UP:
+                    pass
+                elif event.key == SDLK_DOWN:
+                    if self.state != PS_SMALL:
+                        self.image_sprite_id = "stay"
+                        self.set_clip()
+
+
