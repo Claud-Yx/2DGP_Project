@@ -70,7 +70,7 @@ class Character_Object:
         self.l, self.b, self.w, self.h = 0, 0, 0, 0
 
         # Animation Direction
-        self.dir = D_RIGHT
+        self.direction = D_RIGHT
 
         # Sprite image
         self.image_id = CO_NONE
@@ -120,35 +120,35 @@ class Character_Object:
         self.image = load_image( IMAGE_LOCATION[self.image_id] )
 
         if self.image_id == CO_MARIO_SMALL:
-            if self.action == "stay" and self.dir == D_RIGHT:
+            if self.action == "stay" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50*9, 50, 50
                 self.frame_count, self.frame_begin = 27, 0
                 self.loop_animation = True
-            elif self.action == "stay" and self.dir == D_LEFT:
+            elif self.action == "stay" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50*8, 50, 50
                 self.frame_count, self.frame_begin = 27, 0
                 self.loop_animation = True
-            elif self.action == "walk" and self.dir == D_RIGHT:
+            elif self.action == "walk" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50*7, 50, 50
                 self.frame_count, self.frame_begin = 18, 0
                 self.loop_animation = True
-            elif self.action == "walk" and self.dir == D_LEFT:
+            elif self.action == "walk" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50*6, 50, 50
                 self.frame_count, self.frame_begin = 18, 0
                 self.loop_animation = True
-            elif self.action == "run" and self.dir == D_RIGHT:
+            elif self.action == "run" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50*5, 50, 50
                 self.frame_count, self.frame_begin = 8, 0
                 self.loop_animation = True
-            elif self.action == "run" and self.dir == D_LEFT:
+            elif self.action == "run" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50*4, 50, 50
                 self.frame_count, self.frame_begin = 8, 0
                 self.loop_animation = True
-            elif self.action == "swim" and self.dir == D_RIGHT:
+            elif self.action == "swim" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50*3, 50, 50
                 self.frame_count, self.frame_begin = 9, 0
                 self.loop_animation = True
-            elif self.action == "swim" and self.dir == D_LEFT:
+            elif self.action == "swim" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50*2, 50, 50
                 self.frame_count, self.frame_begin = 9, 0
                 self.loop_animation = True
@@ -160,19 +160,19 @@ class Character_Object:
                 self.l, self.b, self.w, self.h = 50, 50*0, 50, 50
                 self.frame_count, self.frame_begin = 14, 0
                 self.loop_animation = True
-            elif self.action == "jump_up" and self.dir == D_RIGHT:
+            elif self.action == "jump_up" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50*7, 50, 50
                 self.frame_count, self.frame_begin = 1, 18
                 self.loop_animation = False
-            elif self.action == "jump_down" and self.dir == D_RIGHT:
+            elif self.action == "jump_down" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50*7, 50, 50
                 self.frame_count, self.frame_begin = 1, 19
                 self.loop_animation = False
-            elif self.action == "jump_up" and self.dir == D_LEFT:
+            elif self.action == "jump_up" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50*6, 50, 50
                 self.frame_count, self.frame_begin = 1, 18
                 self.loop_animation = False
-            elif self.action == "jump_down" and self.dir == D_LEFT:
+            elif self.action == "jump_down" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50*6, 50, 50
                 self.frame_count, self.frame_begin = 1, 19
                 self.loop_animation = False
@@ -187,35 +187,35 @@ class Character_Object:
                 self.loop_animation = False
 
         elif self.image_id == CO_MARIO_SUPER:
-            if self.action == "stay" and self.dir == D_RIGHT:
+            if self.action == "stay" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 9, 50, 100
                 self.frame_count, self.frame_begin = 27, 0
                 self.loop_animation = True
-            elif self.action == "stay" and self.dir == D_LEFT:
+            elif self.action == "stay" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 8, 50, 100
                 self.frame_count, self.frame_begin = 27, 0
                 self.loop_animation = True
-            elif self.action == "walk" and self.dir == D_RIGHT:
+            elif self.action == "walk" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 7, 50, 100
                 self.frame_count, self.frame_begin = 18, 0
                 self.loop_animation = True
-            elif self.action == "walk" and self.dir == D_LEFT:
+            elif self.action == "walk" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 6, 50, 100
                 self.frame_count, self.frame_begin = 18, 0
                 self.loop_animation = True
-            elif self.action == "run" and self.dir == D_RIGHT:
+            elif self.action == "run" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 100, 100 * 5, 100, 100
                 self.frame_count, self.frame_begin = 8, 0
                 self.loop_animation = True
-            elif self.action == "run" and self.dir == D_LEFT:
+            elif self.action == "run" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 100, 100 * 4, 100, 100
                 self.frame_count, self.frame_begin = 8, 0
                 self.loop_animation = True
-            elif self.action == "swim" and self.dir == D_RIGHT:
+            elif self.action == "swim" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 100, 100 * 3, 100, 100
                 self.frame_count, self.frame_begin = 9, 0
                 self.loop_animation = True
-            elif self.action == "swim" and self.dir == D_LEFT:
+            elif self.action == "swim" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 100, 100 * 2, 100, 100
                 self.frame_count, self.frame_begin = 9, 0
                 self.loop_animation = True
@@ -227,27 +227,27 @@ class Character_Object:
                 self.l, self.b, self.w, self.h = 50, 100 * 0, 50, 100
                 self.frame_count, self.frame_begin = 14, 0
                 self.loop_animation = True
-            elif self.action == "crawl" and self.dir == D_RIGHT:
+            elif self.action == "crawl" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 9, 50, 100
                 self.frame_count, self.frame_begin = 3, 27
                 self.loop_animation = False
-            elif self.action == "crawl" and self.dir == D_LEFT:
+            elif self.action == "crawl" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 8, 50, 100
                 self.frame_count, self.frame_begin = 3, 27
                 self.loop_animation = False
-            elif self.action == "jump_up" and self.dir == D_RIGHT:
+            elif self.action == "jump_up" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 100, 100 * 7, 100, 100
                 self.frame_count, self.frame_begin = 1, 18//2
                 self.loop_animation = False
-            elif self.action == "jump_down" and self.dir == D_RIGHT:
+            elif self.action == "jump_down" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 100, 100 * 7, 100, 100
                 self.frame_count, self.frame_begin = 1, 20//2
                 self.loop_animation = False
-            elif self.action == "jump_up" and self.dir == D_LEFT:
+            elif self.action == "jump_up" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 100, 100 * 6, 100, 100
                 self.frame_count, self.frame_begin = 1, 18//2
                 self.loop_animation = False
-            elif self.action == "jump_down" and self.dir == D_LEFT:
+            elif self.action == "jump_down" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 100, 100 * 6, 100, 100
                 self.frame_count, self.frame_begin = 1, 20//2
                 self.loop_animation = False
@@ -257,35 +257,35 @@ class Character_Object:
                 self.loop_animation = False
 
         elif self.image_id == CO_DRY_BONES:
-            if self.action == "stay" and self.dir == D_RIGHT:
+            if self.action == "stay" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 7, 50, 100
                 self.frame_count, self.frame_begin = 1, 0
                 self.loop_animation = False
-            elif self.action == "stay" and self.dir == D_LEFT:
+            elif self.action == "stay" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 6, 50, 100
                 self.frame_count, self.frame_begin = 1, 0
                 self.loop_animation = False
-            elif self.action == "walk" and self.dir == D_RIGHT:
+            elif self.action == "walk" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 5, 50, 100
                 self.frame_count, self.frame_begin = 16, 0
                 self.loop_animation = True
-            elif self.action == "walk" and self.dir == D_LEFT:
+            elif self.action == "walk" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 4, 50, 100
                 self.frame_count, self.frame_begin = 16, 0
                 self.loop_animation = True
-            elif self.action == "break" and self.dir == D_RIGHT:
+            elif self.action == "break" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 3, 50, 100
                 self.frame_count, self.frame_begin = 12, 0
                 self.loop_animation = False
-            elif self.action == "break" and self.dir == D_LEFT:
+            elif self.action == "break" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 2, 50, 100
                 self.frame_count, self.frame_begin = 12, 0
                 self.loop_animation = False
-            elif self.action == "restore" and self.dir == D_RIGHT:
+            elif self.action == "restore" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 1, 50, 100
                 self.frame_count, self.frame_begin = 15, 0
                 self.loop_animation = False
-            elif self.action == "restore" and self.dir == D_LEFT:
+            elif self.action == "restore" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 0, 50, 100
                 self.frame_count, self.frame_begin = 15, 0
                 self.loop_animation = False
@@ -295,19 +295,19 @@ class Character_Object:
                 self.loop_animation = False
 
         elif self.image_id == CO_GOOMBA:
-            if self.action == "stay" and self.dir == D_RIGHT:
+            if self.action == "stay" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 5, 50, 50
                 self.frame_count, self.frame_begin = 1, 0
                 self.loop_animation = False
-            elif self.action == "stay" and self.dir == D_LEFT:
+            elif self.action == "stay" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 4, 50, 50
                 self.frame_count, self.frame_begin = 1, 0
                 self.loop_animation = False
-            elif self.action == "walk" and self.dir == D_RIGHT:
+            elif self.action == "walk" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
                 self.frame_count, self.frame_begin = 16, 0
                 self.loop_animation = True
-            elif self.action == "walk" and self.dir == D_LEFT:
+            elif self.action == "walk" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
                 self.frame_count, self.frame_begin = 16, 0
                 self.loop_animation = True
@@ -325,27 +325,27 @@ class Character_Object:
                 self.loop_animation = False
 
         elif self.image_id == CO_BOO:
-            if self.action == "stay" and self.dir == D_RIGHT:
+            if self.action == "stay" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
                 self.frame_count, self.frame_begin = 1, 0
                 self.loop_animation = False
-            elif self.action == "stay" and self.dir == D_LEFT:
+            elif self.action == "stay" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
                 self.frame_count, self.frame_begin = 1, 0
                 self.loop_animation = False
-            elif self.action == "fly" and self.dir == D_RIGHT:
+            elif self.action == "fly" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 1, 50, 50
                 self.frame_count, self.frame_begin = 8, 0
                 self.loop_animation = True
-            elif self.action == "fly" and self.dir == D_LEFT:
+            elif self.action == "fly" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
                 self.frame_count, self.frame_begin = 8, 0
                 self.loop_animation = True
-            elif self.action == "die" and self.dir == D_RIGHT:
+            elif self.action == "die" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
                 self.frame_count, self.frame_begin = 1, 1
                 self.loop_animation = False
-            elif self.action == "die" and self.dir == D_LEFT:
+            elif self.action == "die" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
                 self.frame_count, self.frame_begin = 1, 1
                 self.loop_animation = False

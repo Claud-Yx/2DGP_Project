@@ -11,24 +11,26 @@ class Player( Character_Object ):
         self.x, self.y = x, y
         # self.px, self.py = self.x, self.y
         self.action = "stay"
-        self.dir = D_RIGHT
+        self.direction = D_RIGHT
+        self.moving_dir = 0
         self.speed = 5
         self.state = s
+        self.update_state()
         self.set_clip()
 
-    def change_state( self ):
+    def update_state( self ):
         if self.state == PS_SMALL:
             self.image_id = CO_MARIO_SMALL
         elif self.state == PS_SUPER:
             self.image_id = CO_MARIO_SUPER
 
     def update( self ):
-        self.change_state()
+        self.update_state()
         if self.action == "walk":
-            if self.dir == D_RIGHT:
-                self.x += self.speed
-            elif self.dir == D_LEFT:
-                self.x -= self.speed
+            if self.moving_dir == D_NONE:
+                self.action = "stay"
+            else:
+                self.x += self.speed * self.moving_dir
 
 
     def handle_event( self ):
@@ -43,12 +45,16 @@ class Player( Character_Object ):
                 if event.key == SDLK_ESCAPE:
                     return False
 
+                elif event.key == SDLK_RIGHT and event.key == SDLK_LEFT:
+                    pass
                 elif event.key == SDLK_RIGHT:
-                    self.dir = D_RIGHT
+                    self.direction = D_RIGHT
+                    self.moving_dir += D_RIGHT
                     self.action = "walk"
                     self.set_clip()
                 elif event.key == SDLK_LEFT:
-                    self.dir = D_LEFT
+                    self.direction = D_LEFT
+                    self.moving_dir += D_LEFT
                     self.action = "walk"
                     self.set_clip()
                 elif event.key == SDLK_UP:
@@ -61,9 +67,11 @@ class Player( Character_Object ):
             elif event.type == SDL_KEYUP:
 
                 if event.key == SDLK_RIGHT:
+                    self.moving_dir += D_LEFT
                     self.action = "stay"
                     self.set_clip()
                 elif event.key == SDLK_LEFT:
+                    self.moving_dir += D_RIGHT
                     self.action = "stay"
                     self.set_clip()
                 elif event.key == SDLK_UP:
