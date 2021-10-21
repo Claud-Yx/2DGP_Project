@@ -1,8 +1,8 @@
 from pico2d import *
 from test_character import *
 
-DISPLAY_W = 1280
-DISPLAY_H = 720
+DISPLAY_W = 300
+DISPLAY_H = 300
 
 open_canvas(DISPLAY_W, DISPLAY_H)
 

@@ -8,6 +8,7 @@ class Player( Character_Object ):
     def __init__(self, x, y, s = PS_SMALL):
         super(Player, self).__init__()
         self.x, self.y = x, y
+        self.set_hit_box(25, 25, 40, 50)
         # self.px, self.py = self.x, self.y
         self.action = "stay"
         self.direction = D_RIGHT
@@ -22,6 +23,8 @@ class Player( Character_Object ):
         self.is_walk = False
         self.is_run = False
         self.is_crawl = False
+        self.is_jump = False
+        self.is_fall = False
 
     def switch_stay( self, bl = True ):
         self.is_stay = bl
@@ -43,6 +46,14 @@ class Player( Character_Object ):
     def switch_crawl( self, bl = True ):
         self.is_crawl = bl
 
+    def switch_jump( self, bl = True ):
+        pass
+
+    def switch_fall( self, bl = True ):
+        self.is_fall = bl
+        if self.is_fall:
+            self.is_crawl = False
+
     def update_state( self ):
         if self.state == PS_SMALL:
             self.image_id = CO_MARIO_SMALL
@@ -51,7 +62,9 @@ class Player( Character_Object ):
 
     def update_animation( self ):
 
-        if self.is_walk:
+        if self.is_fall:
+            self.set_clip('jump_down')
+        elif self.is_walk:
             if self.is_run:
                 self.set_clip('run')
             else:
@@ -62,6 +75,11 @@ class Player( Character_Object ):
             self.set_clip('stay')
 
     def update_move( self ):
+        hit_box = self.get_hit_box()
+
+        if self.is_fall:
+            self.y -= 8
+
         if self.moving_dir == D_NONE:
             if not self.is_stay:
                 self.switch_stay()

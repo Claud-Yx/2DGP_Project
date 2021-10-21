@@ -1,4 +1,5 @@
 from pico2d import *
+from tileset import *
 
 CO_NONE = 0
 CO_MARIO_SMALL = 1
@@ -63,6 +64,10 @@ class Character_Object:
         # Object location point
         self.x, self.y = 0, 0
 
+        # Hit Box Range
+        self.hit_x1, self.hit_x2 = 10, 10
+        self.hit_y1, self.hit_y2 = 10, 10
+
         # Object moving value
         self.speed = 0
 
@@ -87,6 +92,16 @@ class Character_Object:
 
         # Animation control value
         self.loop_animation = False
+
+    def set_hit_box( self, x1, x2, y1, y2 ):
+        self.hit_x1 = x1
+        self.hit_x2 = x2
+        self.hit_y1 = y1
+        self.hit_y2 = y2
+
+    def get_hit_box( self ):
+        return [self.x - self.hit_x1, self.x + self.hit_x2,
+                self.y - self.hit_y1, self.y + self.hit_y2]
 
     def draw( self ):
         self.image.draw(self.x, self.y)
