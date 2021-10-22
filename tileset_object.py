@@ -36,16 +36,16 @@ class TileSet:
 
     def set_tile( self, id ):
         if id == MT_BLOCK50X50:
-            self.image = load_image('resource\\maptile\\block50x50.png')
+            self.image = load_image('resource\\tileset\\block50x50.png')
             self.set_hit_box(25, 25, 25, 25)
         elif id == MT_BLOCK50X100:
-            self.image = load_image('resource\\maptile\\block50x100.png')
+            self.image = load_image('resource\\tileset\\block50x100.png')
             self.set_hit_box(25, 25, 50, 50)
         elif id == MT_BLOCK100X50:
-            self.image = load_image('resource\\maptile\\block100x50.png')
+            self.image = load_image('resource\\tileset\\block100x50.png')
             self.set_hit_box(50, 50, 25, 25)
         elif id == MT_BLOCK100X100:
-            self.image = load_image('resource\\maptile\\block100x100.png')
+            self.image = load_image('resource\\tileset\\block100x100.png')
             self.set_hit_box(50, 50, 50, 50)
 
     def get_hit_box( self ):
