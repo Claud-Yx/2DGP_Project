@@ -8,7 +8,6 @@ class Player( Character_Object ):
     def __init__(self, x, y, s = PS_SMALL):
         super(Player, self).__init__()
         self.x, self.y = x, y
-        self.set_hit_box(25, 25, 40, 50)
         # self.px, self.py = self.x, self.y
         self.action = "stay"
         self.direction = D_RIGHT
@@ -75,8 +74,6 @@ class Player( Character_Object ):
             self.set_clip('stay')
 
     def update_move( self ):
-        hit_box = self.get_hit_box()
-
         if self.is_fall:
             self.y -= 8
 

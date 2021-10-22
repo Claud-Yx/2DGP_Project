@@ -1,40 +1,11 @@
 from player import *
 from enemy_goomba import *
 from enemy_drybones import *
-from tileset import *
+from tileset_object import *
 from pico2d import *
 import test_keyboard
 
-hxL = 0
-hxR = 1
-hyD = 2
-hyU = 3
-
 open_canvas()
-
-def update_engine():
-    global player, goomba, drybone
-    global box_100x100
-
-    for box in box_100x100:
-        p_hb = player.get_hit_box()
-        b_hb = box.get_hit_box()
-
-        if b_hb[hxL] < p_hb[hxL]  < b_hb[hxR] or b_hb[hxL] < p_hb[hxR] < b_hb[hxR]:
-            if b_hb[hyU] + 1 >= p_hb[hyD] > b_hb[hyD]:
-                player.switch_fall(False)
-                player.y = b_hb[hyU] + player.hit_y1 + 0.1
-            elif p_hb[hyD] < b_hb[hyU]:
-                continue
-            else:
-                player.switch_fall()
-
-        elif b_hb[hyD] < p_hb[hyD] < b_hb[hyU] or b_hb[hyD] < p_hb[hyU] < b_hb[hyU]:
-            if b_hb[hxR] + 1 >= p_hb[hxL] > b_hb[hxL]:
-                player.x = b_hb[hxR ] + player.hit_x1 + 0.1
-            elif b_hb[hxL ] - 1 <= p_hb[hxR ] >= b_hb[hxR ]:
-                player.x = b_hb[hxL ] + player.hit_x2 + 0.1
-
 
 # Initialization:
 player = Player(250, 140, PS_SUPER)
@@ -75,8 +46,6 @@ while Running:
     drybone.update()
     drybone.clip_draw()
     drybone.frame_update()
-
-    # update_engine()
 
     events = get_events()
 
