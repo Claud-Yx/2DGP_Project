@@ -1,4 +1,5 @@
 from enum import auto, IntEnum
+import pico2d
 
 
 class Pos( IntEnum ):
@@ -22,7 +23,8 @@ class Pos( IntEnum ):
 
 
 class HitBox:
-    def __init__( self, x, y, yt = 10, yb = 10, xl = 10, xr = 10 ):
+    def __init__( self, x, y, yt = 10, yb = 10, xl = 10, xr = 10, on = True,
+                  img_path='resource\\hit_box.png', img_id=2):
         # Hit box name
         self.name = ""
         self.type = ""
@@ -45,7 +47,14 @@ class HitBox:
 
         # Hit box checking
         self.is_hit = [False for b in range(4)]
+        self.is_on = on
 
+        # Hit box image
+        if img_path == '':
+            self.image = None
+        else:
+            self.image = pico2d.load_image(img_path)
+        self.image_id = img_id  # 0:blue / 1:green / 2:red
 
     def set_pos( self, x, y ):
         self.center_pos = [x, y]
@@ -78,64 +87,74 @@ class HitBox:
     def check_hit( self, other ):
 
         # top check
-        if (
-                other.is_pos_in_box(self.edge_pos[Pos.lt], t=-1, l=-1, r=-1) or
-                other.is_pos_in_box(self.edge_pos[Pos.rt], t=-1, l=-1, r=-1) or
-                self.is_pos_in_box(other.edge_pos[Pos.lb], b=-1, l=-1, r=-1) or
-                self.is_pos_in_box(other.edge_pos[Pos.rb], b=-1, l=-1, r=-1)
-        ):
-            self.is_hit[Pos.top] = True
-        else:
-            self.is_hit[Pos.top] = False
+        if self.is_on:
+            if (
+                    other.is_pos_in_box(self.edge_pos[Pos.lt], t=-1, l=-1, r=-1) or
+                    other.is_pos_in_box(self.edge_pos[Pos.rt], t=-1, l=-1, r=-1) or
+                    self.is_pos_in_box(other.edge_pos[Pos.lb], b=-1, l=-1, r=-1) or
+                    self.is_pos_in_box(other.edge_pos[Pos.rb], b=-1, l=-1, r=-1)
+            ):
+                self.is_hit[Pos.top] = True
+            else:
+                self.is_hit[Pos.top] = False
 
-        # bottom check
-        if (
-                other.is_pos_in_box( self.edge_pos[ Pos.lb ], b=-1, l=-1, r=-1 ) or
-                other.is_pos_in_box( self.edge_pos[ Pos.rb ], b=-1, l=-1, r=-1 ) or
-                self.is_pos_in_box( other.edge_pos[ Pos.lt ], t=-1, l=-1, r=-1 ) or
-                self.is_pos_in_box( other.edge_pos[ Pos.rt ], t=-1, l=-1, r=-1 )
-        ):
-            self.is_hit[Pos.bottom] = True
-        else:
-            self.is_hit[Pos.bottom] = False
+            # bottom check
+            if (
+                    other.is_pos_in_box( self.edge_pos[ Pos.lb ], b=-1, l=-1, r=-1 ) or
+                    other.is_pos_in_box( self.edge_pos[ Pos.rb ], b=-1, l=-1, r=-1 ) or
+                    self.is_pos_in_box( other.edge_pos[ Pos.lt ], t=-1, l=-1, r=-1 ) or
+                    self.is_pos_in_box( other.edge_pos[ Pos.rt ], t=-1, l=-1, r=-1 )
+            ):
+                self.is_hit[Pos.bottom] = True
+            else:
+                self.is_hit[Pos.bottom] = False
 
-        # left check
-        if (
-                other.is_pos_in_box( self.edge_pos[ Pos.lt ], t=-1, b=-1, l=-1 ) or
-                other.is_pos_in_box( self.edge_pos[ Pos.lb ], t=-1, b=-1, l=-1 ) or
-                self.is_pos_in_box( other.edge_pos[ Pos.rt ], t=-1, b=-1, r=-1 ) or
-                self.is_pos_in_box( other.edge_pos[ Pos.rb ], t=-1, b=-1, r=-1 )
-        ):
-            self.is_hit[Pos.left] = True
-        else:
-            self.is_hit[Pos.left] = False
+            # left check
+            if (
+                    other.is_pos_in_box( self.edge_pos[ Pos.lt ], t=-1, b=-1, l=-1 ) or
+                    other.is_pos_in_box( self.edge_pos[ Pos.lb ], t=-1, b=-1, l=-1 ) or
+                    self.is_pos_in_box( other.edge_pos[ Pos.rt ], t=-1, b=-1, r=-1 ) or
+                    self.is_pos_in_box( other.edge_pos[ Pos.rb ], t=-1, b=-1, r=-1 )
+            ):
+                self.is_hit[Pos.left] = True
+            else:
+                self.is_hit[Pos.left] = False
 
-        # left check
-        if (
-                other.is_pos_in_box( self.edge_pos[ Pos.rt ], t=-1, b=-1, r=-1 ) or
-                other.is_pos_in_box( self.edge_pos[ Pos.rb ], t=-1, b=-1, r=-1 ) or
-                self.is_pos_in_box( other.edge_pos[ Pos.lt ], t=-1, b=-1, l=-1 ) or
-                self.is_pos_in_box( other.edge_pos[ Pos.lb ], t=-1, b=-1, l=-1 )
-        ):
-            self.is_hit[Pos.right] = True
-        else:
-            self.is_hit[Pos.right] = False
+            # left check
+            if (
+                    other.is_pos_in_box( self.edge_pos[ Pos.rt ], t=-1, b=-1, r=-1 ) or
+                    other.is_pos_in_box( self.edge_pos[ Pos.rb ], t=-1, b=-1, r=-1 ) or
+                    self.is_pos_in_box( other.edge_pos[ Pos.lt ], t=-1, b=-1, l=-1 ) or
+                    self.is_pos_in_box( other.edge_pos[ Pos.lb ], t=-1, b=-1, l=-1 )
+            ):
+                self.is_hit[Pos.right] = True
+            else:
+                self.is_hit[Pos.right] = False
 
-        # return check
-        for b in self.is_hit:
-            if b:
-                return True
+            # return check
+            for b in self.is_hit:
+                if b:
+                    return True
         return False
 
     def get_info( self ):
         return [self.name, self.type]
+
+    def show_hit_box( self ):
+        if self.is_on:
+            for x in range(self.edge_pos[Pos.lt][Pos.x], self.edge_pos[Pos.rt][Pos.x]+1):
+                self.image.clip_draw(0, self.image_id, 1, 1, x, self.pos_range[Pos.top])
+                self.image.clip_draw(0, self.image_id, 1, 1, x, self.pos_range[Pos.bottom])
+
+            for y in range(self.edge_pos[Pos.lb][Pos.y], self.edge_pos[Pos.lt][Pos.y]+1):
+                self.image.clip_draw(0, self.image_id, 1, 1, self.pos_range[Pos.left], y)
+                self.image.clip_draw(0, self.image_id, 1, 1, self.pos_range[Pos.right], y)
 
 
 def test_hit_box():
     if __name__ != "__main__":
         return False
 
-    import pico2d
     import os
 
     def handle_event(pos):
@@ -187,7 +206,7 @@ def test_hit_box():
         print( pos, "=", pos.value)
     print()
 
-    hb = HitBox( 50, 50 )
+    hb = HitBox( 50, 50, img_path = '' )
     print("= Created: initialized test HitBox class - hb")
 
     print("hb.name:", hb.name, "| hb.type:", hb.type)
@@ -218,6 +237,9 @@ def test_hit_box():
         object.draw(object_x, object_y)
         mouse_object.draw(mpos[0], mpos[1])
         update_hit_check(mouse_hit_box, object_hit_box)
+
+        object_hit_box.show_hit_box()
+        mouse_hit_box.show_hit_box()
 
         pico2d.update_canvas()
 
