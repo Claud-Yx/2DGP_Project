@@ -26,8 +26,25 @@ def show_hit_box():
             box.hit_box.show_hit_box()
 
 
-def set_fps(fps=60):
-    pass
+ct = 0.0
+real_fps = 30.0
+
+
+def set_fps(fps=30):
+    global ct
+    global real_fps
+
+    delay(1/real_fps)
+
+    dt = get_time() - ct
+    ct += dt
+    dt = max(dt, 0.0001)
+    cur_fps = 1.0/dt
+
+    if fps+0.5 < cur_fps:
+        real_fps -= 0.5
+    if fps-0.5 > cur_fps:
+        real_fps += 0.5
 
 
 open_canvas()
@@ -38,13 +55,10 @@ goomba = enGoomba(450, 310)
 drybone = enDryBones(350, 335)
 
 # Map tile set
-box_100x100 = [TileSet(MT_BLOCK100X100) for i in range(16)]
+box_100x100 = [TileSet(MT_BLOCK100X100) for i in range(8)]
 
 for i in range(0, 8):
     box_100x100[i].set_pos(i * 100 + 50, 50)
-
-for i in range(8, 16):
-    box_100x100[i].set_pos((i-8) * 100 + 50, 250)
 
 # Background
 background = load_image('resource\\background\\castle1.png')
@@ -53,8 +67,6 @@ background = load_image('resource\\background\\castle1.png')
 test_keyboard.keyboard_init()
 
 Running = True
-
-events = None
 
 def Rendering():
     global player, goomba, drybone
@@ -85,42 +97,25 @@ def Rendering():
         update_canvas()
 
 
-RenderingTrd = threading.Thread( target = Rendering, name = "Update", daemon = True )
+RenderingTrd = threading.Thread( target = Rendering, name = "Renderer", daemon = True )
 RenderingTrd.start()
 
 # Main Loop:
 while Running:
 
-    # clear_canvas()
-
-    # background.draw(400, 300)
-    #
-    # for i in range( len( box_100x100 ) ):
-    #     box_100x100[i].draw()
-
     player.update()
-    # player.clip_draw()
     player.update_frame()
 
     goomba.update()
-    # goomba.clip_draw()
     goomba.update_frame()
 
     drybone.update()
-    # drybone.clip_draw()
     drybone.update_frame()
-    #
-    # test_keyboard.update_test_keyboard()
-    #
-    # show_hit_box()
-
-    # update_canvas()
 
     events = get_events()
     Running = player.handle_event(events)
     test_keyboard.keyboard_handle(events)
 
-    # set_fps
-    delay(1 / 40)
+    set_fps()
 
 close_canvas()
