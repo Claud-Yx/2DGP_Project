@@ -20,6 +20,10 @@ def show_hit_box():
         drybone.attack_box.show_hit_box()
         drybone.break_box.show_hit_box()
 
+    if player.is_show_object_box:
+        for box in box_100x100:
+            box.hit_box.show_hit_box()
+
 open_canvas()
 
 # Initialization:

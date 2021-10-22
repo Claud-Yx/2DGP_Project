@@ -126,7 +126,7 @@ class Player( Character_Object ):
                     else:
                         self.is_show_hit_box = True
 
-                elif event.key == SDLK_F4:
+                elif event.key == SDLK_F2:
                     if self.is_show_object_box:
                         self.is_show_object_box = False
                     else:
