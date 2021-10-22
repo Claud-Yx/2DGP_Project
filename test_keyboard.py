@@ -49,7 +49,7 @@ def keyboard_handle(g_events):
 
     for event in g_events:
         if event.type == SDL_KEYDOWN:
-            if event.key == SDLK_k:
+            if event.key == SDLK_F4:
                 if SHOW_KEYBOARD:
                     SHOW_KEYBOARD = False
                 else:

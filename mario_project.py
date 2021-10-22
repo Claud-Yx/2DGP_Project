@@ -5,6 +5,21 @@ from tileset_object import *
 from pico2d import *
 import test_keyboard
 
+
+def show_hit_box():
+    if player.is_show_hit_box:
+        player.hit_box.show_hit_box()
+        player.attack_box.show_hit_box()
+        player.break_box.show_hit_box()
+
+        goomba.hit_box.show_hit_box()
+        goomba.attack_box.show_hit_box()
+        goomba.break_box.show_hit_box()
+
+        drybone.hit_box.show_hit_box()
+        drybone.attack_box.show_hit_box()
+        drybone.break_box.show_hit_box()
+
 open_canvas()
 
 # Initialization:
@@ -37,20 +52,22 @@ while Running:
 
     player.update()
     player.clip_draw()
-    player.frame_update()
+    player.update_frame()
 
     goomba.update()
     goomba.clip_draw()
-    goomba.frame_update()
+    goomba.update_frame()
 
     drybone.update()
     drybone.clip_draw()
-    drybone.frame_update()
+    drybone.update_frame()
 
-    events = get_events()
+    show_hit_box()
 
     test_keyboard.update_test_keyboard()
     update_canvas()
+
+    events = get_events()
     Running = player.handle_event(events)
     test_keyboard.keyboard_handle(events)
 
