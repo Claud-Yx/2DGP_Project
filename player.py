@@ -25,6 +25,10 @@ class Player( Character_Object ):
         self.is_jump = False
         self.is_fall = False
 
+        # Hit box debugging
+        self.is_show_hit_box = False
+        self.is_show_object_box = False
+
     def switch_stay( self, bl = True ):
         self.is_stay = bl
         if self.is_stay:
@@ -115,6 +119,18 @@ class Player( Character_Object ):
             elif event.type == SDL_KEYDOWN:
                 if event.key == SDLK_ESCAPE:
                     return False
+
+                elif event.key == SDLK_F3:
+                    if self.is_show_hit_box:
+                        self.is_show_hit_box = False
+                    else:
+                        self.is_show_hit_box = True
+
+                elif event.key == SDLK_F4:
+                    if self.is_show_object_box:
+                        self.is_show_object_box = False
+                    else:
+                        self.is_show_object_box = True
 
                 elif event.key == SDLK_RIGHT:
                     self.direction = D_RIGHT
