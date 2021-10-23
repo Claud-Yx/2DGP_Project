@@ -7,6 +7,13 @@ import threading
 import test_keyboard
 
 
+def update_world():
+    for box in box_100x100:
+        if player.hit_box.check_hit(box.hit_box):
+            return
+        # print(player.hit_box.is_hit[POS.bottom], player.hit_box.other_type)
+
+
 def show_hit_box():
     if player.is_show_hit_box:
         player.hit_box.show_hit_box()
@@ -50,7 +57,7 @@ def set_fps(fps=30):
 open_canvas()
 
 # Initialization:
-player = Player(250, 140, PS_SUPER)
+player = Player(250, 540, PS_SUPER)
 goomba = enGoomba(450, 310)
 drybone = enDryBones(350, 335)
 
@@ -111,6 +118,8 @@ while Running:
 
     drybone.update()
     drybone.update_frame()
+
+    update_world()
 
     events = get_events()
     Running = player.handle_event(events)

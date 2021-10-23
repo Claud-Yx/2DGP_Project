@@ -1,5 +1,6 @@
 from pico2d import *
 from hit_box import *
+from value import *
 
 MT_NONE = 0
 MT_BLOCK50X50 = 1
@@ -19,7 +20,7 @@ class TileSet:
         self.image_id = id
 
         # Hit box
-        self.hit_box = HitBox(self.x, self.y)
+        self.hit_box = HitBox(self.x, self.y, type=TYPE.PLATFORM_NT)
 
         if self.image_id != MT_NONE:
             self.set_tile(self.image_id)
@@ -33,6 +34,7 @@ class TileSet:
         if id == MT_BLOCK50X50:
             self.image = load_image('resource\\tileset\\block50x50.png')
             self.hit_box.set_range(25, 25, 25, 25)
+            self.hit_box.name = NAME.TILESET
         elif id == MT_BLOCK50X100:
             self.image = load_image('resource\\tileset\\block50x100.png')
             self.hit_box.set_range(50, 50, 25, 25)

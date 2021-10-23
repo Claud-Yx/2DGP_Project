@@ -134,6 +134,10 @@ class Character_Object:
         self.image = load_image( IMAGE_LOCATION[self.image_id] )
 
         if self.image_id == CO_MARIO_SMALL:
+            self.hit_box.set_info(NAME.PLAYER_SMALL, TYPE.HIT)
+            self.attack_box.set_info(NAME.PLAYER_SMALL, TYPE.ATTACK)
+            self.break_box.set_info(NAME.PLAYER_SMALL, TYPE.BREAK)
+
             if self.action == "stay" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50*9, 50, 50
                 self.frame_count, self.frame_begin = 27, 0
@@ -229,7 +233,7 @@ class Character_Object:
                 self.hit_box.is_on = True
                 self.attack_box.is_on = True
                 self.break_box.is_on = False
-                self.hit_box.set_range(22, 12, 10, 12)
+                self.hit_box.set_range(22, 15, 10, 12)
                 self.attack_box.set_range(-8, 12, 8, 16)
                 self.loop_animation = False
             elif self.action == "jump_up" and self.direction == D_LEFT:
@@ -247,7 +251,7 @@ class Character_Object:
                 self.hit_box.is_on = True
                 self.attack_box.is_on = True
                 self.break_box.is_on = False
-                self.hit_box.set_range(22, 12, 12, 10)
+                self.hit_box.set_range(22, 15, 12, 10)
                 self.attack_box.set_range(-8, 12, 16, 8)
                 self.loop_animation = False
             elif self.action == "die":
@@ -264,6 +268,10 @@ class Character_Object:
                 self.loop_animation = False
 
         elif self.image_id == CO_MARIO_SUPER:
+            self.hit_box.set_info(NAME.PLAYER_SUPER, TYPE.HIT)
+            self.attack_box.set_info(NAME.PLAYER_SUPER, TYPE.ATTACK)
+            self.break_box.set_info(NAME.PLAYER_SUPER, TYPE.BREAK)
+
             if self.action == "stay" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 9, 50, 100
                 self.frame_count, self.frame_begin = 27, 0
@@ -318,7 +326,7 @@ class Character_Object:
                 self.hit_box.is_on = True
                 self.attack_box.is_on = False
                 self.break_box.is_on = False
-                self.hit_box.set_range(21, 39, 25, 28)
+                self.hit_box.set_range(21, 40, 25, 28)
                 self.loop_animation = True
             elif self.action == "swim" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 100, 100 * 2, 100, 100
@@ -326,7 +334,7 @@ class Character_Object:
                 self.hit_box.is_on = True
                 self.attack_box.is_on = False
                 self.break_box.is_on = False
-                self.hit_box.set_range(21, 39, 28, 25)
+                self.hit_box.set_range(21, 40, 28, 25)
                 self.loop_animation = True
             elif self.action == "hang":
                 self.l, self.b, self.w, self.h = 50, 100 * 1, 50, 100
@@ -375,8 +383,8 @@ class Character_Object:
                 self.hit_box.is_on = True
                 self.attack_box.is_on = True
                 self.break_box.is_on = False
-                self.hit_box.set_range(30, 35, 21, 17)
-                self.attack_box.set_range(-32, 37, 12, 28)
+                self.hit_box.set_range(30, 40, 21, 17)
+                self.attack_box.set_range(-32, 41, 12, 28)
                 self.loop_animation = False
             elif self.action == "jump_up" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 100, 100 * 6, 100, 100
@@ -393,8 +401,8 @@ class Character_Object:
                 self.hit_box.is_on = True
                 self.attack_box.is_on = True
                 self.break_box.is_on = False
-                self.hit_box.set_range(30, 35, 17, 21)
-                self.attack_box.set_range(-32, 37, 28, 12)
+                self.hit_box.set_range(30, 40, 17, 21)
+                self.attack_box.set_range(-32, 41, 28, 12)
                 self.loop_animation = False
 
             else:

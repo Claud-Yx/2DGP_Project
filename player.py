@@ -8,7 +8,14 @@ class Player( Character_Object ):
     def __init__(self, x, y, s = PS_SMALL):
         super(Player, self).__init__()
         self.x, self.y = x, y
-        # self.px, self.py = self.x, self.y
+
+        # 임시 점프
+        self.jump_power_max = 20
+        self.jump_power = self.jump_power_max
+
+        # 임시 중력
+        self.gravity = self.jump_power_max
+
         self.action = "stay"
         self.direction = D_RIGHT
         self.moving_dir = 0
@@ -24,6 +31,7 @@ class Player( Character_Object ):
         self.is_crawl = False
         self.is_jump = False
         self.is_fall = False
+        self.is_float = False
 
         # Hit box debugging
         self.is_show_hit_box = False
@@ -50,12 +58,25 @@ class Player( Character_Object ):
         self.is_crawl = bl
 
     def switch_jump( self, bl = True ):
-        pass
+        self.is_jump = bl
+        if self.is_jump:
+            self.is_fall = False
+            self.switch_float()
 
     def switch_fall( self, bl = True ):
         self.is_fall = bl
         if self.is_fall:
+            self.is_jump = False
             self.is_crawl = False
+            self.switch_float()
+
+    def switch_float( self, bl = True ):
+        self.is_float = bl
+        if self.is_float:
+            self.is_crawl = False
+
+    def full_jump( self ):
+        self.jump_power = self.jump_power_max
 
     def update_state( self ):
         if self.state == PS_SMALL:
@@ -67,6 +88,8 @@ class Player( Character_Object ):
 
         if self.is_fall:
             self.set_clip('jump_down')
+        elif self.is_jump:
+            self.set_clip('jump_up')
         elif self.is_walk:
             if self.is_run:
                 self.set_clip('run')
@@ -78,8 +101,17 @@ class Player( Character_Object ):
             self.set_clip('stay')
 
     def update_move( self ):
-        if self.is_fall:
-            self.y -= 8
+        if self.is_fall and not self.is_jump:
+            self.y -= self.jump_power
+            self.jump_power += 1
+            if self.jump_power >= self.jump_power_max:
+                self.jump_power = self.jump_power_max
+        elif self.is_jump:
+            self.y += self.jump_power
+            self.jump_power -= 1
+            if self.jump_power < 0:
+                self.jump_power = 0
+                self.switch_fall()
 
         if self.moving_dir == D_NONE:
             if not self.is_stay:
@@ -104,8 +136,25 @@ class Player( Character_Object ):
 
         # print("update move: ", self.direction, self.moving_dir, self.action)
 
+    def update_hit_box( self ):
+
+        if self.hit_box.is_hit[POS.bottom]:
+            if (
+                    self.hit_box.other_type == TYPE.PLATFORM_T or
+                    self.hit_box.other_type == TYPE.PLATFORM_NT
+            ):
+                self.full_jump()
+                self.switch_fall(False)
+                self.switch_float(False)
+            elif not self.is_jump:
+                self.switch_fall()
+        elif not self.is_jump:
+            self.switch_fall()
+
+
     def update( self ):
         self.update_state()
+        self.update_hit_box()
         self.update_move()
         self.update_animation()
 
@@ -148,6 +197,9 @@ class Player( Character_Object ):
 
                 elif event.key == SDLK_z:
                     self.switch_run()
+                elif event.key == SDLK_x:
+                    if not self.is_fall:
+                        self.switch_jump()
 
             elif event.type == SDL_KEYUP:
 
@@ -163,5 +215,9 @@ class Player( Character_Object ):
 
                 elif event.key == SDLK_z:
                     self.switch_run(False)
+                elif event.key == SDLK_x:
+                    if self.is_jump and not self.is_fall:
+                        self.switch_fall()
+                        self.jump_power = 0
 
         return True
