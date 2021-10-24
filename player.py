@@ -34,7 +34,8 @@ class Player(Character_Object):
         self.is_fall = False
 
         self.is_float = False
-        self.is_stock = False
+        self.is_stuck_r = False
+        self.is_stuck_l = False
 
         # Hit box debugging
         self.is_show_hit_box = True
@@ -78,8 +79,11 @@ class Player(Character_Object):
         if self.is_float:
             self.is_crawl = False
 
-    def switch_stock(self, bl=True):
-        self.is_stock = bl
+    def switch_stuck_r(self, bl=True):
+        self.is_stuck_r = bl
+
+    def switch_stuck_l(self, bl=True):
+        self.is_stuck_l = bl
 
     def full_jump(self):
         self.jump_power = self.jump_power_max
@@ -135,7 +139,7 @@ class Player(Character_Object):
                 self.direction = self.moving_dir
                 self.set_clip()
 
-            if self.is_walk and not self.is_stock:
+            if self.is_walk and (not self.is_stuck_r and not self.is_stuck_l):
                 if self.is_run:
                     self.x += (self.speed + self.acceleration) * self.moving_dir
                 else:
@@ -154,36 +158,6 @@ class Player(Character_Object):
         # print("update move: ", self.direction, self.moving_dir, self.action)
 
     def update_hit_box(self):
-
-        while 0 < len(self.hit_box.other_name) and self.hit_box.is_on:
-            o_name = self.hit_box.other_name.pop()
-            o_type = self.hit_box.other_type.pop()
-            o_pos = self.hit_box.other_center_pos.pop()
-            o_range = self.hit_box.other_range.pop()
-            o_range_pos = self.hit_box.other_range_pos.pop()
-            o_edge_pos = self.hit_box.other_edge_pos.pop()
-            hit = self.hit_box.hit.pop()
-
-            if (
-                    hit[POS.RIGHT] and not hit[POS.LEFT] and
-                    self.px < o_range_pos[POS.RIGHT]
-            ):
-                self.x = o_range_pos[POS.LEFT] - self.hit_box.range[POS.RIGHT]
-                self.reset_boxes_pos()
-                self.switch_stock()
-            else:
-                self.switch_stock(False)
-
-            # if hit[POS.LEFT] or hit[POS.RIGHT] or hit[POS.TOP]:
-            #     if o_type == TYPE.PLATFORM_NT:
-            #         if hit[POS.TOP] and self.py <= o_range_pos[POS.BOTTOM] - self.hit_box.range[POS.TOP]:
-            #             self.y = o_range_pos[POS.BOTTOM] - self.hit_box.range[POS.TOP] - 1
-            #             self.switch_fall()
-            #             self.gravity = 0
-            #         if hit[POS.LEFT] and self.px >= o_range_pos[POS.RIGHT] + self.hit_box.range[POS.LEFT]:
-            #             self.x = o_range_pos[POS.RIGHT] + self.hit_box.range[POS.LEFT] + 1
-            #         if hit[POS.RIGHT] and self.px <= o_range_pos[POS.LEFT] - self.hit_box.range[POS.RIGHT]:
-            #             self.x = o_range_pos[POS.LEFT] - self.hit_box.range[POS.RIGHT] - 1
 
         while 0 < len(self.stand_box.other_name) and self.stand_box.is_on:
             o_name = self.stand_box.other_name.pop()
@@ -211,16 +185,61 @@ class Player(Character_Object):
                     self.switch_float(False)
                     self.reset_boxes_pos()
 
-        print(self.hit_box.is_hit)
+        while 0 < len(self.hit_box.other_name) and self.hit_box.is_on:
+            o_name = self.hit_box.other_name.pop()
+            o_type = self.hit_box.other_type.pop()
+            o_pos = self.hit_box.other_center_pos.pop()
+            o_range = self.hit_box.other_range.pop()
+            o_range_pos = self.hit_box.other_range_pos.pop()
+            o_edge_pos = self.hit_box.other_edge_pos.pop()
+            hit = self.hit_box.hit.pop()
+
+            if (
+                    hit[POS.RIGHT] and
+                    not hit[POS.LEFT] and
+                    self.x < o_range_pos[POS.LEFT] and
+                    self.hit_box.range_pos[POS.BOTTOM] < o_range_pos[POS.TOP]
+            ):
+                self.x = o_range_pos[POS.LEFT] - self.hit_box.range[POS.RIGHT]
+                self.reset_boxes_pos()
+                self.switch_stuck_r()
+
+            elif (
+                    hit[POS.LEFT] and
+                    not hit[POS.RIGHT] and
+                    self.x > o_range_pos[POS.RIGHT] and
+                    self.hit_box.range_pos[POS.BOTTOM] < o_range_pos[POS.TOP]
+            ):
+                self.x = o_range_pos[POS.RIGHT] + self.hit_box.range[POS.LEFT]
+                self.reset_boxes_pos()
+                self.switch_stuck_l()
+
+            # if hit[POS.LEFT] or hit[POS.RIGHT] or hit[POS.TOP]:
+            #     if o_type == TYPE.PLATFORM_NT:
+            #         if hit[POS.TOP] and self.py <= o_range_pos[POS.BOTTOM] - self.hit_box.range[POS.TOP]:
+            #             self.y = o_range_pos[POS.BOTTOM] - self.hit_box.range[POS.TOP] - 1
+            #             self.switch_fall()
+            #             self.gravity = 0
+            #         if hit[POS.LEFT] and self.px >= o_range_pos[POS.RIGHT] + self.hit_box.range[POS.LEFT]:
+            #             self.x = o_range_pos[POS.RIGHT] + self.hit_box.range[POS.LEFT] + 1
+            #         if hit[POS.RIGHT] and self.px <= o_range_pos[POS.LEFT] - self.hit_box.range[POS.RIGHT]:
+            #             self.x = o_range_pos[POS.LEFT] - self.hit_box.range[POS.RIGHT] - 1
 
         if self.hit_box.is_on:
             if not self.is_jump and not self.hit_box.is_hit[POS.BOTTOM]:
                 self.switch_fall()
+
             if (
                     (not self.hit_box.is_hit[POS.RIGHT]
-                    or self.direction == D_LEFT)
+                     or self.direction == D_LEFT)
             ):
-                self.switch_stock(False)
+                self.switch_stuck_r(False)
+
+            if (
+                    (not self.hit_box.is_hit[POS.LEFT]
+                     or self.direction == D_RIGHT)
+            ):
+                self.switch_stuck_l(False)
 
         self.hit_box.is_hit = [False for b in range(len(self.hit_box.is_hit))]
 
