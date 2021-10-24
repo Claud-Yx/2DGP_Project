@@ -37,22 +37,22 @@ class TYPE(StrEnum):
 
 
 class POS( IntEnum ):
-    top = 0
-    bottom = auto()
-    left = auto()
-    right = auto()
+    TOP = 0
+    BOTTOM = auto()
+    LEFT = auto()
+    RIGHT = auto()
 
-    lefttop = 0
-    leftbottom = auto()
-    righttop = auto()
-    rightbottom = auto()
+    LEFTTOP = 0
+    LEFTBOTTOM = auto()
+    RIGHTTOP = auto()
+    RIGHTBOTTOM = auto()
 
-    lt = 0
-    lb = auto()
-    rt = auto()
-    rb = auto()
+    LT = 0
+    LB = auto()
+    RT = auto()
+    RB = auto()
 
-    x = 0
-    y = 1
+    X = 0
+    Y = 1
 
 

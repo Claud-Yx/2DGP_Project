@@ -28,15 +28,32 @@ def keyboard_init():
     TK_X = load_image( 'resource\\keyboard.png' )
     TK_BG = load_image('resource\\keyboard_bg.png')
 
+# standard location: left top
+def show_keyboard(x = 50, y = 550, w = 1, h = 1):
+    button_w = 64 * w
+    button_h = 64 * h
+    bg_w = 340 * w
+    bg_h = 148 * h
+    button_xi = 64 * w
+    button_yi = 64 * h
+    bg_xi = button_xi * 2
+    bg_yi = button_yi / 2
 
-def show_keyboard(x = 50, y = 550):
-    TK_BG.draw(x + 64 * 2, y - 32)
-    TK_UP.clip_draw(64 * 0, 64 * TK_UP_KEY_STATE, 64, 64, x + 64 * 3, y)
-    TK_DOWN.clip_draw(64 * 1, 64 * TK_DOWN_KEY_STATE, 64, 64, x + 64 * 3, y - 64)
-    TK_LEFT.clip_draw( 64 * 2, 64 * TK_LEFT_KEY_STATE, 64, 64, x + 64 * 2, y - 64)
-    TK_RIGHT.clip_draw(64 * 3, 64 * TK_RIGHT_KEY_STATE, 64, 64, x + 64 * 4, y - 64)
-    TK_Z.clip_draw(64 * 4, 64 * TK_Z_KEY_STATE, 64, 64, x + 64 * 0, y - 64)
-    TK_X.clip_draw(64 * 5, 64 * TK_X_KEY_STATE, 64, 64, x + 64 * 1, y - 64)
+    TK_BG.draw(x + bg_xi, y - bg_yi,
+               bg_w, bg_h)
+
+    TK_UP.clip_draw(64 * 0, 64 * TK_UP_KEY_STATE, 64, 64,
+                    x + button_xi * 3, y, button_w, button_h)
+    TK_DOWN.clip_draw(64 * 1, 64 * TK_DOWN_KEY_STATE, 64, 64,
+                      x + button_xi * 3, y - button_yi, button_w, button_h)
+    TK_LEFT.clip_draw( 64 * 2, 64 * TK_LEFT_KEY_STATE, 64, 64,
+                       x + button_xi * 2, y - button_yi, button_w, button_h)
+    TK_RIGHT.clip_draw(64 * 3, 64 * TK_RIGHT_KEY_STATE, 64, 64,
+                       x + button_xi * 4, y - button_yi, button_w, button_h)
+    TK_Z.clip_draw(64 * 4, 64 * TK_Z_KEY_STATE, 64, 64,
+                   x + button_xi * 0, y - button_yi, button_w, button_h)
+    TK_X.clip_draw(64 * 5, 64 * TK_X_KEY_STATE, 64, 64,
+                   x + button_xi * 1, y - button_yi, button_w, button_h)
 
 
 def keyboard_handle(g_events):
@@ -82,11 +99,11 @@ def keyboard_handle(g_events):
                 TK_X_KEY_STATE = 1
 
 
-def update_test_keyboard(x = 50, y = 550):
+def update_test_keyboard(x = 50, y = 550, w = 1, h = 1):
     global SHOW_KEYBOARD
 
     if SHOW_KEYBOARD:
-        show_keyboard(x, y)
+        show_keyboard(x, y, w, h)
 
 
 # open_canvas()

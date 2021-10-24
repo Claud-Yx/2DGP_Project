@@ -24,6 +24,10 @@ class enGoomba( Character_Object ):
         if self.x < 0 or self.x > 799:  # fix point
             self.direction *= -1
 
+        self.hit_box.set_pos(self.x, self.y)
+        self.attack_box.set_pos(self.x, self.y)
+        self.break_box.set_pos(self.x, self.y)
+
     def update( self ):
         self.update_move()
         self.update_animation()

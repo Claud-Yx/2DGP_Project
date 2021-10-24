@@ -43,7 +43,7 @@ class TileSet:
             self.hit_box.set_range(25, 25, 50, 50)
         elif id == MT_BLOCK100X100:
             self.image = load_image('resource\\tileset\\block100x100.png')
-            self.hit_box.set_range(50, 50, 50, 50)
+            self.hit_box.set_range(51, 51, 51, 51)
 
     def draw( self ):
         self.image.draw(self.x, self.y)

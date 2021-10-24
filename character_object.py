@@ -64,6 +64,8 @@ class Character_Object:
         # Object location point
         self.x, self.y = 0, 0
 
+        self.px, self.py = self.x, self.y
+
         # Hit Box
         self.hit_box = HitBox(self.x, self.y, img_id = 2)
         self.attack_box = HitBox(self.x, self.y, on=False, img_id = 0)
@@ -103,10 +105,6 @@ class Character_Object:
 
         self.image.clip_draw((self.frames + self.frame_begin) * self.l, self.b,
                              self.w, self.h, self.x, self.y)
-
-        self.hit_box.set_pos(self.x, self.y)
-        self.attack_box.set_pos(self.x, self.y)
-        self.break_box.set_pos(self.x, self.y)
 
     def update_frame( self ):
         if self.frame_count == 0:
@@ -233,8 +231,8 @@ class Character_Object:
                 self.hit_box.is_on = True
                 self.attack_box.is_on = True
                 self.break_box.is_on = False
-                self.hit_box.set_range(22, 15, 10, 12)
-                self.attack_box.set_range(-8, 12, 8, 16)
+                self.hit_box.set_range(22, 15, 12, 12)
+                self.attack_box.set_range(-8, 15, 8, 16)
                 self.loop_animation = False
             elif self.action == "jump_up" and self.direction == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50*6, 50, 50
@@ -251,8 +249,8 @@ class Character_Object:
                 self.hit_box.is_on = True
                 self.attack_box.is_on = True
                 self.break_box.is_on = False
-                self.hit_box.set_range(22, 15, 12, 10)
-                self.attack_box.set_range(-8, 12, 16, 8)
+                self.hit_box.set_range(22, 15, 12, 12)
+                self.attack_box.set_range(-8, 15, 16, 8)
                 self.loop_animation = False
             elif self.action == "die":
                 self.l, self.b, self.w, self.h = 50, 50*0, 50, 50
@@ -374,7 +372,7 @@ class Character_Object:
                 self.hit_box.is_on = True
                 self.attack_box.is_on = False
                 self.break_box.is_on = True
-                self.hit_box.set_range(30, 36, 15, 20)
+                self.hit_box.set_range(30, 36, 15, 15)
                 self.break_box.set_range(34, -30, 15, 15)
                 self.loop_animation = False
             elif self.action == "jump_down" and self.direction == D_RIGHT:
@@ -383,7 +381,7 @@ class Character_Object:
                 self.hit_box.is_on = True
                 self.attack_box.is_on = True
                 self.break_box.is_on = False
-                self.hit_box.set_range(30, 40, 21, 17)
+                self.hit_box.set_range(30, 40, 15, 15)
                 self.attack_box.set_range(-32, 41, 12, 28)
                 self.loop_animation = False
             elif self.action == "jump_up" and self.direction == D_LEFT:
@@ -392,7 +390,7 @@ class Character_Object:
                 self.hit_box.is_on = True
                 self.attack_box.is_on = False
                 self.break_box.is_on = True
-                self.hit_box.set_range(30, 36, 20, 15)
+                self.hit_box.set_range(30, 36, 15, 15)
                 self.break_box.set_range(34, -30, 15, 15)
                 self.loop_animation = False
             elif self.action == "jump_down" and self.direction == D_LEFT:
@@ -401,7 +399,7 @@ class Character_Object:
                 self.hit_box.is_on = True
                 self.attack_box.is_on = True
                 self.break_box.is_on = False
-                self.hit_box.set_range(30, 40, 17, 21)
+                self.hit_box.set_range(30, 40, 15, 15)
                 self.attack_box.set_range(-32, 41, 28, 12)
                 self.loop_animation = False
 
