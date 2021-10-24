@@ -195,6 +195,15 @@ class Player(Character_Object):
             hit = self.hit_box.hit.pop()
 
             if (
+                    hit[POS.TOP] and
+                    not hit[POS.BOTTOM] and
+                    self.py <= o_range_pos[POS.BOTTOM] - self.hit_box.range[POS.TOP]
+            ):
+                self.y = o_range_pos[POS.BOTTOM] - self.hit_box.range[POS.TOP] - 1
+                self.switch_fall()
+                self.gravity = 0
+
+            elif (
                     hit[POS.RIGHT] and
                     not hit[POS.LEFT] and
                     self.x < o_range_pos[POS.LEFT] and
@@ -213,17 +222,6 @@ class Player(Character_Object):
                 self.x = o_range_pos[POS.RIGHT] + self.hit_box.range[POS.LEFT]
                 self.reset_boxes_pos()
                 self.switch_stuck_l()
-
-            # if hit[POS.LEFT] or hit[POS.RIGHT] or hit[POS.TOP]:
-            #     if o_type == TYPE.PLATFORM_NT:
-            #         if hit[POS.TOP] and self.py <= o_range_pos[POS.BOTTOM] - self.hit_box.range[POS.TOP]:
-            #             self.y = o_range_pos[POS.BOTTOM] - self.hit_box.range[POS.TOP] - 1
-            #             self.switch_fall()
-            #             self.gravity = 0
-            #         if hit[POS.LEFT] and self.px >= o_range_pos[POS.RIGHT] + self.hit_box.range[POS.LEFT]:
-            #             self.x = o_range_pos[POS.RIGHT] + self.hit_box.range[POS.LEFT] + 1
-            #         if hit[POS.RIGHT] and self.px <= o_range_pos[POS.LEFT] - self.hit_box.range[POS.RIGHT]:
-            #             self.x = o_range_pos[POS.LEFT] - self.hit_box.range[POS.RIGHT] - 1
 
         if self.hit_box.is_on:
             if not self.is_jump and not self.hit_box.is_hit[POS.BOTTOM]:

@@ -87,16 +87,18 @@ goomba = enGoomba(450, 310)
 drybone = enDryBones(350, 335)
 
 # Map tile set
-box_100x100 = [TileSet(MT_BLOCK100X100) for i in range(13)]
+box_100x100 = [TileSet(MT_BLOCK100X100) for i in range(15)]
 
 for i in range(0, 8):
     box_100x100[i].set_pos(i * 100 + 50, 50)
 
-box_100x100[8].set_pos(350, 150)
-box_100x100[9].set_pos(450, 150)
-box_100x100[10].set_pos(550, 150)
-box_100x100[11].set_pos(450, 250)
-box_100x100[12].set_pos(450, 350)
+box_100x100[8].set_pos(250, 150)
+box_100x100[9].set_pos(350, 150)
+box_100x100[10].set_pos(450, 150)
+box_100x100[11].set_pos(550, 150)
+box_100x100[12].set_pos(450, 250)
+box_100x100[13].set_pos(250, 350)
+box_100x100[14].set_pos(450, 350)
 
 # Background
 background = load_image('resource\\background\\castle1.png')
