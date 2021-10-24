@@ -10,6 +10,7 @@ import test_keyboard
 def update_world():
     for box in box_100x100:
         player.hit_box.check_hit(box.hit_box)
+        player.stand_box.check_hit(box.hit_box)
 
 
 def show_hit_box():
@@ -137,8 +138,6 @@ while Running:
 
     update_world()
     player.update_hit_box()
-
-    print("player_pos:", [player.x, player.y], "| player_prepos:", [player.px, player.py])
     player.clip_draw()
 
     # goomba.update()

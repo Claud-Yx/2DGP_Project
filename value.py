@@ -20,6 +20,7 @@ class NAME(StrEnum):
 
 class TYPE(StrEnum):
     HIT = auto()
+    STAND = auto()
     ATTACK = auto()
     BREAK = auto()
 

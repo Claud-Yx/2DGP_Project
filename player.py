@@ -32,7 +32,9 @@ class Player(Character_Object):
         self.is_crawl = False
         self.is_jump = False
         self.is_fall = False
+
         self.is_float = False
+        self.is_stock = False
 
         # Hit box debugging
         self.is_show_hit_box = True
@@ -76,8 +78,17 @@ class Player(Character_Object):
         if self.is_float:
             self.is_crawl = False
 
+    def switch_stock(self, bl=True):
+        self.is_stock = bl
+
     def full_jump(self):
         self.jump_power = self.jump_power_max
+
+    def reset_boxes_pos(self):
+        self.hit_box.set_pos(self.x, self.y)
+        self.stand_box.set_pos(self.x, self.y)
+        self.attack_box.set_pos(self.x, self.y)
+        self.break_box.set_pos(self.x, self.y)
 
     def update_state(self):
         if self.state == PS_SMALL:
@@ -124,7 +135,7 @@ class Player(Character_Object):
                 self.direction = self.moving_dir
                 self.set_clip()
 
-            if self.is_walk:
+            if self.is_walk and not self.is_stock:
                 if self.is_run:
                     self.x += (self.speed + self.acceleration) * self.moving_dir
                 else:
@@ -136,6 +147,7 @@ class Player(Character_Object):
             self.x = 800 - 1
 
         self.hit_box.set_pos(self.x, self.y)
+        self.stand_box.set_pos(self.x, self.y)
         self.attack_box.set_pos(self.x, self.y)
         self.break_box.set_pos(self.x, self.y)
 
@@ -153,38 +165,67 @@ class Player(Character_Object):
             hit = self.hit_box.hit.pop()
 
             if (
-                    hit[POS.BOTTOM] and not self.is_jump and
-                    self.py >= o_range_pos[POS.TOP] + self.hit_box.range[POS.BOTTOM]
+                    hit[POS.RIGHT] and not hit[POS.LEFT] and
+                    self.px < o_range_pos[POS.RIGHT]
+            ):
+                self.x = o_range_pos[POS.LEFT] - self.hit_box.range[POS.RIGHT]
+                self.reset_boxes_pos()
+                self.switch_stock()
+            else:
+                self.switch_stock(False)
+
+            # if hit[POS.LEFT] or hit[POS.RIGHT] or hit[POS.TOP]:
+            #     if o_type == TYPE.PLATFORM_NT:
+            #         if hit[POS.TOP] and self.py <= o_range_pos[POS.BOTTOM] - self.hit_box.range[POS.TOP]:
+            #             self.y = o_range_pos[POS.BOTTOM] - self.hit_box.range[POS.TOP] - 1
+            #             self.switch_fall()
+            #             self.gravity = 0
+            #         if hit[POS.LEFT] and self.px >= o_range_pos[POS.RIGHT] + self.hit_box.range[POS.LEFT]:
+            #             self.x = o_range_pos[POS.RIGHT] + self.hit_box.range[POS.LEFT] + 1
+            #         if hit[POS.RIGHT] and self.px <= o_range_pos[POS.LEFT] - self.hit_box.range[POS.RIGHT]:
+            #             self.x = o_range_pos[POS.LEFT] - self.hit_box.range[POS.RIGHT] - 1
+
+        while 0 < len(self.stand_box.other_name) and self.stand_box.is_on:
+            o_name = self.stand_box.other_name.pop()
+            o_type = self.stand_box.other_type.pop()
+            o_pos = self.stand_box.other_center_pos.pop()
+            o_range = self.stand_box.other_range.pop()
+            o_range_pos = self.stand_box.other_range_pos.pop()
+            o_edge_pos = self.stand_box.other_edge_pos.pop()
+            stand = self.stand_box.hit.pop()
+
+            if (
+                    stand[POS.BOTTOM] and
+                    not self.is_jump and
+                    self.py >= o_range_pos[POS.TOP] + self.stand_box.range[POS.BOTTOM]
             ):
 
                 if (
                         o_type == TYPE.PLATFORM_T or
                         o_type == TYPE.PLATFORM_NT
                 ):
-                    self.y = o_range_pos[POS.TOP] + self.hit_box.range[POS.BOTTOM]
+                    self.y = o_range_pos[POS.TOP] + self.stand_box.range[POS.BOTTOM]
                     self.full_jump()
                     self.gravity = 0
                     self.switch_fall(False)
                     self.switch_float(False)
+                    self.reset_boxes_pos()
 
-            if hit[POS.LEFT] or hit[POS.RIGHT] or hit[POS.TOP]:
-                if o_type == TYPE.PLATFORM_NT:
-                    if hit[POS.TOP] and self.py <= o_range_pos[POS.BOTTOM] - self.hit_box.range[POS.TOP]:
-                        self.y = o_range_pos[POS.BOTTOM] - self.hit_box.range[POS.TOP] - 1
-                        self.switch_fall()
-                        self.gravity = 0
-                    if hit[POS.LEFT] and self.px >= o_range_pos[POS.RIGHT] + self.hit_box.range[POS.LEFT]:
-                        self.x = o_range_pos[POS.RIGHT] + self.hit_box.range[POS.LEFT] + 1
-                    if hit[POS.RIGHT] and self.px <= o_range_pos[POS.LEFT] - self.hit_box.range[POS.RIGHT]:
-                        self.x = o_range_pos[POS.LEFT] - self.hit_box.range[POS.RIGHT] - 1
+        print(self.hit_box.is_hit)
 
         if self.hit_box.is_on:
             if not self.is_jump and not self.hit_box.is_hit[POS.BOTTOM]:
                 self.switch_fall()
+            if (
+                    (not self.hit_box.is_hit[POS.RIGHT]
+                    or self.direction == D_LEFT)
+            ):
+                self.switch_stock(False)
 
         self.hit_box.is_hit = [False for b in range(len(self.hit_box.is_hit))]
 
         self.hit_box.set_pos(self.x, self.y)
+        self.stand_box.set_pos(self.x, self.y)
         self.attack_box.set_pos(self.x, self.y)
         self.break_box.set_pos(self.x, self.y)
 
