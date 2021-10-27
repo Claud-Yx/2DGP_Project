@@ -3,8 +3,6 @@ import gs_framework
 
 import gs_stage_enter
 
-name = "TitleState"
-
 logo = None
 menu = []
 menu_outline = []
@@ -15,11 +13,9 @@ menu_index = 0
 
 def enter():
     global logo
-    global menu, menu_index
+    global menu
     global menu_outline
     global cursor
-
-    menu_index = 0
 
     logo = load_image('resource\\logo_image\\title.png')
     menu = [load_font('resource\\font\\new_super_mario_font.ttf', 50) for i in range(3)]
@@ -51,9 +47,9 @@ def handle_events():
             gs_framework.quit()
 
         elif event.type == SDL_KEYDOWN:
-            # if event.key == SDLK_ESCAPE:
-            #     gs_framework.quit()
-            if event.key == SDLK_UP:
+            if event.key == SDLK_ESCAPE:
+                gs_framework.quit()
+            elif event.key == SDLK_UP:
                 menu_index -= 1
                 if menu_index < 0:
                     menu_index = 2

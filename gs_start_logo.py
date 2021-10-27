@@ -3,8 +3,6 @@ from pico2d import *
 
 import gs_title
 
-name = "StartLogoState"
-
 logo = None
 effect_fade = None
 logo_time = 0.0
