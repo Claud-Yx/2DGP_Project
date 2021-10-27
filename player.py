@@ -1,4 +1,6 @@
 from pico2d import *
+
+import gs_framework
 from character_object import *
 
 PS_SMALL = 0
@@ -258,7 +260,7 @@ class Player(Character_Object):
 
         for event in events:
             if event.type == SDL_QUIT:
-                return False
+                gs_framework.quit()
 
             elif event.type == SDL_KEYDOWN:
                 if event.key == SDLK_ESCAPE:

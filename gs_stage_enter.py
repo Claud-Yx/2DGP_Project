@@ -3,6 +3,8 @@ import gs_framework
 
 import gs_stage_main
 
+name = "StageMainState"
+
 def enter():
     pass
 
