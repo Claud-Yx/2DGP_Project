@@ -7,6 +7,30 @@ import threading
 import test_keyboard
 
 
+# def enter():
+#     pass
+#
+# def exit():
+#     pass
+#
+#
+# def handle_events():
+#     pass
+#
+# def update():
+#     pass
+#
+#
+# def draw():
+#     pass
+#
+# def pause():
+#     pass
+#
+# def resume():
+#     pass
+
+
 def update_world():
     for box in box_100x100:
         player.hit_box.check_hit(box.hit_box)
@@ -36,6 +60,7 @@ ct = 0.0
 real_fps = 30
 is_fps_changed = False
 
+
 def set_fps(fps=30):
     global ct
     global real_fps
@@ -45,37 +70,37 @@ def set_fps(fps=30):
         real_fps = fps
         is_fps_changed = True
 
-    delay(1/real_fps)
+    delay(1 / real_fps)
 
     dt = get_time() - ct
     ct += dt
     dt = max(dt, 0.0001)
-    cur_fps = 1.0/dt
+    cur_fps = 1.0 / dt
 
-    if fps+250 < cur_fps:
+    if fps + 250 < cur_fps:
         real_fps -= 250
-    elif fps+50 < cur_fps:
+    elif fps + 50 < cur_fps:
         real_fps -= 50
-    elif fps+10 < cur_fps:
+    elif fps + 10 < cur_fps:
         real_fps -= 10
-    elif fps+5 < cur_fps:
+    elif fps + 5 < cur_fps:
         real_fps -= 5
-    elif fps+2 < cur_fps:
+    elif fps + 2 < cur_fps:
         real_fps -= 2
-    elif fps+0.4 < cur_fps:
+    elif fps + 0.4 < cur_fps:
         real_fps -= 0.4
 
-    if fps-250 > cur_fps:
+    if fps - 250 > cur_fps:
         real_fps += 250
-    elif fps-50 > cur_fps:
+    elif fps - 50 > cur_fps:
         real_fps += 50
-    elif fps-10 > cur_fps:
+    elif fps - 10 > cur_fps:
         real_fps += 10
-    elif fps-5 < cur_fps:
+    elif fps - 5 < cur_fps:
         real_fps += 5
-    elif fps-2 > cur_fps:
+    elif fps - 2 > cur_fps:
         real_fps += 2
-    elif fps-0.4 > cur_fps:
+    elif fps - 0.4 > cur_fps:
         real_fps += 0.4
 
 
@@ -120,10 +145,10 @@ def RenderFrame():
         goomba.update_frame()
         drybone.update_frame()
 
-        delay(1/20)
+        delay(1 / 20)
 
 
-RenderFrameTrd = threading.Thread(target = RenderFrame, name ="FrameRenderer", daemon = True)
+RenderFrameTrd = threading.Thread(target=RenderFrame, name="FrameRenderer", daemon=True)
 RenderFrameTrd.start()
 
 # Main Loop:
@@ -131,10 +156,10 @@ while Running:
 
     clear_canvas()
 
-    background.draw( 400, 300 )
+    background.draw(400, 300)
 
-    for i in range( len( box_100x100 ) ):
-        box_100x100[ i ].draw()
+    for i in range(len(box_100x100)):
+        box_100x100[i].draw()
 
     player.update()
 
@@ -153,10 +178,10 @@ while Running:
     # F3: Character, item, interactive hit box
     show_hit_box()
     test_keyboard.update_test_keyboard(
-        pico2d.get_canvas_width() - (64*4+50)*0.75,
+        pico2d.get_canvas_width() - (64 * 4 + 50) * 0.75,
         pico2d.get_canvas_height() - 50 * 0.75,
         0.75, 0.75
-        )
+    )
 
     events = get_events()
     Running = player.handle_event(events)
