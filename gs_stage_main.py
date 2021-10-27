@@ -31,7 +31,7 @@ def enter():
     running_thread = True
     UpdateFrameThd = threading.Thread(target=UpdateFrame, name="FrameUpdater", daemon=True)
 
-    player = Player(250, 340, PS_SUPER)
+    player = Player(250, 540, PS_SUPER)
     enemies = []
     enemies.append(enGoomba(450, 310))
     enemies.append(enDryBones(350, 335))
@@ -90,15 +90,6 @@ def update():
     for enemy in enemies:
         enemy.update()
 
-    # Debug output
-    # F2: Tile sets hit box
-    # F3: Character, item, interactive hit box
-    test_keyboard.update_test_keyboard(
-        pico2d.get_canvas_width() - (64 * 4 + 50) * 0.75,
-        pico2d.get_canvas_height() - 50 * 0.75,
-        0.75, 0.75
-    )
-
 
 def draw():
     global player, enemies, tilesets
@@ -122,6 +113,16 @@ def draw():
 
     # Draw debugging info
     show_hit_box()
+
+    # Debug output
+    # F2: Tile sets hit box
+    # F3: Character, item, interactive hit box
+    keyboard_size = 0.75
+    test_keyboard.update_test_keyboard(
+        pico2d.get_canvas_width() - (64 * 4 + 50) * keyboard_size,
+        pico2d.get_canvas_height() - 50 * keyboard_size,
+        keyboard_size, keyboard_size
+    )
 
     update_canvas()
 

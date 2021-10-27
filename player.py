@@ -40,8 +40,8 @@ class Player(Character_Object):
         self.is_stuck_l = False
 
         # Hit box debugging
-        self.is_show_hit_box = True
-        self.is_show_object_box = True
+        self.is_show_hit_box = False
+        self.is_show_object_box = False
 
     def switch_stay(self, bl=True):
         self.is_stay = bl
