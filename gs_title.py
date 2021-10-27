@@ -1,5 +1,4 @@
 from pico2d import *
-
 import gs_framework
 
 logo = None
@@ -76,6 +75,8 @@ def draw():
     global cursor_pos
     global cursor
 
+    clear_canvas()
+
     logo.draw(gs_framework.canvas_width // 2, gs_framework.canvas_height // 2)
 
     if menu_index == 0:
@@ -108,7 +109,10 @@ def draw():
                          gs_framework.canvas_height // 2 - 210,
                          "EXIT GAME", (0, 0, 0))
 
+    update_canvas()
+
     delay(0.05)
+
 
 
 def pause():

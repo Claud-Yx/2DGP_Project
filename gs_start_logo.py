@@ -49,6 +49,8 @@ def draw():
     global effect_fade
     global logo_time
 
+    clear_canvas()
+
     if logo_time <= 0.1:
         effect_fade.clip_draw(19, 0, 1, 1,
                               pico2d.get_canvas_width()//2, pico2d.get_canvas_height()//2,
@@ -82,6 +84,8 @@ def draw():
                               pico2d.get_canvas_width()//2, pico2d.get_canvas_height()//2,
                               pico2d.get_canvas_width(), pico2d.get_canvas_height())
 
+    update_canvas()
+
 def pause():
     pass
 
@@ -99,7 +103,6 @@ def test_gs_start_logo():
     enter()
 
     while logo_time < 3.0:
-        clear_canvas()
 
         Events = get_events()
 
@@ -109,7 +112,6 @@ def test_gs_start_logo():
 
         update()
         draw()
-        update_canvas()
 
     close_canvas()
 
