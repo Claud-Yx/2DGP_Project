@@ -1,7 +1,10 @@
 from pico2d import *
+from value import *
 
 import gs_framework
 import gs_title
+
+
 
 def enter():
     pass
