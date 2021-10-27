@@ -1,3 +1,5 @@
+import gs_framework
+
 from player import *
 from enemy_goomba import *
 from enemy_drybones import *
@@ -104,7 +106,7 @@ def set_fps(fps=30):
         real_fps += 0.4
 
 
-open_canvas(full=True)
+open_canvas(full=False)
 
 # Initialization:
 player = Player(250, 340, PS_SUPER)
