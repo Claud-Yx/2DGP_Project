@@ -57,3 +57,20 @@ class POS( IntEnum ):
     Y = 1
 
 
+class OT( IntEnum ):  # Object Type
+    TILESETS = 0
+    ENEMIES = auto()
+    ITMES = auto()
+    INTERACTIVES = auto()
+    SIZE = auto()
+
+
+class EM( IntEnum ):  # Edit Menu
+    MAIN = 0
+    TILESETS = auto()
+    ENEMIES = auto()
+    ITMES = auto()
+    INTERACTIVES = auto()
+    BACKGROUNDS = auto()
+    SIZE = auto()
+
