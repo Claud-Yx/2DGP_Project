@@ -63,6 +63,8 @@ class Character_Object:
 
         # Object location point
         self.x, self.y = 0, 0
+        self.wx, self.wy = 0, 0
+        self.correction_y = 0
 
         self.px, self.py = self.x, self.y
 
@@ -96,6 +98,10 @@ class Character_Object:
 
         # Animation control value
         self.loop_animation = False
+
+    def init_decode(self, mx, my):
+        self.wx = mx * 50 / 2
+        self.wy = my * 50 / 2
 
     def draw( self ):
         self.image.draw(self.x, self.y)
@@ -133,6 +139,7 @@ class Character_Object:
         self.image = load_image( IMAGE_LOCATION[self.image_id] )
 
         if self.image_id == CO_MARIO_SMALL:
+            self.correction_y = 15
             self.hit_box.set_info(NAME.PLAYER_SMALL, TYPE.HIT)
             self.stand_box.set_info(NAME.PLAYER_SMALL, TYPE.STAND)
             self.attack_box.set_info(NAME.PLAYER_SMALL, TYPE.ATTACK)
@@ -294,6 +301,7 @@ class Character_Object:
                 self.loop_animation = False
 
         elif self.image_id == CO_MARIO_SUPER:
+            self.correction_y = 40
             self.hit_box.set_info(NAME.PLAYER_SUPER, TYPE.HIT)
             self.stand_box.set_info(NAME.PLAYER_SUPER, TYPE.STAND)
             self.attack_box.set_info(NAME.PLAYER_SUPER, TYPE.ATTACK)
@@ -467,6 +475,8 @@ class Character_Object:
                 self.loop_animation = False
 
         elif self.image_id == CO_DRY_BONES:
+            self.correction_y = 40
+
             if self.action == "stay" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 7, 50, 100
                 self.frame_count, self.frame_begin = 1, 0
@@ -505,6 +515,8 @@ class Character_Object:
                 self.loop_animation = False
 
         elif self.image_id == CO_GOOMBA:
+            self.correction_y = 15
+
             if self.action == "stay" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 5, 50, 50
                 self.frame_count, self.frame_begin = 1, 0
@@ -535,6 +547,7 @@ class Character_Object:
                 self.loop_animation = False
 
         elif self.image_id == CO_BOO:
+            self.correction_y = 25
             if self.action == "stay" and self.direction == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
                 self.frame_count, self.frame_begin = 1, 0

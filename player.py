@@ -11,6 +11,7 @@ class Player(Character_Object):
     def __init__(self, x, y, s=PS_SMALL):
         super(Player, self).__init__()
         self.x, self.y = x, y
+        self.wx, self.wy = x, y
 
         # 임시 점프
         self.jump_power_max = 20
