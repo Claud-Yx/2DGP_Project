@@ -57,7 +57,7 @@ class POS( IntEnum ):
     Y = 1
 
 
-class OT( IntEnum ):  # Object Type
+class TN(IntEnum):  # Object Type
     PLAYER = 0
     TILESETS = auto()
     ENEMIES = auto()
@@ -120,3 +120,28 @@ class TID(IntEnum):  # Type ID
     WIRE_MESH = auto()
 
     NONE = 99
+
+
+class HB (IntEnum):  # Hit box
+    COLLISION = 0
+    STAND = auto()
+    ATTACK = auto()
+    BREAK = auto()
+    SIZE = auto()
+
+
+class Numbering:
+    number = 0
+
+    def nbr(self=None, begin=False):
+        if begin:
+            Numbering.number = 0
+
+        temp = Numbering.number
+        Numbering.number += 1
+
+        return temp
+
+
+def nbr(begin=False):
+    return Numbering.nbr(begin=begin)

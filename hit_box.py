@@ -4,6 +4,8 @@ import pico2d
 
 
 class HitBox:
+    image = None
+
     def __init__(self, x, y, yt=10, yb=10, xl=10, xr=10, on=True,
                  img_path='resource\\hit_box.png', img_id=2, name="", type=""):
 

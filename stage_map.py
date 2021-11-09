@@ -15,7 +15,7 @@ class StageMap:
         self.size = [0, 0]
         self.player = None
 
-        self.object = [list() for i in range(OT.SIZE)]
+        self.object = [list() for i in range(TN.SIZE)]
 
         self.file_path = "stage\\"
         self.file_format = ".txt"
@@ -26,11 +26,11 @@ class StageMap:
 
     def set_object(self, player, tilesets=[], enemies=[], items=[], interactives=[], foregrounds=[]):
         self.player = player
-        self.object[OT.TILESETS] = tilesets
-        self.object[OT.ENEMIES] = enemies
-        self.object[OT.ITMES] = items
-        self.object[OT.INTERACTIVES] = interactives
-        self.object[OT.FOREGROUND] = foregrounds
+        self.object[TN.TILESETS] = tilesets
+        self.object[TN.ENEMIES] = enemies
+        self.object[TN.ITMES] = items
+        self.object[TN.INTERACTIVES] = interactives
+        self.object[TN.FOREGROUND] = foregrounds
 
     def read_stage_file(self, file_name):
         file = open(self.file_path + file_name + self.file_format, 'r')
