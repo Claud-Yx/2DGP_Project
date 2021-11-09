@@ -15,7 +15,7 @@ class StageMap:
         self.size = [0, 0]
         self.player = None
 
-        self.object = [[] for i in range(OT.SIZE)]
+        self.object = [list() for i in range(OT.SIZE)]
 
         self.file_path = "stage\\"
         self.file_format = ".txt"
@@ -24,12 +24,13 @@ class StageMap:
     def set_size(self, size=[]):
         self.size = [size[0] * 50, size[1] * 50]
 
-    def set_object(self, player, tilesets=[], enemies=[], items=[], interactives=[]):
+    def set_object(self, player, tilesets=[], enemies=[], items=[], interactives=[], foregrounds=[]):
         self.player = player
         self.object[OT.TILESETS] = tilesets
         self.object[OT.ENEMIES] = enemies
         self.object[OT.ITMES] = items
         self.object[OT.INTERACTIVES] = interactives
+        self.object[OT.FOREGROUND] = foregrounds
 
     def read_stage_file(self, file_name):
         file = open(self.file_path + file_name + self.file_format, 'r')
@@ -40,15 +41,21 @@ class StageMap:
             self.stage_code.insert(0, line)
         file.close()
 
+    def create_object(self, tname, tid, lx, ly, count=1, foreground=False):
+        pass
+
+
     def decode_stage_file(self):
 
         # stage information
         file_info = self.stage_code.pop()
 
         if not file_info[0:4] == "INFO":
+            print("ERROR: Undefined INFO line")
             return False
 
         if not file_info[4] == "n":
+            print("ERROR: Undefined INFO name code")
             return False
 
         self.world = int(file_info[5]) * 10 + int(file_info[6])
@@ -56,6 +63,7 @@ class StageMap:
         self.map = int(file_info[9]) * 10 + int(file_info[10])
 
         if not file_info[11] == "w" and not file_info[14] == "h":
+            print("ERROR: Undefined INFO w/h code")
             return False
 
         self.set_size(
@@ -64,72 +72,120 @@ class StageMap:
         )
 
         # map data
+        player = None
+        tilesets = []
+        enemies = []
+        items = []
+        interactives = []
+        foregrounds = []
+
+        lx, ly = 0, 0  # file line position(left bottom) / 1 = 50px
+        object_lx = 0  # object file line position(left bottom) / 1 = 50px
+        index = 0  # file line cursor
+        type_name, type_id = 0, 0  # type_name: player, enemy... / type_id: mario, goomba...
+
+        # y axis
         # from bottom line
         while 0 < len(self.stage_code):
             line = self.stage_code.pop(0)
-            x, y = 0, 0
             index = 0
+            lx = 0
 
+            # x axis
             while index < len(line):
-                is_size = True
+                is_foreground = False
+                object_lx = 0
+                type_name, type_id = 0, 0
+                count = 1
+
+                # foreground
+                if 'f' == line[index]:
+                    is_foreground = True
+
+                # blank
                 if '.' == line[index]:
-                    x += (int(line[index + 1]) * 100 +
-                          int(line[index + 2]) * 10 +
-                          int(line[index + 3]))
+                    lx += (int(line[index + 1]) * 100 +
+                           int(line[index + 2]) * 10 +
+                           int(line[index + 3]))
                     index += 4
-                    is_size = False
 
-                elif 'p' == line[index]:
-                    pass
+                # if not blank
+                else:
+                    type_name = line[index]
+                    index += 1
 
-                elif 'e' == line[index]:
-                    id = (int(line[index + 1]) * 10 +
-                          int(line[index + 2]))
-                    index += 3
+                    # player
+                    if 'p' == type_name:
+                        type_id = 0
 
-                    if TID.GOOMBA == id:
+                    # enemies
+                    elif 'e' == type_name:
+                        type_id = (int(line[index]) * 10 +
+                                   int(line[index + 1]))
+                        index += 2
+
+                    # door
+                    elif 'd' == type_name:
                         pass
 
-                    elif TID.DRY_BONES == id:
+                    # pipe
+                    elif 'P' == type_name:
                         pass
 
-                    elif TID.BOO == id:
+                    # tilesets
+                    elif 't' == type_name:
+                        type_id = (int(line[index]) * 10 +
+                                   int(line[index + 1]))
+                        index += 2
+
+                    # items
+                    elif 'i' == type_name:
                         pass
 
-                    elif TID.PIRANHA_PLANT == id:
-                        pass
-
-                    elif TID.SPIKE_BALL == id:
-                        pass
-
-                    elif TID.BOSS == id:
+                    # interactive things
+                    elif 'a' == type_name:
                         pass
 
                     else:
-                        print("ERROR: Undefined Enemy Type ID")
+                        print("ERROR: Undefined TypeName")
                         return False
 
-                elif 'd' == line[index]:
-                    pass
+                    # size
+                    if 'w' == line[index]:
+                        object_lx = lx
 
-                elif 'P' == line[index]:
-                    pass
+                        lx += (int(line[index + 1]) * 100 +
+                                 int(line[index + 2]) * 10 +
+                                 int(line[index + 3]))
+                        index += 4
 
-                elif 't' == line[index]:
-                    pass
+                    else:
+                        print("ERROR: Undefined width code")
+                        return False
 
-                elif 'i' == line[index]:
-                    pass
+                    # useless?
+                    # if 'h' == line[index]:
+                    #     ly += (int(line[index + 1]) * 100 +
+                    #            int(line[index + 2]) * 10 +
+                    #            int(line[index + 3]))
+                    #     index += 4
+                    # else:
+                    #     print("ERROR: Undefined height code")
+                    #     return False
 
-                elif 'a' == line[index]:
-                    pass
+                    if 'C' == line[index]:
+                        count = (int(line[index + 1]) * 100 +
+                                 int(line[index + 2]) * 10 +
+                                 int(line[index + 3]))
+                        index += 4
 
+                self.create_object(type_name, type_id, object_lx, ly, count, is_foreground)
+            ly += 1
 
         return True
 
 
-
-
+# test stage_map.py
 def test_stage_map():
     stage = StageMap()
     stage.read_stage_file('000000.txt')

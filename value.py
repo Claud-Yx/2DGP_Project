@@ -58,10 +58,12 @@ class POS( IntEnum ):
 
 
 class OT( IntEnum ):  # Object Type
-    TILESETS = 0
+    PLAYER = 0
+    TILESETS = auto()
     ENEMIES = auto()
     ITMES = auto()
     INTERACTIVES = auto()
+    FOREGROUND = auto()
     SIZE = auto()
 
 
@@ -74,12 +76,17 @@ class EM( IntEnum ):  # Edit Menu
     BACKGROUNDS = auto()
     SIZE = auto()
 
+
 class TID(IntEnum):  # Type ID
+    MARIO_SMALL = 0
+    MARIO_SUPER = auto()
+    MARIO_FLAME = auto()
+
     GOOMBA = 0
     DRY_BONES = auto()
     BOO = auto()
     PIRANHA_PLANT = 10
-    SPIKE_BALL = auto()
+    SPINNING_SPIKE = auto()
     BOSS = 20
 
     DOOR_RG = 0
@@ -97,7 +104,7 @@ class TID(IntEnum):  # Type ID
 
     COIN = 0
     SUPER_MUSHROOM = auto()
-    LIFE_MUSHRUUM = auto()
+    LIFE_MUSHROOM = auto()
     FIRE_FLOWER = auto()
     SUPER_STAR = auto()
     STAR_COIN = auto()
@@ -111,3 +118,5 @@ class TID(IntEnum):  # Type ID
     SPIKE_LEFT = auto()
     SPIKE_RIGHT = auto()
     WIRE_MESH = auto()
+
+    NONE = 99

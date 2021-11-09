@@ -1,4 +1,5 @@
 from pico2d import *
+from value import *
 from hit_box import *
 
 CO_NONE = 0
@@ -58,21 +59,19 @@ IMAGE_SPRITES = [
     SPRITES_PIRANHA_PLANT
 ]
 
-class Character_Object:
+
+class Object:
+    image = None
+
     def __init__( self ):
 
         # Object location point
         self.x, self.y = 0, 0
-        self.wx, self.wy = 0, 0
-        self.correction_y = 0
 
         self.px, self.py = self.x, self.y
 
         # Hit Box
-        self.hit_box = HitBox(self.x, self.y, img_id = 2)
-        self.stand_box = HitBox(self.x, self.y, img_id = 2)
-        self.attack_box = HitBox(self.x, self.y, on=False, img_id = 0)
-        self.break_box = HitBox(self.x, self.y, on=False, img_id = 1)
+        self.hit_boxes = []
 
         # Object moving value
         self.speed = 0
@@ -99,9 +98,28 @@ class Character_Object:
         # Animation control value
         self.loop_animation = False
 
-    def init_decode(self, mx, my):
-        self.wx = mx
-        self.wy = my + self.correction_y - 50
+        # Image initialization
+        if None == Object.image:
+            Object.image = {
+                (OT.PLAYER, TID.MARIO_SMALL): 'resource\\characters\\mario_small.png',
+                (OT.PLAYER, TID.MARIO_SUPER): 'resource\\characters\\mario_super.png',
+                (OT.TILESETS, TID.CASTLE_BLOCK_50X50): 'resource\\tileset\\block50x50.png',
+                (OT.TILESETS, TID.CASTLE_BLOCK_50X100): 'resource\\tileset\\block50x100.png',
+                (OT.TILESETS, TID.CASTLE_BLOCK_100X50): 'resource\\tileset\\block100x50.png',
+                (OT.TILESETS, TID.CASTLE_BLOCK_100X100): 'resource\\tileset\\block100x100.png',
+                (OT.TILESETS, TID.CASTLE_BLOCK_100X100): 'resource\\tileset\\block100x100.png',
+                (OT.ENEMIES, TID.GOOMBA): 'resource\\characters\\goomba.png',
+                (OT.ENEMIES, TID.DRY_BONES): 'resource\\characters\\dry_bones.png',
+                (OT.ENEMIES, TID.BOO): 'resource\\characters\\boo.png',
+                (OT.ENEMIES, TID.PIRANHA_PLANT): 'resource\\characters\\piranha_plant.png',
+                (OT.ENEMIES, TID.SPINNING_SPIKE): 'resource\\characters\\spinning_spike.png',
+                (OT.ITEMS, TID.COIN): 'resource\\items\\coin.png',
+                (OT.ITEMS, TID.FIRE_FLOWER): 'resource\\items\\fire_flower.png',
+                (OT.ITEMS, TID.LIFE_MUSHROOM): 'resource\\items\\life_mushroom.png',
+                (OT.ITEMS, TID.STAR_COIN): 'resource\\items\\starcoin.png',
+                (OT.ITEMS, TID.SUPER_MUSHROOM): 'resource\\items\\super_mushroom.png',
+                (OT.ITEMS, TID.super_star): 'resource\\items\\super_star.png',
+            }
 
     def draw( self ):
         self.image.draw(self.x, self.y)
@@ -584,4 +602,3 @@ class Character_Object:
                 self.loop_animation = False
 
         self.frames = self.frame_begin
-

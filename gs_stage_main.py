@@ -37,7 +37,7 @@ def enter():
     enemies.append(enDryBones(350, 335))
 
     # Map tile set
-    tilesets = [TileSet(MT_BLOCK100X100) for i in range(15)]
+    tilesets = [TileSet(TID.CASTLE_BLOCK_100X100) for i in range(15)]
 
     for i in range(0, 8):
         tilesets[i].set_pos(i * 100 + 50, 50)
@@ -126,7 +126,7 @@ def draw():
 
     update_canvas()
 
-    set_fps()
+    delay(1 / 60)
 
 def pause():
     pass
@@ -155,55 +155,6 @@ def show_hit_box():
     if player.is_show_object_box:
         for box in tilesets:
             box.hit_box.show_hit_box()
-
-
-ct = 0.0
-real_fps = 30
-is_fps_changed = False
-
-
-def set_fps(fps=30):
-    global ct
-    global real_fps
-    global is_fps_changed
-
-    if real_fps != fps and not is_fps_changed:
-        real_fps = fps
-        is_fps_changed = True
-
-    delay(1 / real_fps)
-
-    dt = get_time() - ct
-    ct += dt
-    dt = max(dt, 0.0001)
-    cur_fps = 1.0 / dt
-
-    if fps + 250 < cur_fps:
-        real_fps -= 250
-    elif fps + 50 < cur_fps:
-        real_fps -= 50
-    elif fps + 10 < cur_fps:
-        real_fps -= 10
-    elif fps + 5 < cur_fps:
-        real_fps -= 5
-    elif fps + 2 < cur_fps:
-        real_fps -= 2
-    elif fps + 0.4 < cur_fps:
-        real_fps -= 0.4
-
-    if fps - 250 > cur_fps:
-        real_fps += 250
-    elif fps - 50 > cur_fps:
-        real_fps += 50
-    elif fps - 10 > cur_fps:
-        real_fps += 10
-    elif fps - 5 < cur_fps:
-        real_fps += 5
-    elif fps - 2 > cur_fps:
-        real_fps += 2
-    elif fps - 0.4 > cur_fps:
-        real_fps += 0.4
-
 
 def UpdateFrame():
     global player, enemies
