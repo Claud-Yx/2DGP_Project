@@ -65,7 +65,7 @@ def keyboard_handle(g_events):
         TK_RIGHT_KEY_STATE, TK_Z_KEY_STATE, TK_X_KEY_STATE
 
     for event in g_events:
-        if event.type == SDL_KEYDOWN:
+        if event.type_id == SDL_KEYDOWN:
             if event.key == SDLK_F4:
                 if SHOW_KEYBOARD:
                     SHOW_KEYBOARD = False
@@ -84,7 +84,7 @@ def keyboard_handle(g_events):
                 TK_Z_KEY_STATE = 0
             elif event.key == SDLK_x:
                 TK_X_KEY_STATE = 0
-        elif event.type == SDL_KEYUP:
+        elif event.type_id == SDL_KEYUP:
             if event.key == SDLK_UP:
                 TK_UP_KEY_STATE = 1
             elif event.key == SDLK_DOWN:

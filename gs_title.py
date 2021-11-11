@@ -47,10 +47,10 @@ def handle_events():
     Events = gs_framework.Events
 
     for event in Events:
-        if event.type == SDL_QUIT:
+        if event.type_id == SDL_QUIT:
             gs_framework.quit()
 
-        elif event.type == SDL_KEYDOWN:
+        elif event.type_id == SDL_KEYDOWN:
             # if event.key == SDLK_ESCAPE:
             #     gs_framework.quit()
             if event.key == SDLK_UP:
@@ -148,10 +148,10 @@ def test_gs_title():
         Events = get_events()
 
         for event in Events:
-            if event.type == SDL_QUIT:
+            if event.type_id == SDL_QUIT:
                 loop = False
 
-            elif event.type == SDL_KEYDOWN:
+            elif event.type_id == SDL_KEYDOWN:
                 if event.key == SDLK_ESCAPE:
                     loop = False
                 elif event.key == SDLK_UP:

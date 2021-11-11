@@ -40,7 +40,7 @@ class TileSet:
     def set_tile( self ):
         if self.image_id == TID.CASTLE_BLOCK_50X50:
             self.hit_box.set_range(25, 25, 25, 25)
-            self.hit_box.name = NAME.TILESET
+            self.hit_box.type_name = NAME.TILESET
         elif self.image_id == TID.CASTLE_BLOCK_50X100:
             self.hit_box.set_range(50, 50, 25, 25)
         elif self.image_id == TID.CASTLE_BLOCK_100X50:

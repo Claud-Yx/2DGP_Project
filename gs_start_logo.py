@@ -32,7 +32,7 @@ def handle_events():
     Events = gs_framework.Events
 
     for event in Events:
-        if event.type == SDL_QUIT:
+        if event.type_id == SDL_QUIT:
             gs_framework.quit()
 
 
@@ -109,7 +109,7 @@ def test_gs_start_logo():
         Events = get_events()
 
         for event in Events:
-            if event.type == SDL_QUIT:
+            if event.type_id == SDL_QUIT:
                 logo_time = 4
 
         update()

@@ -89,7 +89,7 @@ class Test:
         events = get_events()
 
         for event in events:
-            if event.type == SDL_KEYDOWN:
+            if event.type_id == SDL_KEYDOWN:
                 if event.key == SDLK_ESCAPE:
                     return False
                 elif event.key == SDLK_RIGHT:
@@ -118,7 +118,7 @@ class Test:
                         self.image_id = len( IMAGE_LOCATES ) - 1
                     self.set_clip()
 
-            elif event.type == SDL_QUIT:
+            elif event.type_id == SDL_QUIT:
                 return False
 
         return True

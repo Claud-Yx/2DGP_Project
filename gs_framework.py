@@ -54,10 +54,10 @@ def run(start_state):
     start_state.enter()
 
     while Running:
-        if stack[-1].name == "StageMainState" and Threading:
+        if stack[-1].type_name == "StageMainState" and Threading:
             stack[-1].UpdateFrameThd.start()
             Threading = False
-        elif not stack[-1].name == "StageMainState" and not Threading:
+        elif not stack[-1].type_name == "StageMainState" and not Threading:
             Threading = True
 
         Events = get_events()

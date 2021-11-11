@@ -7,15 +7,17 @@ class HitBox:
     image = None
 
     def __init__(self, x, y, yt=10, yb=10, xl=10, xr=10, on=True,
-                 img_path='resource\\hit_box.png', img_id=2, name="", type=""):
+                 img_id=2, tname=99, tid=99, bid=99):
 
         # Hit box info
-        self.name = name
-        self.type = type
+        self.type_name = tname
+        self.type_id = tid
+        self.box_id = bid
 
         # Hit other box info
-        self.other_name = [""]
-        self.other_type = [""]
+        self.other_type_name = []
+        self.other_type_id = []
+        self.other_box_id = []
         self.other_center_pos = [[0, 0]]
         self.other_range = [[0, 0, 0, 0]]
         self.other_range_pos = [[0, 0, 0, 0]]
@@ -43,29 +45,29 @@ class HitBox:
         self.is_hit = [False for b in range(4)]
 
         # Hit box image
-        if img_path == '':
-            self.image = None
-        else:
-            self.image = pico2d.load_image(img_path)
+        if not HitBox.image:
+            HitBox.image = pico2d.load_image('resource\\hit_box.png')
         self.image_id = img_id  # 0:blue / 1:green / 2:red
 
-    def set_info(self, n="", t=""):
-        self.name = n
-        self.type = t
+    def set_info(self, n=99, t=99, b=99):
+        self.type_name = n
+        self.type_id = t
+        self.box_id = b
 
     def get_info(self):
-        return [self.name, self.type]
+        return [self.type_name, self.type_id, self.box_id]
 
-    def set_other_info(self, name="", type="", pos=[], range=[], r_pos=[], e_pos=[]):
-        self.other_name.append(name)
-        self.other_type.append(type)
+    def set_other_info(self, tname=99, tid=99, bid=99, pos=[], range=[], r_pos=[], e_pos=[]):
+        self.other_type_name.append(tname)
+        self.other_type_id.append(tid)
+        self.other_box_id.append(bid)
         self.other_center_pos.append(pos)
         self.other_range.append(range)
         self.other_range_pos.append(r_pos)
         self.other_edge_pos.append(e_pos)
 
     def get_other_info(self):
-        return [self.other_name, self.other_type]
+        return [self.other_type_name, self.other_type_id, self.other_box_id]
 
     def set_pos(self, x, y):
         self.center_pos = [x, y]
@@ -95,7 +97,7 @@ class HitBox:
                 return True
         return False
 
-    def check_hit(self, other, adj = -1):
+    def check_hit(self, other, adj=-1):
         hit = [False for b in range(4)]
 
         # top check
@@ -143,7 +145,7 @@ class HitBox:
             for b in hit:
                 if b:
                     self.hit.append(hit)
-                    self.set_other_info(other.name, other.type,
+                    self.set_other_info(other.type_name, other.type_id, other.box_id,
                                         other.center_pos, other.range,
                                         other.range_pos, other.edge_pos)
                     return True
@@ -179,11 +181,14 @@ def test_hit_box():
                     return False
 
             elif event.type == pico2d.SDL_MOUSEMOTION:
-                pos[0], pos[1] = event.X, 600 - 1 - event.Y
+                pos[0], pos[1] = event.x, 600 - 1 - event.y
 
         return True
 
     def update_hit_check(a, b):
+        a.is_hit = [False for b in range(4)]
+        b.is_hit = [False for b in range(4)]
+
         a.check_hit(b)
         b.check_hit(a)
 
@@ -194,48 +199,42 @@ def test_hit_box():
 
         direction = ["Top", "Bottom", "Left", "Right"]
         for i in range(4):
-            if a.hit[i]:
+            if a.is_hit[i]:
                 bl = "True"
             else:
                 bl = "False"
             debug_a[i].draw(10, 600 - (i * 30 + 10), "small box [" + direction[i] + "]: " + bl, (0, 0, 100))
 
-            if b.hit[i]:
+            if b.is_hit[i]:
                 bl = "True"
             else:
                 bl = "False"
             debug_b[i].draw(10, 600 - (i * 30 + 130), "big box [" + direction[i] + "]: " + bl, (0, 0, 100))
 
-        debug_a_info = [pico2d.load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF') for i in range(4)]
-        debug_b_info = [pico2d.load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF') for i in range(4)]
+        debug_a_info = [pico2d.load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF') for i in range(3)]
+        debug_b_info = [pico2d.load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF') for i in range(3)]
 
         x = 400
 
         debug_a_info[0].draw(pico2d.get_canvas_width() - x,
                              pico2d.get_canvas_height() - 10,
-                             "small box name: " + a.name, (0, 0, 100))
+                             "small box type_name: " + str(a.type_name), (0, 0, 100))
         debug_a_info[1].draw(pico2d.get_canvas_width() - x,
                              pico2d.get_canvas_height() - 40,
-                             "small box type: " + a.type, (0, 0, 100))
+                             "small box type_id: " + str(int(a.type_id)), (0, 0, 100))
         debug_a_info[2].draw(pico2d.get_canvas_width() - x,
                              pico2d.get_canvas_height() - 70,
-                             "small box other name: " + a.other_name, (0, 0, 100))
-        debug_a_info[3].draw(pico2d.get_canvas_width() - x,
-                             pico2d.get_canvas_height() - 100,
-                             "small box other type: " + a.other_type, (0, 0, 100))
+                             "small box box_id: " + str(a.box_id), (0, 0, 100))
 
         debug_b_info[0].draw(pico2d.get_canvas_width() - x,
-                             pico2d.get_canvas_height() - 130,
-                             "big box name: " + b.name, (0, 0, 100))
+                             pico2d.get_canvas_height() - 140,
+                             "big box type_name: " + str(b.type_name), (0, 0, 100))
         debug_b_info[1].draw(pico2d.get_canvas_width() - x,
-                             pico2d.get_canvas_height() - 160,
-                             "big box type: " + b.type, (0, 0, 100))
+                             pico2d.get_canvas_height() - 170,
+                             "big box type_id: " + str(int(b.type_id)), (0, 0, 100))
         debug_b_info[2].draw(pico2d.get_canvas_width() - x,
-                             pico2d.get_canvas_height() - 190,
-                             "big box other name: " + b.other_name, (0, 0, 100))
-        debug_b_info[3].draw(pico2d.get_canvas_width() - x,
-                             pico2d.get_canvas_height() - 220,
-                             "big box other type: " + b.other_type, (0, 0, 100))
+                             pico2d.get_canvas_height() - 200,
+                             "big box box_id: " + str(b.box_id), (0, 0, 100))
 
     Running = True
 
@@ -249,7 +248,7 @@ def test_hit_box():
     hb = HitBox(50, 50, img_path='')
     print("= Created: initialized test HitBox class - hb")
 
-    print("hb.name:", hb.name, "| hb.type:", hb.type)
+    print("hb.name:", hb.type_name, "| hb.type:", hb.type_id)
     print("hb.center_pos:", hb.center_pos)
 
     print("hb.range:", hb.range)
@@ -262,12 +261,12 @@ def test_hit_box():
 
     object_x, object_y = 400, 300
     object_hit_box = HitBox(object_x, object_y, 50, 50, 50, 50)
-    object_hit_box.set_info("big_box", "tile_set")
+    object_hit_box.set_info(TN.TILESETS, TID.CASTLE_BLOCK_100X100, HB.COLLISION)
     object = pico2d.load_image('resource\\tileset\\block100x100.png')
 
     mpos = [50, 50]
     mouse_hit_box = HitBox(mpos[0], mpos[1], 25, 25, 25, 25)
-    mouse_hit_box.set_info("small_box", "moving_tile")
+    mouse_hit_box.set_info(TN.TILESETS, TID.CASTLE_BLOCK_50X50, HB.COLLISION)
     mouse_object = pico2d.load_image('resource\\tileset\\block50x50.png')
 
     pico2d.hide_cursor()

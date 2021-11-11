@@ -3,62 +3,9 @@ from value import *
 from abc import *
 from hit_box import *
 
-CO_NONE = 0
-CO_MARIO_SMALL = 1
-CO_MARIO_SUPER = 2
-CO_DRY_BONES = 3
-CO_GOOMBA = 4
-CO_BOO = 5
-CO_PIRANHA_PLANT = 6
-
 D_NONE = 0
 D_RIGHT = 1
 D_LEFT = -1
-
-IMAGE_LOCATION = [
-    'resource\\no_image.png',
-    'resource\\characters\\mario_small.png', 'resource\\characters\\mario_super.png',
-    'resource\\characters\\dry_bones.png', 'resource\\characters\\goomba.png',
-    'resource\\characters\\boo.png', 'resource\\characters\\piranha_plant.png'
-]
-
-SPRITES_MARIO_SUPER = [
-    "stay", "walk", "run", "swim",
-    "hang", "climb", "jump_up", "jump_down"
-                                "crawl"
-]
-
-SPRITES_MARIO_SMALL = [
-    "stay", "walk", "run", "swim",
-    "hang", "climb", "jump_up", "jump_down"
-                                "die"
-]
-
-SPRITES_WARURU = [
-    "stay", "walk", "break", "restore"
-]
-
-SPRITES_GOOMBA = [
-    "stay", "walk", "dieA", "dieB"
-]
-
-SPRITES_BOO = [
-    "stay", "fly", "die"
-]
-
-SPRITES_PIRANHA_PLANT = [
-    "pop"
-]
-
-IMAGE_SPRITES = [
-    ["none"],
-    SPRITES_MARIO_SMALL,
-    SPRITES_MARIO_SUPER,
-    SPRITES_WARURU,
-    SPRITES_GOOMBA,
-    SPRITES_BOO,
-    SPRITES_PIRANHA_PLANT
-]
 
 
 class Object:
