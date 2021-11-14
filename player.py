@@ -20,6 +20,7 @@ class KEY(IntEnum):
     X_DOWN = auto()
     X_UP = auto()
 
+
 key_event_table = {
     (SDL_KEYDOWN, SDLK_UP): KEY.UP_DOWN,
     (SDL_KEYUP, SDLK_UP): KEY.UP_UP,
@@ -134,19 +135,92 @@ class HangState:
         pass
 
 
+class ClimbState:
+    def enter(player, event):
+        pass
+
+    def exit(player, event):
+        pass
+
+    def do(player):
+        pass
+
+    def draw(player):
+        pass
+
 next_state_table = {
-    IdleState: {},
-    SitState: {},
-    WalkState: {},
-    RunState: {},
-    JumpState: {},
-    FallState: {},
-    HangState: {}
+    IdleState: {
+        KEY.UP_DOWN: IdleState, KEY.UP_UP: IdleState,
+        KEY.DOWN_DOWN: SitState, KEY.DOWN_UP: SitState,
+        KEY.LEFT_DOWN: WalkState, KEY.LEFT_UP: WalkState,
+        KEY.RIGHT_DOWN: WalkState, KEY.RIGHT_UP: WalkState,
+        KEY.Z_DOWN: RunState, KEY.Z_UP: RunState,
+        KEY.X_DOWN: JumpState, KEY.X_UP: IdleState
+    },
+    SitState: {
+        KEY.UP_DOWN: SitState, KEY.UP_UP: SitState,
+        KEY.DOWN_UP: IdleState,
+        KEY.LEFT_DOWN: WalkState, KEY.LEFT_UP: WalkState,
+        KEY.RIGHT_DOWN: WalkState, KEY.RIGHT_UP: WalkState,
+        KEY.Z_DOWN: RunState, KEY.Z_UP: RunState,
+        KEY.X_DOWN: JumpState, KEY.X_UP: SitState
+    },
+    WalkState: {
+        KEY.UP_DOWN: WalkState, KEY.UP_UP: WalkState,
+        KEY.DOWN_DOWN: WalkState, KEY.DOWN_UP: WalkState,
+        KEY.LEFT_DOWN: IdleState, KEY.LEFT_UP: IdleState,
+        KEY.RIGHT_DOWN: IdleState, KEY.RIGHT_UP: IdleState,
+        KEY.Z_DOWN: RunState, KEY.Z_UP: RunState,
+        KEY.X_DOWN: JumpState, KEY.X_UP: WalkState
+    },
+    RunState: {
+        KEY.UP_DOWN: RunState, KEY.UP_UP: RunState,
+        KEY.DOWN_DOWN: RunState, KEY.DOWN_UP: RunState,
+        KEY.LEFT_DOWN: WalkState, KEY.LEFT_UP: WalkState,
+        KEY.RIGHT_DOWN: WalkState, KEY.RIGHT_UP: WalkState,
+        KEY.Z_DOWN: RunState, KEY.Z_UP: RunState,
+        KEY.X_DOWN: JumpState, KEY.X_UP: RunState
+    },
+    JumpState: {
+        KEY.UP_DOWN: JumpState, KEY.UP_UP: JumpState,
+        KEY.DOWN_DOWN: JumpState, KEY.DOWN_UP: JumpState,
+        KEY.LEFT_DOWN: JumpState, KEY.LEFT_UP: JumpState,
+        KEY.RIGHT_DOWN: JumpState, KEY.RIGHT_UP: JumpState,
+        KEY.Z_DOWN: JumpState, KEY.Z_UP: JumpState,
+        KEY.X_DOWN: JumpState, KEY.X_UP: FallState
+    },
+    FallState: {
+        KEY.UP_DOWN: FallState, KEY.UP_UP: FallState,
+        KEY.DOWN_DOWN: FallState, KEY.DOWN_UP: FallState,
+        KEY.LEFT_DOWN: FallState, KEY.LEFT_UP: FallState,
+        KEY.RIGHT_DOWN: FallState, KEY.RIGHT_UP: FallState,
+        KEY.Z_DOWN: FallState, KEY.Z_UP: FallState,
+        KEY.X_DOWN: FallState, KEY.X_UP: FallState
+    },
+    HangState: {
+        KEY.UP_DOWN: ClimbState, KEY.UP_UP: ClimbState,
+        KEY.DOWN_DOWN: ClimbState, KEY.DOWN_UP: ClimbState,
+        KEY.LEFT_DOWN: ClimbState, KEY.LEFT_UP: ClimbState,
+        KEY.RIGHT_DOWN: ClimbState, KEY.RIGHT_UP: ClimbState,
+        KEY.Z_DOWN: HangState, KEY.Z_UP: HangState,
+        KEY.X_DOWN: JumpState, KEY.X_UP: HangState
+    },
+    ClimbState: {
+        KEY.UP_DOWN: HangState, KEY.UP_UP: HangState,
+        KEY.DOWN_DOWN: HangState, KEY.DOWN_UP: HangState,
+        KEY.LEFT_DOWN: HangState, KEY.LEFT_UP: HangState,
+        KEY.RIGHT_DOWN: HangState, KEY.RIGHT_UP: HangState,
+        KEY.Z_DOWN: ClimbState, KEY.Z_UP: ClimbState,
+        KEY.X_DOWN: JumpState, KEY.X_UP: ClimbState
+    }
 }
+
 
 class Player(game_object):
     def __init__(self):
         super(TN.PLAYER, TID.MARIO_SMALL)
+
+
 
 # class Player(Character_Object):
 #     def __init__(self, x, y):

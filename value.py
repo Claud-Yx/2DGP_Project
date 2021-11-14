@@ -1,40 +1,47 @@
 from enum import Enum, IntEnum, auto
 
-
-class StrEnum(str, Enum):
-    def _generate_next_value_(name, start, count, last_values):
-        return name
-
-    def __str__(self):
-        return self.name
+GRAVITY_ACCEL = 9.8
+PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
 
 
-class NAME(StrEnum):
-    PLAYER_SMALL = auto()
-    PLAYER_SUPER = auto()
-    ENEMY = auto()
-    INTERACTIVE = auto()
-    ITEM = auto()
-    TILESET = auto()
+def get_pps_from_kmph(kmph):
+    return kmph * 1000.0 / 3600.0 * PIXEL_PER_METER
 
 
-class TYPE(StrEnum):
-    HIT = auto()
-    STAND = auto()
-    ATTACK = auto()
-    BREAK = auto()
 
-    GOOMBA = auto()
-    DRY_BONES = auto()
+# class StrEnum(str, Enum):
+#     def _generate_next_value_(name, start, count, last_values):
+#         return name
+#
+#     def __str__(self):
+#         return self.name
 
-    WIRE_MESH = auto()
-    DOOR = auto()
-
-    SUPER_MUSHROOM = auto()
-
-    PLATFORM_T = auto()
-    PLATFORM_NT = auto()
-    PIPE = auto()
+# class NAME(StrEnum):
+#     PLAYER_SMALL = auto()
+#     PLAYER_SUPER = auto()
+#     ENEMY = auto()
+#     INTERACTIVE = auto()
+#     ITEM = auto()
+#     TILESET = auto()
+#
+#
+# class TYPE(StrEnum):
+#     HIT = auto()
+#     STAND = auto()
+#     ATTACK = auto()
+#     BREAK = auto()
+#
+#     GOOMBA = auto()
+#     DRY_BONES = auto()
+#
+#     WIRE_MESH = auto()
+#     DOOR = auto()
+#
+#     SUPER_MUSHROOM = auto()
+#
+#     PLATFORM_T = auto()
+#     PLATFORM_NT = auto()
+#     PIPE = auto()
 
 
 class POS( IntEnum ):
@@ -55,6 +62,22 @@ class POS( IntEnum ):
 
     X = 0
     Y = 1
+
+
+class ACTION(IntEnum):
+    IDLE = 0,
+    SIT = auto(),
+    WALK = auto(),
+    RUN = auto(),
+    FLY = auto(),
+    JUMP = auto(),
+    FALL = auto(),
+    HANG = auto(),
+    CLIMB = auto(),
+    SWIM = auto(),
+    RESTORE = auto(),
+    DIE_A = auto(),
+    DIE_B = auto()
 
 
 class TN(IntEnum):  # Object Type
