@@ -220,7 +220,24 @@ class Player(game_object):
     def __init__(self):
         super(TN.PLAYER, TID.MARIO_SMALL)
 
+    def add_event(self, event):
+        self.event_que.insert(0, event)
 
+    def update(self):
+        self.cur_state.do(self)
+        if len(self.event_que) > 0:
+            event = self.event_que.pop()
+            self.cur_state.exit(self, event)
+            self.cur_state = next_state_table[self.cur_state][event]
+            self.cur_state.enter(self, event)
+
+    def draw(self):
+        self.cur_state.draw(self)
+
+    def handle_event(self, event):
+        if (event.type, event.key) in key_event_table:
+            key_event = key_event_table[(event.type, event.key)]
+            self.add_event(key_event)
 
 # class Player(Character_Object):
 #     def __init__(self, x, y):

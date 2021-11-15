@@ -14,7 +14,7 @@ class Object:
     image_inst = None
     image = {}
 
-    def __init__(self, type_name, type_id):
+    def __init__(self, type_name, type_id, state):
         # Image initialization
         if None == Object.image_inst:
             Object.image_inst = (
@@ -84,6 +84,10 @@ class Object:
         # Object action with sprite animation
         self.action = ACTION.IDLE
 
+        # Event and state
+        self.event_que = []
+        self.cur_state = state
+
         # Animation frame value
         self.frames = 0
         self.frame_begin = 0
@@ -91,6 +95,8 @@ class Object:
 
         # Animation control value
         self.loop_animation = False
+
+        self.cur_state.enter(self, None)
 
     def draw(self):
         Object.image[(self.type_name, self.type_id)].draw(self.x, self.y)
