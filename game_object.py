@@ -3,6 +3,8 @@ from value import *
 from abc import *
 from hit_box import *
 
+import gs_framework
+
 D_NONE = 0
 D_RIGHT = 1
 D_LEFT = -1
@@ -89,7 +91,9 @@ class Object:
         self.cur_state = state
 
         # Animation frame value
-        self.frames = 0
+        self.time_per_action = 0.0
+        self.action_per_time = 0.0
+        self.frame = 0
         self.frame_begin = 0
         self.frame_count = 0
 
@@ -98,15 +102,19 @@ class Object:
 
         self.cur_state.enter(self, None)
 
+    def set_tpa(self, tpa):
+        self.time_per_action = tpa
+        self.action_per_time = 1.0 / self.time_per_action
+
     def draw(self):
         Object.image[(self.type_name, self.type_id)].draw(self.x, self.y)
 
     def clip_draw(self):
         if self.frame_count == 1:
-            self.frames = 0
+            self.frame = 0
 
         Object.image[(self.type_name, self.type_id)].clip_draw(
-            (self.frames + self.frame_begin) * self.l, self.b,
+            int((self.frame + self.frame_begin)) * self.l, self.b,
             self.w, self.h, self.x, self.y)
 
     @abstractmethod
@@ -122,10 +130,14 @@ class Object:
             return
 
         if not self.loop_animation:
-            if self.frames + 1 == self.frame_count:
+            if self.frame + 1 == self.frame_count:
                 return
 
-        self.frames = (self.frames + 1) % self.frame_count
+        self.frame = (self.frame +
+                      self.frame_count *
+                      self.action_per_time *
+                      gs_framework.frame_time
+                      ) % self.frame_count
 
     def set_clip(self, a=None):
 
@@ -140,6 +152,7 @@ class Object:
             self.hit_boxes[HB.BREAK].set_info(TN.PLAYER, TID.MARIO_SMALL, HB.BREAK)
 
             if self.action == ACTION.IDLE and self.x_direction == D_RIGHT:
+                self.set_tpa(1.2)
                 self.l, self.b, self.w, self.h = 50, 50 * 9, 50, 50
                 self.frame_count, self.frame_begin = 27, 0
                 self.hit_boxes[HB.COLLISION].is_on = True
@@ -150,6 +163,7 @@ class Object:
                 self.hit_boxes[HB.STAND].set_range(-14, 15, 12, 12)
                 self.loop_animation = True
             elif self.action == ACTION.IDLE and self.x_direction == D_LEFT:
+                self.set_tpa(1.2)
                 self.l, self.b, self.w, self.h = 50, 50 * 8, 50, 50
                 self.frame_count, self.frame_begin = 27, 0
                 self.hit_boxes[HB.COLLISION].is_on = True
@@ -160,6 +174,7 @@ class Object:
                 self.hit_boxes[HB.STAND].set_range(-14, 15, 12, 12)
                 self.loop_animation = True
             elif self.action == ACTION.WALK and self.x_direction == D_RIGHT:
+                self.set_tpa(1.2)
                 self.l, self.b, self.w, self.h = 50, 50 * 7, 50, 50
                 self.frame_count, self.frame_begin = 18, 0
                 self.hit_boxes[HB.COLLISION].is_on = True
@@ -575,7 +590,7 @@ class Object:
                 self.l, self.b, self.w, self.h = 50, 100 * 4, 50, 50
                 self.loop_animation = False
 
-        self.frames = self.frame_begin
+        self.frame = self.frame_begin
 
 
 def test_object():

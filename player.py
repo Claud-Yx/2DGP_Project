@@ -576,9 +576,12 @@ def test_player():
     print("player.pos = (", player.x, ", ", player.y, ")")
     print("player.cur_state = " + player.cur_state.__name__)
 
+    current_time = get_time()
+
     while Running:
         clear_canvas()
-
+        gs_framework.frame_time = get_time() - current_time
+        current_time += gs_framework.frame_time
         events = get_events()
         for event in events:
             if event.type == SDL_QUIT:
@@ -590,6 +593,11 @@ def test_player():
 
         player.update()
         player.draw()
+
+        debug_print("frame = " + str(player.frame) +
+                    " apt = " + str(player.action_per_time) +
+                    " tpa = " + str(player.time_per_action) +
+                    " time = " + str(gs_framework.frame_time))
 
         update_canvas()
 
