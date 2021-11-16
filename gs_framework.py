@@ -7,6 +7,8 @@ Threading = True
 canvas_width = 1280
 canvas_height = 720
 
+frame_time = get_time()
+
 
 def change_state(state):
     global stack
@@ -47,11 +49,12 @@ def quit():
 
 
 def run(start_state):
-    global Running, stack, Events
+    global Running, stack, Events, frame_time
     Running = True
     Threading = True
     stack = [start_state]
     start_state.enter()
+    current_time = get_time()
 
     while Running:
         if stack[-1].type_name == "StageMainState" and Threading:
@@ -64,6 +67,8 @@ def run(start_state):
         stack[-1].handle_events()
         stack[-1].update()
         stack[-1].draw()
+        frame_time = get_time() - current_time
+        current_time += frame_time
 
     while len(stack) > 0:
         stack[-1].exit()

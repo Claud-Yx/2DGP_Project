@@ -8,6 +8,16 @@ def get_pps_from_kmph(kmph):
     return kmph * 1000.0 / 3600.0 * PIXEL_PER_METER
 
 
+def get_pps_from_mps(mps):
+    return mps * PIXEL_PER_METER
+
+
+def get_accel_from_pps(pps, t):
+    if t == 0:
+        print("cannot divide by 0")
+        return None
+
+    return pps / t
 
 # class StrEnum(str, Enum):
 #     def _generate_next_value_(name, start, count, last_values):
@@ -65,18 +75,18 @@ class POS( IntEnum ):
 
 
 class ACTION(IntEnum):
-    IDLE = 0,
-    SIT = auto(),
-    WALK = auto(),
-    RUN = auto(),
-    FLY = auto(),
-    JUMP = auto(),
-    FALL = auto(),
-    HANG = auto(),
-    CLIMB = auto(),
-    SWIM = auto(),
-    RESTORE = auto(),
-    DIE_A = auto(),
+    IDLE = 0
+    SIT = auto()
+    WALK = auto()
+    RUN = auto()
+    FLY = auto()
+    JUMP = auto()
+    FALL = auto()
+    HANG = auto()
+    CLIMB = auto()
+    SWIM = auto()
+    RESTORE = auto()
+    DIE_A = auto()
     DIE_B = auto()
 
 
@@ -84,7 +94,7 @@ class TN(IntEnum):  # Object Type
     PLAYER = 0
     TILESETS = auto()
     ENEMIES = auto()
-    ITMES = auto()
+    ITEMS = auto()
     INTERACTIVES = auto()
     FOREGROUND = auto()
     SIZE = auto()

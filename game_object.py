@@ -54,7 +54,7 @@ class Object:
                 (TN.ITEMS, TID.LIFE_MUSHROOM): Object.image_inst[nbr()],
                 (TN.ITEMS, TID.STAR_COIN): Object.image_inst[nbr()],
                 (TN.ITEMS, TID.SUPER_MUSHROOM): Object.image_inst[nbr()],
-                (TN.ITEMS, TID.super_star): Object.image_inst[nbr()],
+                (TN.ITEMS, TID.SUPER_STAR): Object.image_inst[nbr()],
             }
 
         # Object location point
@@ -127,7 +127,10 @@ class Object:
 
         self.frames = (self.frames + 1) % self.frame_count
 
-    def set_clip(self, a=""):
+    def set_clip(self, a=None):
+
+        if not a:
+            self.action = a
 
         if (self.type_name, self.type_id) == (TN.PLAYER, TID.MARIO_SMALL):
             self.correction_y = 15
@@ -573,3 +576,13 @@ class Object:
                 self.loop_animation = False
 
         self.frames = self.frame_begin
+
+
+def test_object():
+    open_canvas()
+    object = Object()
+
+
+
+if __name__ == "__main__":
+    test_object()

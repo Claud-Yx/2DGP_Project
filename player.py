@@ -39,16 +39,25 @@ key_event_table = {
 
 class IdleState:
     def enter(player, event):
-        pass
+        player.set_clip(ACTION.IDLE)
+
+        if event == KEY.RIGHT_DOWN:
+            player.x_direction += 1
+        elif event == KEY.RIGHT_UP:
+            player.x_direction -= 1
+        elif event == KEY.LEFT_DOWN:
+            player.x_direction -= 1
+        elif event == KEY.LEFT_UP:
+            player.x_direction += 1
 
     def exit(player, event):
         pass
 
     def do(player):
-        pass
+        player.update_frame()
 
     def draw(player):
-        pass
+        player.clip_draw()
 
 
 class SitState:
@@ -216,9 +225,9 @@ next_state_table = {
 }
 
 
-class Player(game_object):
+class Player(Object):
     def __init__(self):
-        super(TN.PLAYER, TID.MARIO_SMALL)
+        super().__init__(TN.PLAYER, TID.MARIO_SMALL, IdleState)
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -233,6 +242,10 @@ class Player(game_object):
 
     def draw(self):
         self.cur_state.draw(self)
+
+    def accelerate(self, dir):
+        pass
+
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
@@ -551,3 +564,36 @@ class Player(game_object):
 #                         self.jump_power = 0
 #
 #         return True
+
+def test_player():
+    open_canvas()
+    player = Player()
+    Running = True
+
+    player.x, player.y = 300, 90
+
+    print("== player info ==")
+    print("player.pos = (", player.x, ", ", player.y, ")")
+    print("player.cur_state = " + player.cur_state.__name__)
+
+    while Running:
+        clear_canvas()
+
+        events = get_events()
+        for event in events:
+            if event.type == SDL_QUIT:
+                Running = False
+            elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
+                Running = False
+            else:
+                player.handle_event(event)
+
+        player.update()
+        player.draw()
+
+        update_canvas()
+
+    close_canvas()
+
+if __name__ == "__main__":
+    test_player()
