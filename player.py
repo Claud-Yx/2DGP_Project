@@ -5,6 +5,15 @@ from value import *
 import gs_framework
 import game_object
 
+MIN_VELOCITY = get_pps_from_kmph(10.0)
+
+MAX_WALK_VELOCITY = get_pps_from_kmph(17.0)
+ACCEL_WALK = get_accel_from_pps(MAX_WALK_VELOCITY, 0.8)
+
+MAX_RUN_VELOCITY = get_pps_from_kmph(40.0)
+
+STANDARD_RESISTANCE = ACCEL_WALK * 2.0
+
 
 class KEY(IntEnum):
     UP_DOWN = 0
@@ -39,8 +48,6 @@ key_event_table = {
 
 class IdleState:
     def enter(player, event):
-        player.set_clip(ACTION.IDLE)
-
         if event == KEY.RIGHT_DOWN:
             player.x_direction += 1
         elif event == KEY.RIGHT_UP:
@@ -50,11 +57,34 @@ class IdleState:
         elif event == KEY.LEFT_UP:
             player.x_direction += 1
 
+        if player.x_direction == D_RIGHT:
+            player.facing = D_RIGHT
+        elif player.x_direction == D_LEFT:
+            player.facing = D_LEFT
+
+        player.set_clip(ACTION.IDLE)
+
     def exit(player, event):
         pass
 
     def do(player):
-        player.update_frame()
+        player.update_frame(gs_framework.frame_time)
+
+        player.velocity -= STANDARD_RESISTANCE * gs_framework.frame_time * player.forcing
+
+        if -1 < player.velocity < 1:
+            player.velocity = 0
+
+        speed = player.velocity * gs_framework.frame_time
+
+        if speed > 0:
+            player.forcing = D_RIGHT
+        elif speed == 0:
+            player.forcing = D_NONE
+        else:
+            player.forcing = D_LEFT
+
+        player.x += speed
 
     def draw(player):
         player.clip_draw()
@@ -76,30 +106,84 @@ class SitState:
 
 class WalkState:
     def enter(player, event):
-        pass
+        if event == KEY.RIGHT_DOWN:
+            player.x_direction += 1
+        elif event == KEY.RIGHT_UP:
+            player.x_direction -= 1
+        elif event == KEY.LEFT_DOWN:
+            player.x_direction -= 1
+        elif event == KEY.LEFT_UP:
+            player.x_direction += 1
+
+        if player.x_direction == D_RIGHT:
+            player.facing = D_RIGHT
+        elif player.x_direction == D_LEFT:
+            player.facing = D_LEFT
+
+        player.velocity += MIN_VELOCITY * player.x_direction
+
+        if player.is_run:
+            player.max_velocity = MAX_RUN_VELOCITY
+        else:
+            player.accel = ACCEL_WALK
+            player.max_velocity = MAX_WALK_VELOCITY
+
+        print(str(player.accel), str(player.max_velocity))
 
     def exit(player, event):
+        if event == KEY.Z_DOWN:
+            player.is_run = True
+        elif event == KEY.Z_UP:
+            player.is_run = False
+
         pass
 
     def do(player):
-        pass
+
+        if player.x_direction != player.forcing:
+            player.set_clip(ACTION.BREAK)
+        else:
+            if MAX_WALK_VELOCITY * 1.5 * -1 > player.velocity or MAX_WALK_VELOCITY * 1.5 < player.velocity:
+                player.set_clip(ACTION.RUN)
+            else:
+                player.set_clip(ACTION.WALK)
+
+        player.update_frame(gs_framework.frame_time)
+
+        player.velocity += player.accel * gs_framework.frame_time * player.x_direction
+
+        if player.forcing != player.x_direction:
+            player.velocity += player.accel * gs_framework.frame_time * player.x_direction * 2
+
+        player.velocity = clamp(player.max_velocity * -1, player.velocity, player.max_velocity)
+
+        speed = player.velocity * gs_framework.frame_time
+
+        if speed > 0:
+            player.forcing = D_RIGHT
+        elif speed == 0:
+            player.forcing = D_NONE
+        else:
+            player.forcing = D_LEFT
+
+        player.x += speed
 
     def draw(player):
-        pass
+        player.clip_draw()
 
 
-class RunState:
-    def enter(player, event):
-        pass
-
-    def exit(player, event):
-        pass
-
-    def do(player):
-        pass
-
-    def draw(player):
-        pass
+# class RunState:
+#     def enter(player, event):
+#         pass
+#
+#     def exit(player, event):
+#         pass
+#
+#     def do(player):
+#         pass
+#
+#     def draw(player):
+#         pass
 
 
 class JumpState:
@@ -163,7 +247,7 @@ next_state_table = {
         KEY.DOWN_DOWN: SitState, KEY.DOWN_UP: SitState,
         KEY.LEFT_DOWN: WalkState, KEY.LEFT_UP: WalkState,
         KEY.RIGHT_DOWN: WalkState, KEY.RIGHT_UP: WalkState,
-        KEY.Z_DOWN: RunState, KEY.Z_UP: RunState,
+        KEY.Z_DOWN: IdleState, KEY.Z_UP: IdleState,
         KEY.X_DOWN: JumpState, KEY.X_UP: IdleState
     },
     SitState: {
@@ -171,7 +255,7 @@ next_state_table = {
         KEY.DOWN_UP: IdleState,
         KEY.LEFT_DOWN: WalkState, KEY.LEFT_UP: WalkState,
         KEY.RIGHT_DOWN: WalkState, KEY.RIGHT_UP: WalkState,
-        KEY.Z_DOWN: RunState, KEY.Z_UP: RunState,
+        KEY.Z_DOWN: SitState, KEY.Z_UP: SitState,
         KEY.X_DOWN: JumpState, KEY.X_UP: SitState
     },
     WalkState: {
@@ -179,17 +263,17 @@ next_state_table = {
         KEY.DOWN_DOWN: WalkState, KEY.DOWN_UP: WalkState,
         KEY.LEFT_DOWN: IdleState, KEY.LEFT_UP: IdleState,
         KEY.RIGHT_DOWN: IdleState, KEY.RIGHT_UP: IdleState,
-        KEY.Z_DOWN: RunState, KEY.Z_UP: RunState,
+        KEY.Z_DOWN: WalkState, KEY.Z_UP: WalkState,
         KEY.X_DOWN: JumpState, KEY.X_UP: WalkState
     },
-    RunState: {
-        KEY.UP_DOWN: RunState, KEY.UP_UP: RunState,
-        KEY.DOWN_DOWN: RunState, KEY.DOWN_UP: RunState,
-        KEY.LEFT_DOWN: WalkState, KEY.LEFT_UP: WalkState,
-        KEY.RIGHT_DOWN: WalkState, KEY.RIGHT_UP: WalkState,
-        KEY.Z_DOWN: RunState, KEY.Z_UP: RunState,
-        KEY.X_DOWN: JumpState, KEY.X_UP: RunState
-    },
+    # RunState: {
+    #     KEY.UP_DOWN: RunState, KEY.UP_UP: RunState,
+    #     KEY.DOWN_DOWN: RunState, KEY.DOWN_UP: RunState,
+    #     KEY.LEFT_DOWN: WalkState, KEY.LEFT_UP: WalkState,
+    #     KEY.RIGHT_DOWN: WalkState, KEY.RIGHT_UP: WalkState,
+    #     KEY.Z_DOWN: RunState, KEY.Z_UP: RunState,
+    #     KEY.X_DOWN: JumpState, KEY.X_UP: RunState
+    # },
     JumpState: {
         KEY.UP_DOWN: JumpState, KEY.UP_UP: JumpState,
         KEY.DOWN_DOWN: JumpState, KEY.DOWN_UP: JumpState,
@@ -227,7 +311,9 @@ next_state_table = {
 
 class Player(Object):
     def __init__(self):
-        super().__init__(TN.PLAYER, TID.MARIO_SMALL, IdleState)
+        super().__init__(TN.PLAYER, TID.MARIO_SUPER, IdleState)
+
+        self.is_run = False
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -242,10 +328,6 @@ class Player(Object):
 
     def draw(self):
         self.cur_state.draw(self)
-
-    def accelerate(self, dir):
-        pass
-
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
@@ -565,8 +647,9 @@ class Player(Object):
 #
 #         return True
 
+
 def test_player():
-    open_canvas()
+    open_canvas(1600, 600)
     player = Player()
     Running = True
 
@@ -594,14 +677,14 @@ def test_player():
         player.update()
         player.draw()
 
-        debug_print("frame = " + str(player.frame) +
-                    " apt = " + str(player.action_per_time) +
-                    " tpa = " + str(player.time_per_action) +
-                    " time = " + str(gs_framework.frame_time))
+        debug_print(" facing = " + str(player.facing) +
+                    " x_dir = " + str(player.x_direction) +
+                    " velocity = " + str(player.velocity))
 
         update_canvas()
 
     close_canvas()
+
 
 if __name__ == "__main__":
     test_player()

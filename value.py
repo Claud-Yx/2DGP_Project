@@ -79,6 +79,7 @@ class ACTION(IntEnum):
     SIT = auto()
     WALK = auto()
     RUN = auto()
+    BREAK = auto()
     FLY = auto()
     JUMP = auto()
     FALL = auto()
