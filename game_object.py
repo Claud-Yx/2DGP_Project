@@ -42,6 +42,7 @@ class Object:
 
         # Bounding Box
         self.bounding_box = {}
+        self.show_bb = False
 
         # Object moving value
         self.max_velocity = 0
@@ -94,6 +95,10 @@ class Object:
             int((self.frame + self.frame_begin)) * self.l, self.b,
             self.w, self.h, self.x, self.y)
 
+    def draw_bb(self):
+        for key in self.bounding_box.keys():
+            self.bounding_box[key].draw_bb((self.x, self.y))
+
     @abstractmethod
     def update(self):
         pass
@@ -126,10 +131,10 @@ class Object:
 
         if (self.type_name, self.type_id) == (TN.PLAYER, TID.MARIO_SMALL):
             self.correction_y = 15
-            self.bounding_box[HB.COLLISION].set_info(TN.PLAYER, TID.MARIO_SMALL, HB.COLLISION)
-            self.bounding_box[HB.STAND].set_info(TN.PLAYER, TID.MARIO_SMALL, HB.STAND)
-            self.bounding_box[HB.ATTACK].set_info(TN.PLAYER, TID.MARIO_SMALL, HB.ATTACK)
-            self.bounding_box[HB.BREAK].set_info(TN.PLAYER, TID.MARIO_SMALL, HB.BREAK)
+            self.bounding_box[HB.COLLISION] = BoundingBox(HB.COLLISION)
+            self.bounding_box[HB.STAND] = BoundingBox(HB.STAND)
+            self.bounding_box[HB.ATTACK] = BoundingBox(HB.ATTACK)
+            self.bounding_box[HB.BREAK] = BoundingBox(HB.BREAK)
 
             if self.action == ACTION.IDLE and self.facing == D_RIGHT:
                 self.set_tpa(1.2)
@@ -139,8 +144,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 13, 13)
-                self.bounding_box[HB.STAND].set_range(-14, 15, 12, 12)
+                self.bounding_box[HB.COLLISION].set_bb((13, 15, 13, 22))
+                self.bounding_box[HB.STAND].set_bb((-14, 15, 12, 12))
                 self.loop_animation = True
             elif self.action == ACTION.IDLE and self.facing == D_LEFT:
                 self.set_tpa(1.2)
@@ -150,8 +155,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 13, 13)
-                self.bounding_box[HB.STAND].set_range(-14, 15, 12, 12)
+                self.bounding_box[HB.COLLISION].set_bb((22, 15, 13, 13))
+                self.bounding_box[HB.STAND].set_bb((-14, 15, 12, 12))
                 self.loop_animation = True
             elif self.action == ACTION.WALK and self.facing == D_RIGHT:
                 self.set_tpa(1.2)
@@ -161,8 +166,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 13, 13)
-                self.bounding_box[HB.STAND].set_range(-14, 15, 12, 12)
+                self.bounding_box[HB.COLLISION].set_bb((22, 15, 13, 13))
+                self.bounding_box[HB.STAND].set_bb((-14, 15, 12, 12))
                 self.loop_animation = True
             elif self.action == ACTION.WALK and self.facing == D_LEFT:
                 self.set_tpa(1.2)
@@ -172,8 +177,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 13, 13)
-                self.bounding_box[HB.STAND].set_range(-14, 15, 12, 12)
+                self.bounding_box[HB.COLLISION].set_bb((22, 15, 13, 13))
+                self.bounding_box[HB.STAND].set_bb((-14, 15, 12, 12))
                 self.loop_animation = True
             elif self.action == ACTION.RUN and self.facing == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 5, 50, 50
@@ -182,8 +187,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 13, 20)
-                self.bounding_box[HB.STAND].set_range(-14, 15, 12, 18)
+                self.bounding_box[HB.COLLISION].set_bb((13, 15, 20, 22))
+                self.bounding_box[HB.STAND].set_bb((12, 15, 18, -14))
                 self.loop_animation = True
             elif self.action == ACTION.RUN and self.facing == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 4, 50, 50
@@ -192,8 +197,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 20, 13)
-                self.bounding_box[HB.STAND].set_range(-14, 15, 18, 12)
+                self.bounding_box[HB.COLLISION].set_bb((20, 15, 13, 22))
+                self.bounding_box[HB.STAND].set_bb((18, 15, 12, -14))
                 self.loop_animation = True
             elif self.action == ACTION.BREAK and self.facing == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 4, 50, 50
@@ -202,8 +207,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 13, 20)
-                self.bounding_box[HB.STAND].set_range(-14, 15, 12, 18)
+                self.bounding_box[HB.COLLISION].set_bb((13, 15, 20, 22))
+                self.bounding_box[HB.STAND].set_bb((12, 15, 18, -14))
                 self.loop_animation = False
             elif self.action == ACTION.BREAK and self.facing == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 5, 50, 50
@@ -212,8 +217,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 13, 20)
-                self.bounding_box[HB.STAND].set_range(-14, 15, 12, 18)
+                self.bounding_box[HB.COLLISION].set_bb((13, 15, 20, 22))
+                self.bounding_box[HB.STAND].set_bb((12, 15, 18, -14))
                 self.loop_animation = False
             elif self.action == ACTION.SWIM and self.facing == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
@@ -222,8 +227,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 13, 20)
-                self.bounding_box[HB.STAND].set_range(-14, 15, 12, 18)
+                self.bounding_box[HB.COLLISION].set_bb((13, 15, 20, 22))
+                self.bounding_box[HB.STAND].set_bb((12, 15, 18, -14))
                 self.loop_animation = True
             elif self.action == ACTION.SWIM and self.facing == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
@@ -232,8 +237,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 20, 13)
-                self.bounding_box[HB.STAND].set_range(-14, 15, 18, 12)
+                self.bounding_box[HB.COLLISION].set_bb((20, 15, 13, 22))
+                self.bounding_box[HB.STAND].set_bb((18, 15, 12, -14))
                 self.loop_animation = True
             elif self.action == ACTION.HANG:
                 self.l, self.b, self.w, self.h = 50, 50 * 1, 50, 50
@@ -242,7 +247,7 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = False
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 13, 13)
+                self.bounding_box[HB.COLLISION].set_bb((13, 15, 13, 22))
                 self.loop_animation = True
             elif self.action == ACTION.CLIMB:
                 self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
@@ -251,8 +256,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 13, 13)
-                self.bounding_box[HB.STAND].set_range(-14, 15, 12, 12)
+                self.bounding_box[HB.COLLISION].set_bb((13, 15, 13, 22))
+                self.bounding_box[HB.STAND].set_bb((12, 15, 12, -14))
                 self.loop_animation = True
             elif self.action == ACTION.JUMP and self.facing == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 7, 50, 50
@@ -261,8 +266,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = False
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = True
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 13, 12)
-                self.bounding_box[HB.BREAK].set_range(25, -23, 12, 8)
+                self.bounding_box[HB.COLLISION].set_bb((13, 15, 12, 22))
+                self.bounding_box[HB.BREAK].set_bb((12, -23, 8, 25))
                 self.loop_animation = False
             elif self.action == ACTION.FALL and self.facing == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 7, 50, 50
@@ -271,9 +276,9 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = True
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 12, 12)
-                self.bounding_box[HB.STAND].set_range(-14, 15, 11, 11)
-                self.bounding_box[HB.ATTACK].set_range(-8, 15, 8, 16)
+                self.bounding_box[HB.COLLISION].set_bb((12, 15, 12, 22))
+                self.bounding_box[HB.STAND].set_bb((11, 15, 11, -14))
+                self.bounding_box[HB.ATTACK].set_bb((8, 15, 16, -8))
                 self.loop_animation = False
             elif self.action == ACTION.JUMP and self.facing == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 6, 50, 50
@@ -282,8 +287,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = False
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = True
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 12, 13)
-                self.bounding_box[HB.BREAK].set_range(25, -23, 8, 12)
+                self.bounding_box[HB.COLLISION].set_bb((12, 15, 13, 22))
+                self.bounding_box[HB.BREAK].set_bb((8, -23, 12, 25))
                 self.loop_animation = False
             elif self.action == ACTION.FALL and self.facing == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 6, 50, 50
@@ -292,9 +297,9 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = True
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(22, 15, 12, 12)
-                self.bounding_box[HB.STAND].set_range(-14, 15, 11, 11)
-                self.bounding_box[HB.ATTACK].set_range(-8, 15, 16, 8)
+                self.bounding_box[HB.COLLISION].set_bb((12, 15, 12, 22))
+                self.bounding_box[HB.STAND].set_bb((11, 15, 11, -14))
+                self.bounding_box[HB.ATTACK].set_bb((16, 15, 8, -8))
                 self.loop_animation = False
             elif self.action == ACTION.DIE_A:
                 self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
@@ -312,10 +317,10 @@ class Object:
 
         elif (self.type_name, self.type_id) == (TN.PLAYER, TID.MARIO_SUPER):
             self.correction_y = 40
-            self.bounding_box[HB.COLLISION].set_info(TN.PLAYER, TID.MARIO_SUPER, HB.COLLISION)
-            self.bounding_box[HB.STAND].set_info(TN.PLAYER, TID.MARIO_SUPER, HB.STAND)
-            self.bounding_box[HB.ATTACK].set_info(TN.PLAYER, TID.MARIO_SUPER, HB.ATTACK)
-            self.bounding_box[HB.BREAK].set_info(TN.PLAYER, TID.MARIO_SUPER, HB.BREAK)
+            self.bounding_box[HB.COLLISION] = BoundingBox(HB.COLLISION)
+            self.bounding_box[HB.STAND] = BoundingBox(HB.STAND)
+            self.bounding_box[HB.ATTACK] = BoundingBox(HB.ATTACK)
+            self.bounding_box[HB.BREAK] = BoundingBox(HB.BREAK)
 
             if self.action == ACTION.IDLE and self.facing == D_RIGHT:
                 self.set_tpa(1.2)
@@ -325,8 +330,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(30, 40, 15, 15)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 14, 14)
+                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = True
             elif self.action == ACTION.IDLE and self.facing == D_LEFT:
                 self.set_tpa(1.2)
@@ -336,8 +341,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(30, 40, 15, 15)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 14, 14)
+                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = True
             elif self.action == ACTION.WALK and self.facing == D_RIGHT:
                 self.set_tpa(1.0)
@@ -347,8 +352,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(30, 40, 15, 15)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 14, 14)
+                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = True
             elif self.action == ACTION.WALK and self.facing == D_LEFT:
                 self.set_tpa(1.0)
@@ -358,8 +363,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(30, 40, 15, 15)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 14, 14)
+                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = True
             elif self.action == ACTION.RUN and self.facing == D_RIGHT:
                 self.set_tpa(0.5)
@@ -369,8 +374,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(20, 40, 25, 25)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 24, 24)
+                self.bounding_box[HB.COLLISION].set_bb((25, 40, 25, 20))
+                self.bounding_box[HB.STAND].set_bb((24, 40, 24, -39))
                 self.loop_animation = True
             elif self.action == ACTION.RUN and self.facing == D_LEFT:
                 self.set_tpa(0.5)
@@ -380,8 +385,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(20, 40, 25, 25)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 24, 24)
+                self.bounding_box[HB.COLLISION].set_bb((25, 40, 25, 20))
+                self.bounding_box[HB.STAND].set_bb((24, 40, 24, -39))
                 self.loop_animation = True
             elif self.action == ACTION.BREAK and self.facing == D_RIGHT:
                 self.l, self.b, self.w, self.h = 100, 100 * 4, 100, 100
@@ -390,8 +395,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(20, 40, 25, 25)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 24, 24)
+                self.bounding_box[HB.COLLISION].set_bb((25, 40, 25, 20))
+                self.bounding_box[HB.STAND].set_bb((24, 40, 24, -39))
                 self.loop_animation = False
             elif self.action == ACTION.BREAK and self.facing == D_LEFT:
                 self.l, self.b, self.w, self.h = 100, 100 * 5, 100, 100
@@ -400,8 +405,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(20, 40, 25, 25)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 24, 24)
+                self.bounding_box[HB.COLLISION].set_bb((25, 40, 25, 20))
+                self.bounding_box[HB.STAND].set_bb((24, 40, 24, -39))
                 self.loop_animation = False
             elif self.action == ACTION.SWIM and self.facing == D_RIGHT:
                 self.l, self.b, self.w, self.h = 100, 100 * 3, 100, 100
@@ -410,8 +415,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(21, 40, 25, 28)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 24, 27)
+                self.bounding_box[HB.COLLISION].set_bb((25, 40, 28, 21))
+                self.bounding_box[HB.STAND].set_bb((24, 40, 27, -39))
                 self.loop_animation = True
             elif self.action == ACTION.SWIM and self.facing == D_LEFT:
                 self.l, self.b, self.w, self.h = 100, 100 * 2, 100, 100
@@ -420,8 +425,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(21, 40, 28, 25)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 27, 24)
+                self.bounding_box[HB.COLLISION].set_bb((28, 40, 25, 21))
+                self.bounding_box[HB.STAND].set_bb((27, 40, 24, -39))
                 self.loop_animation = True
             elif self.action == ACTION.HANG:
                 self.l, self.b, self.w, self.h = 50, 100 * 1, 50, 100
@@ -430,7 +435,7 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = False
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(30, 40, 15, 15)
+                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
                 self.loop_animation = True
             elif self.action == ACTION.CLIMB:
                 self.l, self.b, self.w, self.h = 50, 100 * 0, 50, 100
@@ -439,8 +444,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(30, 40, 15, 15)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 14, 14)
+                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = True
             elif self.action == ACTION.SIT and self.facing == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 9, 50, 100
@@ -449,8 +454,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(-7, 40, 15, 15)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 14, 14)
+                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, -7))
+                self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = False
             elif self.action == ACTION.SIT and self.facing == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 8, 50, 100
@@ -459,8 +464,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(-7, 40, 15, 15)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 14, 14)
+                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, -7))
+                self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = False
             elif self.action == ACTION.JUMP and self.facing == D_RIGHT:
                 self.l, self.b, self.w, self.h = 100, 100 * 7, 100, 100
@@ -469,8 +474,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = False
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = True
-                self.bounding_box[HB.COLLISION].set_range(30, 36, 15, 15)
-                self.bounding_box[HB.BREAK].set_range(34, -30, 15, 15)
+                self.bounding_box[HB.COLLISION].set_bb((15, 36, 15, 30))
+                self.bounding_box[HB.BREAK].set_bb((15, -30, 15, 30))
                 self.loop_animation = False
             elif self.action == ACTION.FALL and self.facing == D_RIGHT:
                 self.l, self.b, self.w, self.h = 100, 100 * 7, 100, 100
@@ -479,9 +484,9 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = True
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(30, 40, 15, 15)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 14, 14)
-                self.bounding_box[HB.ATTACK].set_range(-32, 41, 12, 28)
+                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
+                self.bounding_box[HB.ATTACK].set_bb((12, 41, 28, -32))
                 self.loop_animation = False
             elif self.action == ACTION.JUMP and self.facing == D_LEFT:
                 self.l, self.b, self.w, self.h = 100, 100 * 6, 100, 100
@@ -490,8 +495,8 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = False
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = True
-                self.bounding_box[HB.COLLISION].set_range(30, 36, 15, 15)
-                self.bounding_box[HB.BREAK].set_range(34, -30, 15, 15)
+                self.bounding_box[HB.COLLISION].set_bb((15, 36, 15, 30))
+                self.bounding_box[HB.BREAK].set_bb((15, -30, 15, 30))
                 self.loop_animation = False
             elif self.action == ACTION.FALL and self.facing == D_LEFT:
                 self.l, self.b, self.w, self.h = 100, 100 * 6, 100, 100
@@ -500,9 +505,9 @@ class Object:
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = True
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_range(30, 40, 15, 15)
-                self.bounding_box[HB.STAND].set_range(-39, 40, 14, 14)
-                self.bounding_box[HB.ATTACK].set_range(-32, 41, 28, 12)
+                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
+                self.bounding_box[HB.ATTACK].set_bb((28, 41, 12, -32))
                 self.loop_animation = False
 
             else:

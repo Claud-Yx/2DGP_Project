@@ -372,6 +372,9 @@ class Player(game_object.Object):
     def draw(self):
         self.cur_state.draw(self)
 
+        if self.show_bb:
+            self.draw_bb()
+
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
@@ -712,8 +715,15 @@ def test_player():
         for event in events:
             if event.type == SDL_QUIT:
                 Running = False
-            elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
+            elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
                 Running = False
+            elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_F2):
+                print("in debugging")
+                if not player.show_bb:
+                    player.show_bb = True
+                else:
+                    player.show_bb = False
+
             else:
                 player.handle_event(event)
 
