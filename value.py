@@ -1,6 +1,6 @@
 from enum import Enum, IntEnum, auto
 
-GRAVITY_ACCEL = 9.8
+GRAVITY_ACCEL_MPS = 9.8
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
 
 
@@ -18,6 +18,9 @@ def get_accel_from_pps(pps, t):
         return None
 
     return pps / t
+
+
+GRAVITY_ACCEL_PPS = get_pps_from_mps(GRAVITY_ACCEL_MPS)
 
 # class StrEnum(str, Enum):
 #     def _generate_next_value_(name, start, count, last_values):
@@ -55,20 +58,10 @@ def get_accel_from_pps(pps, t):
 
 
 class POS( IntEnum ):
-    TOP = 0
-    BOTTOM = auto()
-    LEFT = auto()
-    RIGHT = auto()
-
-    LEFTTOP = 0
-    LEFTBOTTOM = auto()
-    RIGHTTOP = auto()
-    RIGHTBOTTOM = auto()
-
-    LT = 0
-    LB = auto()
-    RT = auto()
-    RB = auto()
+    LEFT = 0
+    BOTTOM = 1
+    RIGHT = 2
+    TOP = 3
 
     X = 0
     Y = 1

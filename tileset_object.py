@@ -1,5 +1,5 @@
 from pico2d import *
-from hit_box import *
+from bounding_box import *
 from value import *
 
 

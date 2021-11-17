@@ -1,5 +1,5 @@
 from pico2d import *
-from hit_box import *
+from bounding_box import *
 
 CO_NONE = 0
 CO_MARIO_SMALL = 1
