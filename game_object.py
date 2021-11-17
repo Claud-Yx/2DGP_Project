@@ -11,50 +11,29 @@ D_DOWN = -1
 
 
 class Object:
-    image_inst = None
-    image = {}
+    image = None
 
     def __init__(self, type_name, type_id, state):
         # Image initialization
-        if None == Object.image_inst:
-            Object.image_inst = (
-                load_image('resource\\characters\\mario_small.png'),
-                load_image('resource\\characters\\mario_super.png'),
-                load_image('resource\\tileset\\block50x50.png'),
-                load_image('resource\\tileset\\block50x100.png'),
-                load_image('resource\\tileset\\block100x50.png'),
-                load_image('resource\\tileset\\block100x100.png'),
-                load_image('resource\\characters\\goomba.png'),
-                load_image('resource\\characters\\dry_bones.png'),
-                load_image('resource\\characters\\boo.png'),
-                load_image('resource\\characters\\piranha_plant.png'),
-                load_image('resource\\characters\\spinning_spike.png'),
-                load_image('resource\\items\\coin.png'),
-                load_image('resource\\items\\fire_flower.png'),
-                load_image('resource\\items\\life_mushroom.png'),
-                load_image('resource\\items\\starcoin.png'),
-                load_image('resource\\items\\super_mushroom.png'),
-                load_image('resource\\items\\super_star.png')
-            )
-
+        if None == Object.image:
             Object.image = {
-                (TN.PLAYER, TID.MARIO_SMALL): Object.image_inst[nbr(begin=True)],
-                (TN.PLAYER, TID.MARIO_SUPER): Object.image_inst[nbr()],
-                (TN.TILESETS, TID.CASTLE_BLOCK_50X50): Object.image_inst[nbr()],
-                (TN.TILESETS, TID.CASTLE_BLOCK_50X100): Object.image_inst[nbr()],
-                (TN.TILESETS, TID.CASTLE_BLOCK_100X50): Object.image_inst[nbr()],
-                (TN.TILESETS, TID.CASTLE_BLOCK_100X100): Object.image_inst[nbr()],
-                (TN.ENEMIES, TID.GOOMBA): Object.image_inst[nbr()],
-                (TN.ENEMIES, TID.DRY_BONES): Object.image_inst[nbr()],
-                (TN.ENEMIES, TID.BOO): Object.image_inst[nbr()],
-                (TN.ENEMIES, TID.PIRANHA_PLANT): Object.image_inst[nbr()],
-                (TN.ENEMIES, TID.SPINNING_SPIKE): Object.image_inst[nbr()],
-                (TN.ITEMS, TID.COIN): Object.image_inst[nbr()],
-                (TN.ITEMS, TID.FIRE_FLOWER): Object.image_inst[nbr()],
-                (TN.ITEMS, TID.LIFE_MUSHROOM): Object.image_inst[nbr()],
-                (TN.ITEMS, TID.STAR_COIN): Object.image_inst[nbr()],
-                (TN.ITEMS, TID.SUPER_MUSHROOM): Object.image_inst[nbr()],
-                (TN.ITEMS, TID.SUPER_STAR): Object.image_inst[nbr()],
+                (TN.PLAYER, TID.MARIO_SMALL): load_image('resource\\characters\\mario_small.png'),
+                (TN.PLAYER, TID.MARIO_SUPER): load_image('resource\\characters\\mario_super.png'),
+                (TN.TILESETS, TID.CASTLE_BLOCK_50X50): load_image('resource\\tileset\\block50x50.png'),
+                (TN.TILESETS, TID.CASTLE_BLOCK_50X100): load_image('resource\\tileset\\block50x100.png'),
+                (TN.TILESETS, TID.CASTLE_BLOCK_100X50): load_image('resource\\tileset\\block100x50.png'),
+                (TN.TILESETS, TID.CASTLE_BLOCK_100X100): load_image('resource\\tileset\\block100x100.png'),
+                (TN.ENEMIES, TID.GOOMBA): load_image('resource\\characters\\goomba.png'),
+                (TN.ENEMIES, TID.DRY_BONES): load_image('resource\\characters\\dry_bones.png'),
+                (TN.ENEMIES, TID.BOO): load_image('resource\\characters\\boo.png'),
+                (TN.ENEMIES, TID.PIRANHA_PLANT): load_image('resource\\characters\\piranha_plant.png'),
+                (TN.ENEMIES, TID.SPINNING_SPIKE): load_image('resource\\characters\\spinning_spike.png'),
+                (TN.ITEMS, TID.COIN): load_image('resource\\items\\coin.png'),
+                (TN.ITEMS, TID.FIRE_FLOWER): load_image('resource\\items\\fire_flower.png'),
+                (TN.ITEMS, TID.LIFE_MUSHROOM): load_image('resource\\items\\life_mushroom.png'),
+                (TN.ITEMS, TID.STAR_COIN): load_image('resource\\items\\starcoin.png'),
+                (TN.ITEMS, TID.SUPER_MUSHROOM): load_image('resource\\items\\super_mushroom.png'),
+                (TN.ITEMS, TID.SUPER_STAR): load_image('resource\\items\\super_star.png')
             }
 
         # Object location point
