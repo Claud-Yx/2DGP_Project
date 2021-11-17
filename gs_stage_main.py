@@ -3,7 +3,7 @@ import gs_framework
 from player import *
 from enemy_goomba import *
 from enemy_drybones import *
-from tileset_object import *
+from tileset import *
 from pico2d import *
 import threading
 import test_keyboard

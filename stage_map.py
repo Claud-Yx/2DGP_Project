@@ -1,6 +1,6 @@
 from pico2d import *
 from value import *
-from tileset_object import *
+from tileset import *
 from player import *
 
 from enemy_goomba import *

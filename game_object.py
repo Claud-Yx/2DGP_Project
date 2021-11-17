@@ -13,7 +13,7 @@ D_DOWN = -1
 class Object:
     image = None
 
-    def __init__(self, type_name, type_id, state):
+    def __init__(self, type_name, type_id, x=0, y=0):
         # Image initialization
         if None == Object.image:
             Object.image = {
@@ -33,11 +33,12 @@ class Object:
                 (TN.ITEMS, TID.LIFE_MUSHROOM): load_image('resource\\items\\life_mushroom.png'),
                 (TN.ITEMS, TID.STAR_COIN): load_image('resource\\items\\starcoin.png'),
                 (TN.ITEMS, TID.SUPER_MUSHROOM): load_image('resource\\items\\super_mushroom.png'),
-                (TN.ITEMS, TID.SUPER_STAR): load_image('resource\\items\\super_star.png')
+                (TN.ITEMS, TID.SUPER_STAR): load_image('resource\\items\\super_star.png'),
+                TID.NONE: load_image('resource\\no_image.png')
             }
 
         # Object location point
-        self.x, self.y = 0, 0
+        self.x, self.y = x, y
         self.px, self.py = self.x, self.y
 
         # Bounding Box
@@ -66,10 +67,6 @@ class Object:
         # Object action with sprite animation
         self.action = ACTION.IDLE
 
-        # Event and state
-        self.event_que = []
-        self.cur_state = state
-
         # Animation frame value
         self.time_per_action = 0.0
         self.action_per_time = 0.0
@@ -84,10 +81,18 @@ class Object:
         self.time_per_action = tpa
         self.action_per_time = 1.0 / self.time_per_action
 
-    def draw(self):
-        Object.image[(self.type_name, self.type_id)].draw(self.x, self.y)
+    def image_draw(self):
+        if self.type_id == TID.NONE:
+            Object.image[self.type_id].draw(self.x, self.y)
+        else:
+            Object.image[(self.type_name, self.type_id)].draw(self.x, self.y)
 
     def clip_draw(self):
+
+        if self.type_id == TID.NONE:
+            Object.image[self.type_id].draw(self.x, self.y)
+            return
+
         if self.frame_count == 1:
             self.frame = 0
 
@@ -100,7 +105,15 @@ class Object:
             self.bounding_box[key].draw_bb((self.x, self.y))
 
     @abstractmethod
+    def draw(self):
+        pass
+
+    @abstractmethod
     def update(self):
+        pass
+
+    @abstractmethod
+    def handle_event(self):
         pass
 
     def update_frame(self, frame_time):
@@ -121,7 +134,7 @@ class Object:
                       frame_time
                       ) % self.frame_count
 
-    def set_clip(self, a=None):
+    def set_info(self, a=None):
 
         if a == self.action:
             return
@@ -622,13 +635,27 @@ class Object:
                 self.l, self.b, self.w, self.h = 50, 100 * 4, 50, 50
                 self.loop_animation = False
 
+        elif self.type_name == TN.TILESETS:
+            self.bounding_box[HB.COLLISION] = BoundingBox(HB.COLLISION)
+
+            if self.type_id == TID.CASTLE_BLOCK_50X50:
+                self.bounding_box[HB.COLLISION].set_bb((25, 25, 25, 25))
+            elif self.type_id == TID.CASTLE_BLOCK_50X100:
+                self.bounding_box[HB.COLLISION].set_bb((25, 50, 25, 50))
+            elif self.type_id == TID.CASTLE_BLOCK_100X50:
+                self.bounding_box[HB.COLLISION].set_bb((50, 25, 50, 25))
+            elif self.type_id == TID.CASTLE_BLOCK_100X100:
+                self.bounding_box[HB.COLLISION].set_bb((50, 50, 50, 50))
+
         self.frame = self.frame_begin
 
 
 def test_object():
     open_canvas()
+
     object = Object()
 
+    close_canvas()
 
 
 if __name__ == "__main__":
