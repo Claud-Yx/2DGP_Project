@@ -347,7 +347,6 @@ class Object:
                 self.loop_animation = False
 
         elif (self.type_name, self.type_id) == (TN.PLAYER, TID.MARIO_SUPER):
-            self.correction_y = 40
             self.bounding_box[HB.COLLISION] = BoundingBox(HB.COLLISION)
             self.bounding_box[HB.STAND] = BoundingBox(HB.STAND)
             self.bounding_box[HB.ATTACK] = BoundingBox(HB.ATTACK)
@@ -547,7 +546,6 @@ class Object:
                 self.loop_animation = False
 
         elif (self.type_name, self.type_id) == (TN.ENEMIES, TID.DRY_BONES):
-            self.correction_y = 40
 
             if self.action == "stay" and self.facing == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 7, 50, 100
@@ -587,30 +585,46 @@ class Object:
                 self.loop_animation = False
 
         elif (self.type_name, self.type_id) == (TN.ENEMIES, TID.GOOMBA):
+            self.bounding_box[HB.COLLISION] = BoundingBox(HB.COLLISION)
+            self.bounding_box[HB.STAND] = BoundingBox(HB.STAND)
 
-            if self.action == "stay" and self.facing == D_RIGHT:
+            if self.action == ACTION.IDLE and self.facing == D_RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 5, 50, 50
                 self.frame_count, self.frame_begin = 1, 0
+                self.set_bb(HB.COLLISION, (15, 15, 15, 18))
+                self.set_bb(HB.STAND, (15, 15, 15, -14))
                 self.loop_animation = False
-            elif self.action == "stay" and self.facing == D_LEFT:
+            elif self.action == ACTION.IDLE and self.facing == D_LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 4, 50, 50
                 self.frame_count, self.frame_begin = 1, 0
+                self.set_bb(HB.COLLISION, (15, 15, 15, 18))
+                self.set_bb(HB.STAND, (15, 15, 15, -14))
                 self.loop_animation = False
-            elif self.action == "walk" and self.facing == D_RIGHT:
+            elif self.action == ACTION.WALK and self.facing == D_RIGHT:
+                self.set_tpa(1.0)
                 self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
                 self.frame_count, self.frame_begin = 16, 0
+                self.set_bb(HB.COLLISION, (15, 15, 15, 18))
+                self.set_bb(HB.STAND, (15, 15, 15, -14))
                 self.loop_animation = True
-            elif self.action == "walk" and self.facing == D_LEFT:
+            elif self.action == ACTION.WALK and self.facing == D_LEFT:
+                self.set_tpa(1.0)
                 self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
                 self.frame_count, self.frame_begin = 16, 0
+                self.set_bb(HB.COLLISION, (15, 15, 15, 18))
+                self.set_bb(HB.STAND, (15, 15, 15, -14))
                 self.loop_animation = True
-            elif self.action == "dieA":
+            elif self.action == ACTION.DIE_A:
                 self.l, self.b, self.w, self.h = 50, 50 * 1, 50, 50
                 self.frame_count, self.frame_begin = 3, 0
+                self.set_bb(HB.COLLISION, (15, 15, 15, 18))
+                self.set_bb(HB.STAND, (15, 15, 15, -14))
                 self.loop_animation = False
-            elif self.action == "dieB":
+            elif self.action == ACTION.DIE_B:
                 self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
                 self.frame_count, self.frame_begin = 1, 0
+                self.set_bb(HB.COLLISION, (15, 15, 15, 18))
+                self.set_bb(HB.STAND, (15, 15, 15, -14))
                 self.loop_animation = False
             else:
                 self.l, self.b, self.w, self.h = 50, 50 * 5, 50, 50

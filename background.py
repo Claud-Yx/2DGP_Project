@@ -9,7 +9,8 @@ class Background:
     def __init__(self):
         if Background.image is None:
             Background.image = load_image('resource\\background\\castle1.png')
-    
+            self.show_bb = True
+
     def update(self):
         pass
 

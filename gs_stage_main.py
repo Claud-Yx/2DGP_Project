@@ -1,6 +1,8 @@
 from player import *
 from tileset import *
 from background import *
+from enemy import *
+
 from pico2d import *
 import test_keyboard
 
@@ -18,12 +20,18 @@ tiles = []
 
 background = None
 
+show_bb = False
+
 
 def enter():
     # Initialization:
     global background
     background = Background()
     object_manager.add_object(background, object_manager.OL_BACKGROUND)
+
+    global enemies
+    enemies.append(Goomba(950, 450))
+    object_manager.add_objects(enemies, object_manager.OL_FOREGROUND)
 
     global player
     player = Player(TID.MARIO_SUPER, 200, 500)
@@ -61,11 +69,22 @@ def exit():
 
 
 def handle_events():
+    global show_bb
+
     for event in gs_framework.Events:
         if event.type == SDL_QUIT:
             gs_framework.quit()
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
-            gs_framework.quit()
+            gs_framework.change_state(gs_title)
+        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_F2):
+            if not show_bb:
+                show_bb = True
+                for obj in object_manager.all_objects():
+                    obj.show_bb = True
+            else:
+                show_bb = False
+                for obj in object_manager.all_objects():
+                    obj.show_bb = False
         else:
             player.handle_event(event)
             test_keyboard.keyboard_handle(gs_framework.Events)
@@ -76,6 +95,7 @@ def update():
 
     # collision check
     collide_player_to_tiles(player, tiles)
+    collide_enemies_to_tiles(enemies, tiles)
 
 
 def draw():

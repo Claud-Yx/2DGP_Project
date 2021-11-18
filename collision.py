@@ -74,7 +74,7 @@ def collide_player_to_tiles(player, tiles):
                         player.get_bb(HB.COLLISION)[POS.RIGHT] >=
                         tile.get_bb(HB.COLLISION)[POS.LEFT]
                 ):
-                    if player.facing == game_object.D_RIGHT:
+                    if player.facing == game_object.D_LEFT:
                         player.velocity = 0
                     player.x = (
                             tile.get_bb(HB.COLLISION)[POS.LEFT] -
@@ -86,9 +86,91 @@ def collide_player_to_tiles(player, tiles):
                         player.get_bb(HB.COLLISION)[POS.LEFT] <=
                         tile.get_bb(HB.COLLISION)[POS.RIGHT]
                 ):
-                    if player.facing == game_object.D_LEFT:
+                    if player.facing == game_object.D_RIGHT:
                         player.velocity = 0
                     player.x = (
                             tile.get_bb(HB.COLLISION)[POS.RIGHT] +
                             player.get_bb_range(HB.COLLISION)[POS.LEFT]
                     )
+
+def collide_enemies_to_tiles(enemies, tiles):
+    for enemy in enemies:
+        for tile in tiles:
+            if (enemy.get_bb_on(HB.STAND) and tile.get_bb_on(HB.COLLISION) and
+                    collide(enemy.get_bb(HB.STAND),
+                            tile.get_bb(HB.COLLISION)
+                            )
+            ):
+                enemy.jump_power = 0
+                enemy.is_fall = False
+
+                if (enemy.get_bb(HB.STAND)[POS.BOTTOM] < tile.get_bb(HB.COLLISION)[POS.TOP] and
+                        enemy.action != ACTION.JUMP):
+                    enemy.y = (
+                            enemy.bounding_box[HB.STAND].range[POS.BOTTOM] +
+                            tile.get_bb(HB.COLLISION)[POS.TOP]
+                    )
+
+                break
+            elif (enemy.get_bb_on(HB.STAND) and tile.get_bb_on(HB.COLLISION) and
+                  not collide(
+                      enemy.get_bb(HB.STAND),
+                      tile.get_bb(HB.COLLISION)
+                  )
+            ):
+                enemy.is_fall = True
+
+        for tile in tiles:
+            if (enemy.get_bb_on(HB.COLLISION) and
+                    tile.get_bb_on(HB.COLLISION) and
+                    collide(enemy.get_bb(HB.COLLISION),
+                            tile.get_bb(HB.COLLISION)
+                            ) and
+                    enemy.get_bb(HB.COLLISION)[POS.BOTTOM] < tile.get_bb(HB.COLLISION)[POS.TOP]
+            ):
+
+                # ceiling
+                if (tile.get_bb(HB.COLLISION)[POS.BOTTOM] <=
+                        enemy.get_bb(HB.COLLISION)[POS.TOP] <=
+                        tile.get_bb(HB.COLLISION)[POS.TOP] and
+                        tile.get_bb(HB.COLLISION)[POS.LEFT] <=
+                        enemy.get_bb(HB.COLLISION)[POS.RIGHT] <=
+                        tile.get_bb(HB.COLLISION)[POS.RIGHT] and
+                        tile.get_bb(HB.COLLISION)[POS.LEFT] <=
+                        enemy.get_bb(HB.COLLISION)[POS.LEFT] <=
+                        tile.get_bb(HB.COLLISION)[POS.RIGHT]
+                ):
+                    enemy.jump_power = 0
+                    enemy.y = (
+                            tile.get_bb(HB.COLLISION)[POS.BOTTOM] -
+                            enemy.get_bb_range(HB.COLLISION)[POS.TOP]
+                    )
+
+                else:
+                    # left wall
+                    if (tile.get_bb(HB.COLLISION)[POS.RIGHT] >=
+                            enemy.get_bb(HB.COLLISION)[POS.RIGHT] >=
+                            tile.get_bb(HB.COLLISION)[POS.LEFT]
+                    ):
+                        print("left")
+                        enemy.x_direction = game_object.D_LEFT
+                        enemy.facing = enemy.x_direction
+                        enemy.set_info()
+                        enemy.x = (
+                                tile.get_bb(HB.COLLISION)[POS.LEFT] -
+                                enemy.get_bb_range(HB.COLLISION)[POS.RIGHT]
+                        )
+
+                    # right wall
+                    if (tile.get_bb(HB.COLLISION)[POS.LEFT] <=
+                            enemy.get_bb(HB.COLLISION)[POS.LEFT] <=
+                            tile.get_bb(HB.COLLISION)[POS.RIGHT]
+                    ):
+                        print("right")
+                        enemy.x_direction = game_object.D_RIGHT
+                        enemy.facing = enemy.x_direction
+                        enemy.set_info()
+                        enemy.x = (
+                                tile.get_bb(HB.COLLISION)[POS.RIGHT] +
+                                enemy.get_bb_range(HB.COLLISION)[POS.LEFT]
+                        )
