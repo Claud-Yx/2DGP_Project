@@ -403,7 +403,6 @@ class Player(game_object.Object):
             self.cur_state.exit(self, event)
             try:
                 self.cur_state = next_state_table[self.cur_state][event]
-                print('State:', self.cur_state.__name__, "Event:", event)
             except:
                 print('Error State:', self.cur_state.__name__, "Event:", event)
                 exit(-1)

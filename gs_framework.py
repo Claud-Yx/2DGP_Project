@@ -3,7 +3,6 @@ from pico2d import *
 Running = None
 stack = None
 Events = None
-Threading = True
 canvas_width = 1280
 canvas_height = 720
 
@@ -51,18 +50,11 @@ def quit():
 def run(start_state):
     global Running, stack, Events, frame_time
     Running = True
-    Threading = True
     stack = [start_state]
     start_state.enter()
     current_time = get_time()
 
     while Running:
-        if stack[-1].type_name == "StageMainState" and Threading:
-            stack[-1].UpdateFrameThd.start()
-            Threading = False
-        elif not stack[-1].type_name == "StageMainState" and not Threading:
-            Threading = True
-
         Events = get_events()
         stack[-1].handle_events()
         stack[-1].update()

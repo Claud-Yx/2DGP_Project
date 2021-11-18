@@ -44,13 +44,11 @@ def exit():
 def handle_events():
     global menu_index
 
-    Events = gs_framework.Events
-
-    for event in Events:
-        if event.type_id == SDL_QUIT:
+    for event in gs_framework.Events:
+        if event.type == SDL_QUIT:
             gs_framework.quit()
 
-        elif event.type_id == SDL_KEYDOWN:
+        elif event.type == SDL_KEYDOWN:
             # if event.key == SDLK_ESCAPE:
             #     gs_framework.quit()
             if event.key == SDLK_UP:

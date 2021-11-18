@@ -32,7 +32,7 @@ def handle_events():
     Events = gs_framework.Events
 
     for event in Events:
-        if event.type_id == SDL_QUIT:
+        if event.type == SDL_QUIT:
             gs_framework.quit()
 
 
