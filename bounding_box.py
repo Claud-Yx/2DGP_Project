@@ -24,7 +24,9 @@ class BoundingBox:
         self.range = [ran[POS.LEFT], ran[POS.BOTTOM], ran[POS.RIGHT], ran[POS.TOP]]
 
     def draw_bb(self, pos):
+        if not self.is_on:
+            return
+
         import pico2d
 
         pico2d.draw_rectangle(*self.get_bb(pos))
-

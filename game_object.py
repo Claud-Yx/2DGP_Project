@@ -48,8 +48,6 @@ class Object:
         # Object moving value
         self.max_velocity = 0
         self.velocity = 0
-        self.jump_power = 0
-        self.accel = 0
 
         # Animation sprite value
         self.l, self.b, self.w, self.h = 0, 0, 0, 0
@@ -81,6 +79,9 @@ class Object:
         self.time_per_action = tpa
         self.action_per_time = 1.0 / self.time_per_action
 
+    def get_moving_distance(self):
+        return self.x - self.px, self.y - self.py
+
     def image_draw(self):
         if self.type_id == TID.NONE:
             Object.image[self.type_id].draw(self.x, self.y)
@@ -99,6 +100,22 @@ class Object:
         Object.image[(self.type_name, self.type_id)].clip_draw(
             int((self.frame + self.frame_begin)) * self.l, self.b,
             self.w, self.h, self.x, self.y)
+
+    def get_bb_range(self, bid):
+        return self.bounding_box[bid].range
+
+    def get_bb_on(self, bid):
+        return self.bounding_box[bid].is_on
+
+    def set_bb_on(self, bid, b=True):
+        self.bounding_box[bid].is_on = b
+        return self.bounding_box[bid].is_on
+
+    def get_bb(self, bid):
+        return self.bounding_box[bid].get_bb((self.x, self.y))
+
+    def set_bb(self, bid, ran):
+        return self.bounding_box[bid].set_bb(ran)
 
     def draw_bb(self):
         for key in self.bounding_box.keys():
@@ -135,12 +152,13 @@ class Object:
                       ) % self.frame_count
 
     def set_info(self, a=None):
-
         if a == self.action:
             return
 
         if a != None:
             self.action = a
+
+        # print("facing in set_info(): " + str(self.facing))
 
         if (self.type_name, self.type_id) == (TN.PLAYER, TID.MARIO_SMALL):
             self.correction_y = 15
@@ -172,7 +190,7 @@ class Object:
                 self.bounding_box[HB.STAND].set_bb((-14, 15, 12, 12))
                 self.loop_animation = True
             elif self.action == ACTION.WALK and self.facing == D_RIGHT:
-                self.set_tpa(1.2)
+                self.set_tpa(1.0)
                 self.l, self.b, self.w, self.h = 50, 50 * 7, 50, 50
                 self.frame_count, self.frame_begin = 18, 0
                 self.bounding_box[HB.COLLISION].is_on = True
@@ -183,7 +201,7 @@ class Object:
                 self.bounding_box[HB.STAND].set_bb((-14, 15, 12, 12))
                 self.loop_animation = True
             elif self.action == ACTION.WALK and self.facing == D_LEFT:
-                self.set_tpa(1.2)
+                self.set_tpa(1.0)
                 self.l, self.b, self.w, self.h = 50, 50 * 6, 50, 50
                 self.frame_count, self.frame_begin = 18, 0
                 self.bounding_box[HB.COLLISION].is_on = True
@@ -358,7 +376,7 @@ class Object:
                 self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = True
             elif self.action == ACTION.WALK and self.facing == D_RIGHT:
-                self.set_tpa(1.0)
+                self.set_tpa(0.8)
                 self.l, self.b, self.w, self.h = 50, 100 * 7, 50, 100
                 self.frame_count, self.frame_begin = 18, 0
                 self.bounding_box[HB.COLLISION].is_on = True
@@ -369,7 +387,7 @@ class Object:
                 self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = True
             elif self.action == ACTION.WALK and self.facing == D_LEFT:
-                self.set_tpa(1.0)
+                self.set_tpa(0.8)
                 self.l, self.b, self.w, self.h = 50, 100 * 6, 50, 100
                 self.frame_count, self.frame_begin = 18, 0
                 self.bounding_box[HB.COLLISION].is_on = True

@@ -14,8 +14,6 @@ class TileSet(game_object.Object):
         # Object moving value
         del self.max_velocity
         del self.velocity
-        del self.jump_power
-        del self.accel
         # Animation Direction
 
         del self.facing
