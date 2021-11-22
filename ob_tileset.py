@@ -62,7 +62,7 @@ def test_tileset():
     ]
 
     for tile in tiles:
-        print("tile bb: " + str(tile.bounding_box[HB.COLLISION].range))
+        print("tile bb: " + str(tile.bounding_box[HB.COLLISION_BODY].range))
 
     while Running:
         pico2d.clear_canvas()

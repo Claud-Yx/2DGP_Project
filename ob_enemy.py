@@ -8,7 +8,7 @@ MAX_JUMP_POWER = get_pps_from_mps(20)
 
 
 class Enemy(game_object.Object):
-    def __init__(self, tid=TID.NONE, x=0, y=0, x_dir=game_object.D_RIGHT):
+    def __init__(self, tid=TID.NONE, x=0, y=0, x_dir=DIR.RIGHT):
         super().__init__(TN.ENEMIES, tid, x, y)
 
         self.x_direction = x_dir
@@ -30,7 +30,7 @@ class Enemy(game_object.Object):
 
 
 class Goomba(Enemy):
-    def __init__(self, x=0, y=0, x_dir=game_object.D_RIGHT):
+    def __init__(self, x=0, y=0, x_dir=DIR.RIGHT):
         super().__init__(TID.GOOMBA, x, y, x_dir)
 
         self.velocity = get_pps_from_kmph(8)
@@ -55,10 +55,10 @@ class Goomba(Enemy):
 
         self.update_frame(gs_framework.frame_time)
 
-        if self.x_direction == game_object.D_RIGHT:
-            self.facing = game_object.D_RIGHT
-        elif self.x_direction == game_object.D_LEFT:
-            self.facing = game_object.D_LEFT
+        if self.x_direction == DIR.RIGHT:
+            self.facing = DIR.RIGHT
+        elif self.x_direction == DIR.LEFT:
+            self.facing = DIR.LEFT
 
         if self.is_fall:
             self.fall()
@@ -68,7 +68,7 @@ class Goomba(Enemy):
 
 
 def test_enemy():
-    from tileset import TileSet
+    from ob_tileset import TileSet
 
     open_canvas()
     goomba = Goomba()

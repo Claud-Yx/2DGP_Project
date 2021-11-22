@@ -66,10 +66,10 @@ class IdleState:
             player.jump_power = MAX_JUMP_POWER
             player.set_info(ACTION.JUMP)
 
-        if player.x_direction == D_RIGHT:
-            player.facing = D_RIGHT
-        elif player.x_direction == D_LEFT:
-            player.facing = D_LEFT
+        if player.x_direction == DIR.RIGHT:
+            player.facing = DIR.RIGHT
+        elif player.x_direction == DIR.LEFT:
+            player.facing = DIR.LEFT
 
     def exit(player, event):
         player.check_state(event)
@@ -150,10 +150,10 @@ class WalkState:
             player.set_info(ACTION.JUMP)
             print("player jump power: " + str(player.jump_power) + " is_jump: " + str(player.is_jump))
 
-        if player.x_direction == D_RIGHT:
-            player.facing = D_RIGHT
-        elif player.x_direction == D_LEFT:
-            player.facing = D_LEFT
+        if player.x_direction == DIR.RIGHT:
+            player.facing = DIR.RIGHT
+        elif player.x_direction == DIR.LEFT:
+            player.facing = DIR.LEFT
 
         if player.is_run:
             player.max_velocity = MAX_RUN_VELOCITY
@@ -214,11 +214,11 @@ class WalkState:
         speed = player.velocity * gs_framework.frame_time
 
         if speed > 0:
-            player.forcing = D_RIGHT
+            player.forcing = DIR.RIGHT
         elif speed == 0:
-            player.forcing = D_NONE
+            player.forcing = DIR.NONE
         else:
-            player.forcing = D_LEFT
+            player.forcing = DIR.LEFT
 
         player.x += speed
 
@@ -352,11 +352,11 @@ class Player(game_object.Object):
         speed = self.velocity * gs_framework.frame_time
 
         if speed > 0:
-            self.forcing = D_RIGHT
+            self.forcing = DIR.RIGHT
         elif speed == 0:
-            self.forcing = D_NONE
+            self.forcing = DIR.NONE
         else:
-            self.forcing = D_LEFT
+            self.forcing = DIR.LEFT
 
         self.x += speed
 
@@ -421,7 +421,7 @@ class Player(game_object.Object):
 
 
 def test_player():
-    from tileset import TileSet
+    from ob_tileset import TileSet
     import test_keyboard
 
     gs_framework.canvas_width = 1600
@@ -453,9 +453,9 @@ def test_player():
 
     def update():
         for tile in tiles:
-            if (player.get_bb_on(HB.STAND) and tile.get_bb_on(HB.COLLISION) and
+            if (player.get_bb_on(HB.STAND) and tile.get_bb_on(HB.COLLISION_BODY) and
                     collide(player.get_bb(HB.STAND),
-                            tile.get_bb(HB.COLLISION)
+                            tile.get_bb(HB.COLLISION_BODY)
                             )
             ):
                 player.jump_power = 0
@@ -463,71 +463,71 @@ def test_player():
                 player.is_fall = False
                 player.is_jump = False
 
-                if (player.get_bb(HB.STAND)[POS.BOTTOM] < tile.get_bb(HB.COLLISION)[POS.TOP] and
+                if (player.get_bb(HB.STAND)[POS.BOTTOM] < tile.get_bb(HB.COLLISION_BODY)[POS.TOP] and
                         player.action != ACTION.JUMP):
                     player.y = (
                             player.bounding_box[HB.STAND].range[POS.BOTTOM] +
-                            tile.get_bb(HB.COLLISION)[POS.TOP]
+                            tile.get_bb(HB.COLLISION_BODY)[POS.TOP]
                     )
 
                 break
-            elif (player.get_bb_on(HB.STAND) and tile.get_bb_on(HB.COLLISION) and
+            elif (player.get_bb_on(HB.STAND) and tile.get_bb_on(HB.COLLISION_BODY) and
                   not collide(
                       player.get_bb(HB.STAND),
-                      tile.get_bb(HB.COLLISION)
+                      tile.get_bb(HB.COLLISION_BODY)
                   )
             ):
                 player.on_floor = False
 
         for tile in tiles:
-            if (player.get_bb_on(HB.COLLISION) and
-                    tile.get_bb_on(HB.COLLISION) and
-                    collide(player.get_bb(HB.COLLISION),
-                            tile.get_bb(HB.COLLISION)
+            if (player.get_bb_on(HB.COLLISION_BODY) and
+                    tile.get_bb_on(HB.COLLISION_BODY) and
+                    collide(player.get_bb(HB.COLLISION_BODY),
+                            tile.get_bb(HB.COLLISION_BODY)
                             ) and
-                player.get_bb(HB.COLLISION)[POS.BOTTOM] < tile.get_bb(HB.COLLISION)[POS.TOP]
+                player.get_bb(HB.COLLISION_BODY)[POS.BOTTOM] < tile.get_bb(HB.COLLISION_BODY)[POS.TOP]
             ):
 
                 # ceiling
-                if (tile.get_bb(HB.COLLISION)[POS.BOTTOM] <=
-                        player.get_bb(HB.COLLISION)[POS.TOP] <=
-                        tile.get_bb(HB.COLLISION)[POS.TOP] and
-                        tile.get_bb(HB.COLLISION)[POS.LEFT] <=
-                        player.get_bb(HB.COLLISION)[POS.RIGHT] <=
-                        tile.get_bb(HB.COLLISION)[POS.RIGHT] and
-                        tile.get_bb(HB.COLLISION)[POS.LEFT] <=
-                        player.get_bb(HB.COLLISION)[POS.LEFT] <=
-                        tile.get_bb(HB.COLLISION)[POS.RIGHT]
+                if (tile.get_bb(HB.COLLISION_BODY)[POS.BOTTOM] <=
+                        player.get_bb(HB.COLLISION_BODY)[POS.TOP] <=
+                        tile.get_bb(HB.COLLISION_BODY)[POS.TOP] and
+                        tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
+                        player.get_bb(HB.COLLISION_BODY)[POS.RIGHT] <=
+                        tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT] and
+                        tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
+                        player.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
+                        tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT]
                 ):
                     player.jump_power = 0
                     player.y = (
-                            tile.get_bb(HB.COLLISION)[POS.BOTTOM] -
-                            player.get_bb_range(HB.COLLISION)[POS.TOP]
+                            tile.get_bb(HB.COLLISION_BODY)[POS.BOTTOM] -
+                            player.get_bb_range(HB.COLLISION_BODY)[POS.TOP]
                     )
 
                 else:
                     # left wall
-                    if (tile.get_bb(HB.COLLISION)[POS.RIGHT] >=
-                            player.get_bb(HB.COLLISION)[POS.RIGHT] >=
-                            tile.get_bb(HB.COLLISION)[POS.LEFT]
+                    if (tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT] >=
+                            player.get_bb(HB.COLLISION_BODY)[POS.RIGHT] >=
+                            tile.get_bb(HB.COLLISION_BODY)[POS.LEFT]
                     ):
-                        if player.facing == game_object.D_RIGHT:
+                        if player.facing == DIR.RIGHT:
                             player.velocity = 0
                         player.x = (
-                                tile.get_bb(HB.COLLISION)[POS.LEFT] -
-                                player.get_bb_range(HB.COLLISION)[POS.RIGHT]
+                                tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] -
+                                player.get_bb_range(HB.COLLISION_BODY)[POS.RIGHT]
                         )
 
                     # right wall
-                    if (tile.get_bb(HB.COLLISION)[POS.LEFT] <=
-                            player.get_bb(HB.COLLISION)[POS.LEFT] <=
-                            tile.get_bb(HB.COLLISION)[POS.RIGHT]
+                    if (tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
+                            player.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
+                            tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT]
                     ):
-                        if player.facing == game_object.D_LEFT:
+                        if player.facing == DIR.LEFT:
                             player.velocity = 0
                         player.x = (
-                                tile.get_bb(HB.COLLISION)[POS.RIGHT] +
-                                player.get_bb_range(HB.COLLISION)[POS.LEFT]
+                                tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT] +
+                                player.get_bb_range(HB.COLLISION_BODY)[POS.LEFT]
                         )
 
 
