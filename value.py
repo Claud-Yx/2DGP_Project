@@ -1,4 +1,5 @@
 from enum import Enum, IntEnum, auto
+from typing import List, Set, Dict, Tuple
 
 GRAVITY_ACCEL_MPS = 9.8
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
@@ -21,6 +22,7 @@ def get_accel_from_pps(pps, t):
 
 
 GRAVITY_ACCEL_PPS = get_pps_from_mps(GRAVITY_ACCEL_MPS)
+
 
 # class StrEnum(str, Enum):
 #     def _generate_next_value_(name, start, count, last_values):
@@ -57,7 +59,15 @@ GRAVITY_ACCEL_PPS = get_pps_from_mps(GRAVITY_ACCEL_MPS)
 #     PIPE = auto()
 
 
-class POS( IntEnum ):
+class DIR(IntEnum):
+    NONE = 0
+    LEFT = -1
+    RIGHT = 1
+    UP = 1
+    DOWN = -1
+
+
+class POS(IntEnum):
     LEFT = 0
     BOTTOM = 1
     RIGHT = 2
@@ -94,7 +104,7 @@ class TN(IntEnum):  # Object Type
     SIZE = auto()
 
 
-class EM( IntEnum ):  # Edit Menu
+class EM(IntEnum):  # Edit Menu
     MAIN = 0
     TILESETS = auto()
     ENEMIES = auto()
@@ -149,9 +159,13 @@ class TID(IntEnum):  # Type ID
     NONE = 99
 
 
-class HB (IntEnum):  # Hit box
-    COLLISION = 0
+class HB(IntEnum):  # Hit box
+    COLLISION_BODY = 0
     STAND = auto()
+    COLLISION_LEFT = auto()
+    COLLISION_BOTTOM = auto()
+    COLLISION_TOP = auto()
+    COLLISION_RIGHT = auto()
     ATTACK = auto()
     BREAK = auto()
     SIZE = auto()

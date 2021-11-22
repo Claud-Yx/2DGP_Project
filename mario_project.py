@@ -11,5 +11,5 @@ load_image('resource\\effect\\fade_black.png').clip_draw(19, 0, 1, 1,
     )
 update_canvas()
 # delay(3.0)
-gs_framework.run(gs_start_logo)
+gs_framework.run(gs_stage_main)
 close_canvas()

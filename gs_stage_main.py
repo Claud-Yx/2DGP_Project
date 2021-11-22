@@ -1,7 +1,7 @@
-from player import *
-from tileset import *
-from background import *
-from enemy import *
+from ob_player import *
+from ob_tileset import *
+from ob_background import *
+from ob_enemy import *
 
 from pico2d import *
 import test_keyboard
@@ -14,22 +14,24 @@ import object_manager
 
 name = "StageMainState"
 
-player = None
-enemies = []
+player: Player = None
+enemies: List[Enemy]
 tiles = []
 
-background = None
+background: Background
 
 show_bb = False
 
 
 def enter():
+    print("stage_main enter")
     # Initialization:
     global background
     background = Background()
     object_manager.add_object(background, object_manager.OL_BACKGROUND)
 
     global enemies
+    enemies = []
     enemies.append(Goomba(950, 450))
     object_manager.add_objects(enemies, object_manager.OL_FOREGROUND)
 
@@ -37,7 +39,8 @@ def enter():
     player = Player(TID.MARIO_SUPER, 200, 500)
     object_manager.add_object(player, object_manager.OL_FOREGROUND)
 
-    global tiles
+    global tilesxx
+    tiles = []
     for x in range(50, gs_framework.canvas_width, 100):
         tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, x, 50))
     tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 350, 150))
@@ -75,6 +78,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             gs_framework.quit()
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
+            print(exit.__name__)
             gs_framework.change_state(gs_title)
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_F2):
             if not show_bb:

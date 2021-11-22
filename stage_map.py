@@ -1,7 +1,7 @@
 from pico2d import *
 from value import *
-from tileset import *
-from player import *
+from ob_tileset import *
+from ob_player import *
 
 from enemy_goomba import *
 from enemy_drybones import *

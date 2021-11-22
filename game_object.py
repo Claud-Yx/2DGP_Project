@@ -3,13 +3,6 @@ from value import *
 from abc import *
 from bounding_box import *
 
-D_NONE = 0
-D_RIGHT = 1
-D_LEFT = -1
-D_UP = 1
-D_DOWN = -1
-
-
 class Object:
     image = None
 
@@ -42,7 +35,7 @@ class Object:
         self.px, self.py = self.x, self.y
 
         # Bounding Box
-        self.bounding_box = {}
+        self.bounding_box: Dict[int, BoundingBox] = {}
         self.show_bb = False
 
         # Object moving value
@@ -53,10 +46,10 @@ class Object:
         self.l, self.b, self.w, self.h = 0, 0, 0, 0
 
         # Animation Direction
-        self.facing = D_RIGHT
-        self.x_direction = D_NONE
-        self.y_direction = D_NONE
-        self.forcing = D_NONE
+        self.facing = DIR.RIGHT
+        self.x_direction = DIR.NONE
+        self.y_direction = DIR.NONE
+        self.forcing = DIR.NONE
 
         # Object Type
         self.type_name = type_name
@@ -111,11 +104,14 @@ class Object:
         self.bounding_box[bid].is_on = b
         return self.bounding_box[bid].is_on
 
+    def set_bb(self, bid, range):
+        if not self.bounding_box[bid].is_on:
+            self.bounding_box[bid].is_on = True
+
+        self.bounding_box[bid].set_bb(range)
+
     def get_bb(self, bid):
         return self.bounding_box[bid].get_bb((self.x, self.y))
-
-    def set_bb(self, bid, ran):
-        return self.bounding_box[bid].set_bb(ran)
 
     def draw_bb(self):
         for key in self.bounding_box.keys():
@@ -151,6 +147,501 @@ class Object:
                       frame_time
                       ) % self.frame_count
 
+    def switch_bb_all(self, b=False):
+        for key in self.bounding_box.keys():
+            self.bounding_box[key].is_on = b
+
+
+    def init_bb(self):
+        if (self.type_name, self.type_id) == (TN.PLAYER, TID.MARIO_SMALL):
+            if len(self.bounding_box) == 0:
+                self.bounding_box[HB.COLLISION_BODY] = BoundingBox(HB.COLLISION_BODY)
+                self.bounding_box[HB.COLLISION_LEFT] = BoundingBox(HB.COLLISION_LEFT)
+                self.bounding_box[HB.COLLISION_BOTTOM] = BoundingBox(HB.COLLISION_BOTTOM)
+                self.bounding_box[HB.COLLISION_RIGHT] = BoundingBox(HB.COLLISION_RIGHT)
+                self.bounding_box[HB.COLLISION_TOP] = BoundingBox(HB.COLLISION_TOP)
+            self.switch_bb_all()
+
+            # Idle right
+            if self.action == ACTION.IDLE and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
+
+            # Idle left
+            elif self.action == ACTION.IDLE and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
+
+            # Walk right
+            elif self.action == ACTION.WALK and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
+
+            # Walk left
+            elif self.action == ACTION.WALK and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
+
+            # Run right
+            elif self.action == ACTION.RUN and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 18, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 18, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-17, 15, 18, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 18, 22))
+
+            # Run left
+            elif self.action == ACTION.RUN and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (18, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (18, 15, -17, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (18, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (18, -21, 13, 22))
+
+            # Break right
+            elif self.action == ACTION.BREAK and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 18, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 18, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-17, 15, 18, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 18, 22))
+
+            # Break left
+            elif self.action == ACTION.BREAK and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (18, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (18, 15, -17, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (18, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (18, -21, 13, 22))
+
+            # Swim right
+            elif self.action == ACTION.SWIM and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 18, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 18, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-17, 15, 18, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 18, 22))
+
+            # Swim Left
+            elif self.action == ACTION.SWIM and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (18, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (18, 15, -17, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (18, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (18, -21, 13, 22))
+
+            # Hang
+            elif self.action == ACTION.HANG:
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
+
+            # Climb
+            elif self.action == ACTION.CLIMB:
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
+
+            # Jump right
+            elif self.action == ACTION.JUMP and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
+
+            # Jump left
+            elif self.action == ACTION.JUMP and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
+
+            # Fall right
+            elif self.action == ACTION.FALL and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
+
+            # Fall left
+            elif self.action == ACTION.FALL and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
+
+            # Die A
+            elif self.action == ACTION.DIE_A:
+                del self.bounding_box
+
+            else:
+                print("Invalid action: %s" % (str(self.action)))
+                exit(-1)
+
+        # Mario_Super
+        elif (self.type_name, self.type_id) == (TN.PLAYER, TID.MARIO_SUPER):
+            if len(self.bounding_box) == 0:
+                self.bounding_box[HB.COLLISION_BODY] = BoundingBox(HB.COLLISION_BODY)
+                self.bounding_box[HB.COLLISION_LEFT] = BoundingBox(HB.COLLISION_LEFT)
+                self.bounding_box[HB.COLLISION_BOTTOM] = BoundingBox(HB.COLLISION_BOTTOM)
+                self.bounding_box[HB.COLLISION_RIGHT] = BoundingBox(HB.COLLISION_RIGHT)
+                self.bounding_box[HB.COLLISION_TOP] = BoundingBox(HB.COLLISION_TOP)
+            self.switch_bb_all()
+
+            # Idle right
+            if self.action == ACTION.IDLE and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
+
+            # Idle left
+            elif self.action == ACTION.IDLE and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
+
+            # Walk right
+            elif self.action == ACTION.WALK and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
+
+            # Walk left
+            elif self.action == ACTION.WALK and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
+
+            # Run right
+            elif self.action == ACTION.RUN and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (25, 40, 25, 20))
+                self.set_bb(HB.COLLISION_LEFT, (25, 40, -24, 20))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 40, 25, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 40, 25, 20))
+                self.set_bb(HB.COLLISION_TOP, (25, -19, 25, 20))
+
+            # Run left
+            elif self.action == ACTION.RUN and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (25, 40, 25, 20))
+                self.set_bb(HB.COLLISION_LEFT, (25, 40, -24, 20))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 40, 25, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 40, 25, 20))
+                self.set_bb(HB.COLLISION_TOP, (25, -19, 25, 20))
+
+            # Break right
+            elif self.action == ACTION.BREAK and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (25, 40, 25, 20))
+                self.set_bb(HB.COLLISION_LEFT, (25, 40, -24, 20))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 40, 25, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 40, 25, 20))
+                self.set_bb(HB.COLLISION_TOP, (25, -19, 25, 20))
+
+            # Break left
+            elif self.action == ACTION.BREAK and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (25, 40, 25, 20))
+                self.set_bb(HB.COLLISION_LEFT, (25, 40, -24, 20))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 40, 25, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 40, 25, 20))
+                self.set_bb(HB.COLLISION_TOP, (25, -19, 25, 20))
+
+            # Swim right
+            elif self.action == ACTION.SWIM and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (25, 40, 25, 20))
+                self.set_bb(HB.COLLISION_LEFT, (25, 40, -24, 20))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 40, 25, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 40, 25, 20))
+                self.set_bb(HB.COLLISION_TOP, (25, -19, 25, 20))
+
+            # Swim left
+            elif self.action == ACTION.SWIM and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (25, 40, 25, 20))
+                self.set_bb(HB.COLLISION_LEFT, (25, 40, -24, 20))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 40, 25, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 40, 25, 20))
+                self.set_bb(HB.COLLISION_TOP, (25, -19, 25, 20))
+
+            # Hang
+            elif self.action == ACTION.HANG:
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
+
+            # Climb
+            elif self.action == ACTION.CLIMB:
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
+
+            # Sit right
+            elif self.action == ACTION.SIT and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, -7))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, -7))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, -7))
+                self.set_bb(HB.COLLISION_TOP, (15, 8, 15, -7))
+
+            # Sit left
+            elif self.action == ACTION.SIT and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, -7))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, -7))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, -7))
+                self.set_bb(HB.COLLISION_TOP, (15, 8, 15, -7))
+
+            # Jump right
+            elif self.action == ACTION.JUMP and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 34))
+
+            # Jump left
+            elif self.action == ACTION.JUMP and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 34))
+
+            # Fall right
+            elif self.action == ACTION.FALL and self.facing == DIR.RIGHT:
+                self.set_bb(HB.COLLISION_BODY, (15, 35, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 35, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 37, 15, -34))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 35, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
+
+            # Fall left
+            elif self.action == ACTION.FALL and self.facing == DIR.LEFT:
+                self.set_bb(HB.COLLISION_BODY, (15, 35, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 35, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 37, 15, -34))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 35, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
+
+            else:
+                print("Invalid action: %s" % (str(self.action)))
+                exit(-1)
+
+        # Dry bones
+        elif (self.type_name, self.type_id) == (TN.ENEMIES, TID.DRY_BONES):
+            if len(self.bounding_box) == 0:
+                self.bounding_box[HB.COLLISION_BODY] = BoundingBox(HB.COLLISION_BODY)
+                self.bounding_box[HB.COLLISION_LEFT] = BoundingBox(HB.COLLISION_LEFT)
+                self.bounding_box[HB.COLLISION_BOTTOM] = BoundingBox(HB.COLLISION_BOTTOM)
+                self.bounding_box[HB.COLLISION_RIGHT] = BoundingBox(HB.COLLISION_RIGHT)
+                self.bounding_box[HB.COLLISION_TOP] = BoundingBox(HB.COLLISION_TOP)
+            self.switch_bb_all()
+
+            # Idle right
+            if self.action == ACTION.IDLE and self.facing == DIR.RIGHT:
+                self.l, self.b, self.w, self.h = 50, 100 * 7, 50, 100
+                self.frame_count, self.frame_begin = 1, 0
+                self.loop_animation = False
+
+            # Idle left
+            elif self.action == ACTION.IDLE and self.facing == DIR.LEFT:
+                self.l, self.b, self.w, self.h = 50, 100 * 6, 50, 100
+                self.frame_count, self.frame_begin = 1, 0
+                self.loop_animation = False
+
+            # Walk right
+            elif self.action == ACTION.WALK and self.facing == DIR.RIGHT:
+                self.l, self.b, self.w, self.h = 50, 100 * 5, 50, 100
+                self.frame_count, self.frame_begin = 16, 0
+                self.loop_animation = True
+
+            # Walk left
+            elif self.action == ACTION.WALK and self.facing == DIR.LEFT:
+                self.l, self.b, self.w, self.h = 50, 100 * 4, 50, 100
+                self.frame_count, self.frame_begin = 16, 0
+                self.loop_animation = True
+
+            # Break right
+            elif self.action == ACTION.BREAK and self.facing == DIR.RIGHT:
+                self.l, self.b, self.w, self.h = 50, 100 * 3, 50, 100
+                self.frame_count, self.frame_begin = 12, 0
+                self.loop_animation = False
+
+            # Break left
+            elif self.action == ACTION.BREAK and self.facing == DIR.LEFT:
+                self.l, self.b, self.w, self.h = 50, 100 * 2, 50, 100
+                self.frame_count, self.frame_begin = 12, 0
+                self.loop_animation = False
+
+            # Restore right
+            elif self.action == ACTION.RESTORE and self.facing == DIR.RIGHT:
+                self.l, self.b, self.w, self.h = 50, 100 * 1, 50, 100
+                self.frame_count, self.frame_begin = 15, 0
+                self.loop_animation = False
+
+            # Restore left
+            elif self.action == ACTION.RESTORE and self.facing == DIR.LEFT:
+                self.l, self.b, self.w, self.h = 50, 100 * 0, 50, 100
+                self.frame_count, self.frame_begin = 15, 0
+                self.loop_animation = False
+
+            else:
+                print("Invalid action: %s" % (str(self.action)))
+                exit(-1)
+
+        # Goomba
+        elif (self.type_name, self.type_id) == (TN.ENEMIES, TID.GOOMBA):
+            if len(self.bounding_box) == 0:
+                self.bounding_box[HB.COLLISION_BODY] = BoundingBox(HB.COLLISION_BODY)
+                self.bounding_box[HB.COLLISION_LEFT] = BoundingBox(HB.COLLISION_LEFT)
+                self.bounding_box[HB.COLLISION_BOTTOM] = BoundingBox(HB.COLLISION_BOTTOM)
+                self.bounding_box[HB.COLLISION_RIGHT] = BoundingBox(HB.COLLISION_RIGHT)
+                self.bounding_box[HB.COLLISION_TOP] = BoundingBox(HB.COLLISION_TOP)
+            self.switch_bb_all()
+
+            # Idle right or Idle left or Walk right or Walk left
+            if (self.action == ACTION.IDLE and self.facing == DIR.RIGHT or
+                    self.action == ACTION.IDLE and self.facing == DIR.LEFT or
+                    self.action == ACTION.WALK and self.facing == DIR.RIGHT or
+                    self.action == ACTION.WALK and self.facing == DIR.LEFT
+            ):
+                self.set_bb(HB.COLLISION_BODY, (15, 15, 15, 18))
+                self.set_bb(HB.COLLISION_LEFT, (15, 15, -14, 18))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 15, 15, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 15, 15, 18))
+                self.set_bb(HB.COLLISION_TOP, (15, -17, 15, 18))
+
+            # Die A
+            elif self.action == ACTION.DIE_A:
+                del self.bounding_box
+
+            # Die B
+            elif self.action == ACTION.DIE_B:
+                del self.bounding_box
+
+            else:
+                print("Invalid action: %s" % (str(self.action)))
+                exit(-1)
+
+        # Boo
+        elif (self.type_name, self.type_id) == (TN.ENEMIES, TID.BOO):
+
+            # Idle right
+            if self.action == "stay" and self.facing == DIR.RIGHT:
+                self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
+                self.frame_count, self.frame_begin = 1, 0
+                self.loop_animation = False
+
+            # Idle left
+            elif self.action == "stay" and self.facing == DIR.LEFT:
+                self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
+                self.frame_count, self.frame_begin = 1, 0
+                self.loop_animation = False
+
+            # Fly right
+            elif self.action == "fly" and self.facing == DIR.RIGHT:
+                self.l, self.b, self.w, self.h = 50, 50 * 1, 50, 50
+                self.frame_count, self.frame_begin = 8, 0
+                self.loop_animation = True
+
+            # Fly left
+            elif self.action == "fly" and self.facing == DIR.LEFT:
+                self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
+                self.frame_count, self.frame_begin = 8, 0
+                self.loop_animation = True
+
+            # Die right
+            elif self.action == "die" and self.facing == DIR.RIGHT:
+                self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
+                self.frame_count, self.frame_begin = 1, 1
+                self.loop_animation = False
+
+            # Die left
+            elif self.action == "die" and self.facing == DIR.LEFT:
+                self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
+                self.frame_count, self.frame_begin = 1, 1
+                self.loop_animation = False
+            else:
+                self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
+                self.frame_count, self.frame_begin = 1, 7
+                self.loop_animation = False
+
+        # Piranha plant
+        elif (self.type_name, self.type_id) == (TN.ENEMIES, TID.PIRANHA_PLANT):
+
+            # Pop
+            if self.action == "pop":
+                self.frame_count, self.frame_begin = 78, 0
+                self.l, self.b, self.w, self.h = 50, 100 * 4, 50, 50
+                self.loop_animation = False
+
+        # Tile sets
+        elif self.type_name == TN.TILESETS:
+            if len(self.bounding_box) == 0:
+                self.bounding_box[HB.COLLISION_BODY] = BoundingBox(HB.COLLISION_BODY)
+                self.bounding_box[HB.COLLISION_LEFT] = BoundingBox(HB.COLLISION_LEFT)
+                self.bounding_box[HB.COLLISION_BOTTOM] = BoundingBox(HB.COLLISION_BOTTOM)
+                self.bounding_box[HB.COLLISION_RIGHT] = BoundingBox(HB.COLLISION_RIGHT)
+                self.bounding_box[HB.COLLISION_TOP] = BoundingBox(HB.COLLISION_TOP)
+
+            if self.type_id == TID.CASTLE_BLOCK_50X50:
+                self.set_bb(HB.COLLISION_BODY, (25, 25, 25, 25))
+                self.set_bb(HB.COLLISION_LEFT, (25, 25, -24, 25))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 25, 25, -24))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 25, 25, 25))
+                self.set_bb(HB.COLLISION_TOP, (25, -24, 25, 25))
+            elif self.type_id == TID.CASTLE_BLOCK_50X100:
+                self.set_bb(HB.COLLISION_BODY, (25, 50, 25, 50))
+                self.set_bb(HB.COLLISION_LEFT, (25, 50, -24, 50))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 50, 25, -49))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 50, 25, 50))
+                self.set_bb(HB.COLLISION_TOP, (25, -49, 25, 50))
+            elif self.type_id == TID.CASTLE_BLOCK_100X50:
+                self.set_bb(HB.COLLISION_BODY, (50, 25, 50, 25))
+                self.set_bb(HB.COLLISION_LEFT, (50, 25, -49, 25))
+                self.set_bb(HB.COLLISION_BOTTOM, (50, 25, 50, -24))
+                self.set_bb(HB.COLLISION_RIGHT, (-49, 25, 50, 25))
+                self.set_bb(HB.COLLISION_TOP, (50, -24, 50, 25))
+            elif self.type_id == TID.CASTLE_BLOCK_100X100:
+                self.set_bb(HB.COLLISION_BODY, (50, 50, 50, 50))
+                self.set_bb(HB.COLLISION_LEFT, (50, 50, -49, 50))
+                self.set_bb(HB.COLLISION_BOTTOM, (50, 50, 50, -49))
+                self.set_bb(HB.COLLISION_RIGHT, (-49, 50, 50, 50))
+                self.set_bb(HB.COLLISION_TOP, (50, -49, 50, 50))
+
+        else:
+            print("Invalid type: %s / %s" % (str(self.type_name), str(self.type_id)))
+            exit(-1)
+
     def set_info(self, a=None):
         if a == self.action:
             return
@@ -162,180 +653,180 @@ class Object:
 
         if (self.type_name, self.type_id) == (TN.PLAYER, TID.MARIO_SMALL):
             self.correction_y = 15
-            self.bounding_box[HB.COLLISION] = BoundingBox(HB.COLLISION)
+            self.bounding_box[HB.COLLISION_BODY] = BoundingBox(HB.COLLISION_BODY)
             self.bounding_box[HB.STAND] = BoundingBox(HB.STAND)
             self.bounding_box[HB.ATTACK] = BoundingBox(HB.ATTACK)
             self.bounding_box[HB.BREAK] = BoundingBox(HB.BREAK)
 
-            if self.action == ACTION.IDLE and self.facing == D_RIGHT:
+            if self.action == ACTION.IDLE and self.facing == DIR.RIGHT:
                 self.set_tpa(1.2)
                 self.l, self.b, self.w, self.h = 50, 50 * 9, 50, 50
                 self.frame_count, self.frame_begin = 27, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((13, 15, 13, 22))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((13, 15, 13, 22))
                 self.bounding_box[HB.STAND].set_bb((-14, 15, 12, 12))
                 self.loop_animation = True
-            elif self.action == ACTION.IDLE and self.facing == D_LEFT:
+            elif self.action == ACTION.IDLE and self.facing == DIR.LEFT:
                 self.set_tpa(1.2)
                 self.l, self.b, self.w, self.h = 50, 50 * 8, 50, 50
                 self.frame_count, self.frame_begin = 27, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((22, 15, 13, 13))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((22, 15, 13, 13))
                 self.bounding_box[HB.STAND].set_bb((-14, 15, 12, 12))
                 self.loop_animation = True
-            elif self.action == ACTION.WALK and self.facing == D_RIGHT:
+            elif self.action == ACTION.WALK and self.facing == DIR.RIGHT:
                 self.set_tpa(1.0)
                 self.l, self.b, self.w, self.h = 50, 50 * 7, 50, 50
                 self.frame_count, self.frame_begin = 18, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((22, 15, 13, 13))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((22, 15, 13, 13))
                 self.bounding_box[HB.STAND].set_bb((-14, 15, 12, 12))
                 self.loop_animation = True
-            elif self.action == ACTION.WALK and self.facing == D_LEFT:
+            elif self.action == ACTION.WALK and self.facing == DIR.LEFT:
                 self.set_tpa(1.0)
                 self.l, self.b, self.w, self.h = 50, 50 * 6, 50, 50
                 self.frame_count, self.frame_begin = 18, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((22, 15, 13, 13))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((22, 15, 13, 13))
                 self.bounding_box[HB.STAND].set_bb((-14, 15, 12, 12))
                 self.loop_animation = True
-            elif self.action == ACTION.RUN and self.facing == D_RIGHT:
+            elif self.action == ACTION.RUN and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 5, 50, 50
                 self.frame_count, self.frame_begin = 8, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((13, 15, 20, 22))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((13, 15, 20, 22))
                 self.bounding_box[HB.STAND].set_bb((12, 15, 18, -14))
                 self.loop_animation = True
-            elif self.action == ACTION.RUN and self.facing == D_LEFT:
+            elif self.action == ACTION.RUN and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 4, 50, 50
                 self.frame_count, self.frame_begin = 8, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((20, 15, 13, 22))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((20, 15, 13, 22))
                 self.bounding_box[HB.STAND].set_bb((18, 15, 12, -14))
                 self.loop_animation = True
-            elif self.action == ACTION.BREAK and self.facing == D_RIGHT:
+            elif self.action == ACTION.BREAK and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 4, 50, 50
                 self.frame_count, self.frame_begin = 1, 8
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((13, 15, 20, 22))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((13, 15, 20, 22))
                 self.bounding_box[HB.STAND].set_bb((12, 15, 18, -14))
                 self.loop_animation = False
-            elif self.action == ACTION.BREAK and self.facing == D_LEFT:
+            elif self.action == ACTION.BREAK and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 5, 50, 50
                 self.frame_count, self.frame_begin = 1, 8
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((13, 15, 20, 22))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((13, 15, 20, 22))
                 self.bounding_box[HB.STAND].set_bb((12, 15, 18, -14))
                 self.loop_animation = False
-            elif self.action == ACTION.SWIM and self.facing == D_RIGHT:
+            elif self.action == ACTION.SWIM and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
                 self.frame_count, self.frame_begin = 9, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((13, 15, 20, 22))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((13, 15, 20, 22))
                 self.bounding_box[HB.STAND].set_bb((12, 15, 18, -14))
                 self.loop_animation = True
-            elif self.action == ACTION.SWIM and self.facing == D_LEFT:
+            elif self.action == ACTION.SWIM and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
                 self.frame_count, self.frame_begin = 9, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((20, 15, 13, 22))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((20, 15, 13, 22))
                 self.bounding_box[HB.STAND].set_bb((18, 15, 12, -14))
                 self.loop_animation = True
             elif self.action == ACTION.HANG:
                 self.l, self.b, self.w, self.h = 50, 50 * 1, 50, 50
                 self.frame_count, self.frame_begin = 6, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = False
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((13, 15, 13, 22))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((13, 15, 13, 22))
                 self.loop_animation = True
             elif self.action == ACTION.CLIMB:
                 self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
                 self.frame_count, self.frame_begin = 14, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((13, 15, 13, 22))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((13, 15, 13, 22))
                 self.bounding_box[HB.STAND].set_bb((12, 15, 12, -14))
                 self.loop_animation = True
-            elif self.action == ACTION.JUMP and self.facing == D_RIGHT:
+            elif self.action == ACTION.JUMP and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 7, 50, 50
                 self.frame_count, self.frame_begin = 1, 18
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = False
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = True
-                self.bounding_box[HB.COLLISION].set_bb((13, 15, 12, 22))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((13, 15, 12, 22))
                 self.bounding_box[HB.BREAK].set_bb((12, -23, 8, 25))
                 self.loop_animation = False
-            elif self.action == ACTION.FALL and self.facing == D_RIGHT:
+            elif self.action == ACTION.FALL and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 7, 50, 50
                 self.frame_count, self.frame_begin = 1, 19
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = True
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((12, 15, 12, 22))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((12, 15, 12, 22))
                 self.bounding_box[HB.STAND].set_bb((11, 15, 11, -14))
                 self.bounding_box[HB.ATTACK].set_bb((8, 15, 16, -8))
                 self.loop_animation = False
-            elif self.action == ACTION.JUMP and self.facing == D_LEFT:
+            elif self.action == ACTION.JUMP and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 6, 50, 50
                 self.frame_count, self.frame_begin = 1, 18
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = False
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = True
-                self.bounding_box[HB.COLLISION].set_bb((12, 15, 13, 22))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((12, 15, 13, 22))
                 self.bounding_box[HB.BREAK].set_bb((8, -23, 12, 25))
                 self.loop_animation = False
-            elif self.action == ACTION.FALL and self.facing == D_LEFT:
+            elif self.action == ACTION.FALL and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 6, 50, 50
                 self.frame_count, self.frame_begin = 1, 19
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = True
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((12, 15, 12, 22))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((12, 15, 12, 22))
                 self.bounding_box[HB.STAND].set_bb((11, 15, 11, -14))
                 self.bounding_box[HB.ATTACK].set_bb((16, 15, 8, -8))
                 self.loop_animation = False
             elif self.action == ACTION.DIE_A:
                 self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
                 self.frame_count, self.frame_begin = 1, 14
-                self.bounding_box[HB.COLLISION].is_on = False
+                self.bounding_box[HB.COLLISION_BODY].is_on = False
                 self.bounding_box[HB.STAND].is_on = False
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
@@ -347,195 +838,195 @@ class Object:
                 self.loop_animation = False
 
         elif (self.type_name, self.type_id) == (TN.PLAYER, TID.MARIO_SUPER):
-            self.bounding_box[HB.COLLISION] = BoundingBox(HB.COLLISION)
+            self.bounding_box[HB.COLLISION_BODY] = BoundingBox(HB.COLLISION_BODY)
             self.bounding_box[HB.STAND] = BoundingBox(HB.STAND)
             self.bounding_box[HB.ATTACK] = BoundingBox(HB.ATTACK)
             self.bounding_box[HB.BREAK] = BoundingBox(HB.BREAK)
 
-            if self.action == ACTION.IDLE and self.facing == D_RIGHT:
+            if self.action == ACTION.IDLE and self.facing == DIR.RIGHT:
                 self.set_tpa(1.2)
                 self.l, self.b, self.w, self.h = 50, 100 * 9, 50, 100
                 self.frame_count, self.frame_begin = 27, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((15, 40, 15, 30))
                 self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = True
-            elif self.action == ACTION.IDLE and self.facing == D_LEFT:
+            elif self.action == ACTION.IDLE and self.facing == DIR.LEFT:
                 self.set_tpa(1.2)
                 self.l, self.b, self.w, self.h = 50, 100 * 8, 50, 100
                 self.frame_count, self.frame_begin = 27, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((15, 40, 15, 30))
                 self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = True
-            elif self.action == ACTION.WALK and self.facing == D_RIGHT:
+            elif self.action == ACTION.WALK and self.facing == DIR.RIGHT:
                 self.set_tpa(0.8)
                 self.l, self.b, self.w, self.h = 50, 100 * 7, 50, 100
                 self.frame_count, self.frame_begin = 18, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((15, 40, 15, 30))
                 self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = True
-            elif self.action == ACTION.WALK and self.facing == D_LEFT:
+            elif self.action == ACTION.WALK and self.facing == DIR.LEFT:
                 self.set_tpa(0.8)
                 self.l, self.b, self.w, self.h = 50, 100 * 6, 50, 100
                 self.frame_count, self.frame_begin = 18, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((15, 40, 15, 30))
                 self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = True
-            elif self.action == ACTION.RUN and self.facing == D_RIGHT:
+            elif self.action == ACTION.RUN and self.facing == DIR.RIGHT:
                 self.set_tpa(0.5)
                 self.l, self.b, self.w, self.h = 100, 100 * 5, 100, 100
                 self.frame_count, self.frame_begin = 8, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((25, 40, 25, 20))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((25, 40, 25, 20))
                 self.bounding_box[HB.STAND].set_bb((24, 40, 24, -39))
                 self.loop_animation = True
-            elif self.action == ACTION.RUN and self.facing == D_LEFT:
+            elif self.action == ACTION.RUN and self.facing == DIR.LEFT:
                 self.set_tpa(0.5)
                 self.l, self.b, self.w, self.h = 100, 100 * 4, 100, 100
                 self.frame_count, self.frame_begin = 8, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((25, 40, 25, 20))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((25, 40, 25, 20))
                 self.bounding_box[HB.STAND].set_bb((24, 40, 24, -39))
                 self.loop_animation = True
-            elif self.action == ACTION.BREAK and self.facing == D_RIGHT:
+            elif self.action == ACTION.BREAK and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 100, 100 * 4, 100, 100
                 self.frame_count, self.frame_begin = 1, 8
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((25, 40, 25, 20))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((25, 40, 25, 20))
                 self.bounding_box[HB.STAND].set_bb((24, 40, 24, -39))
                 self.loop_animation = False
-            elif self.action == ACTION.BREAK and self.facing == D_LEFT:
+            elif self.action == ACTION.BREAK and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 100, 100 * 5, 100, 100
                 self.frame_count, self.frame_begin = 1, 8
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((25, 40, 25, 20))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((25, 40, 25, 20))
                 self.bounding_box[HB.STAND].set_bb((24, 40, 24, -39))
                 self.loop_animation = False
-            elif self.action == ACTION.SWIM and self.facing == D_RIGHT:
+            elif self.action == ACTION.SWIM and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 100, 100 * 3, 100, 100
                 self.frame_count, self.frame_begin = 9, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((25, 40, 28, 21))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((25, 40, 28, 21))
                 self.bounding_box[HB.STAND].set_bb((24, 40, 27, -39))
                 self.loop_animation = True
-            elif self.action == ACTION.SWIM and self.facing == D_LEFT:
+            elif self.action == ACTION.SWIM and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 100, 100 * 2, 100, 100
                 self.frame_count, self.frame_begin = 9, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((28, 40, 25, 21))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((28, 40, 25, 21))
                 self.bounding_box[HB.STAND].set_bb((27, 40, 24, -39))
                 self.loop_animation = True
             elif self.action == ACTION.HANG:
                 self.l, self.b, self.w, self.h = 50, 100 * 1, 50, 100
                 self.frame_count, self.frame_begin = 6, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = False
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((15, 40, 15, 30))
                 self.loop_animation = True
             elif self.action == ACTION.CLIMB:
                 self.l, self.b, self.w, self.h = 50, 100 * 0, 50, 100
                 self.frame_count, self.frame_begin = 14, 0
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((15, 40, 15, 30))
                 self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = True
-            elif self.action == ACTION.SIT and self.facing == D_RIGHT:
+            elif self.action == ACTION.SIT and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 9, 50, 100
                 self.frame_count, self.frame_begin = 1, 27
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, -7))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((15, 40, 15, -7))
                 self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = False
-            elif self.action == ACTION.SIT and self.facing == D_LEFT:
+            elif self.action == ACTION.SIT and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 8, 50, 100
                 self.frame_count, self.frame_begin = 1, 27
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, -7))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((15, 40, 15, -7))
                 self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.loop_animation = False
-            elif self.action == ACTION.JUMP and self.facing == D_RIGHT:
+            elif self.action == ACTION.JUMP and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 100, 100 * 7, 100, 100
                 self.frame_count, self.frame_begin = 1, 18 // 2
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = False
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = True
-                self.bounding_box[HB.COLLISION].set_bb((15, 36, 15, 30))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((15, 36, 15, 30))
                 self.bounding_box[HB.BREAK].set_bb((15, -30, 15, 30))
                 self.loop_animation = False
-            elif self.action == ACTION.FALL and self.facing == D_RIGHT:
+            elif self.action == ACTION.FALL and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 100, 100 * 7, 100, 100
                 self.frame_count, self.frame_begin = 1, 20 // 2
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = True
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((15, 40, 15, 30))
                 self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.bounding_box[HB.ATTACK].set_bb((12, 41, 28, -32))
                 self.loop_animation = False
-            elif self.action == ACTION.JUMP and self.facing == D_LEFT:
+            elif self.action == ACTION.JUMP and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 100, 100 * 6, 100, 100
                 self.frame_count, self.frame_begin = 1, 18 // 2
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = False
                 self.bounding_box[HB.ATTACK].is_on = False
                 self.bounding_box[HB.BREAK].is_on = True
-                self.bounding_box[HB.COLLISION].set_bb((15, 36, 15, 30))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((15, 36, 15, 30))
                 self.bounding_box[HB.BREAK].set_bb((15, -30, 15, 30))
                 self.loop_animation = False
-            elif self.action == ACTION.FALL and self.facing == D_LEFT:
+            elif self.action == ACTION.FALL and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 100, 100 * 6, 100, 100
                 self.frame_count, self.frame_begin = 1, 20 // 2
-                self.bounding_box[HB.COLLISION].is_on = True
+                self.bounding_box[HB.COLLISION_BODY].is_on = True
                 self.bounding_box[HB.STAND].is_on = True
                 self.bounding_box[HB.ATTACK].is_on = True
                 self.bounding_box[HB.BREAK].is_on = False
-                self.bounding_box[HB.COLLISION].set_bb((15, 40, 15, 30))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((15, 40, 15, 30))
                 self.bounding_box[HB.STAND].set_bb((14, 40, 14, -39))
                 self.bounding_box[HB.ATTACK].set_bb((28, 41, 12, -32))
                 self.loop_animation = False
@@ -547,35 +1038,35 @@ class Object:
 
         elif (self.type_name, self.type_id) == (TN.ENEMIES, TID.DRY_BONES):
 
-            if self.action == "stay" and self.facing == D_RIGHT:
+            if self.action == "stay" and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 7, 50, 100
                 self.frame_count, self.frame_begin = 1, 0
                 self.loop_animation = False
-            elif self.action == "stay" and self.facing == D_LEFT:
+            elif self.action == "stay" and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 6, 50, 100
                 self.frame_count, self.frame_begin = 1, 0
                 self.loop_animation = False
-            elif self.action == "walk" and self.facing == D_RIGHT:
+            elif self.action == "walk" and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 5, 50, 100
                 self.frame_count, self.frame_begin = 16, 0
                 self.loop_animation = True
-            elif self.action == "walk" and self.facing == D_LEFT:
+            elif self.action == "walk" and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 4, 50, 100
                 self.frame_count, self.frame_begin = 16, 0
                 self.loop_animation = True
-            elif self.action == "break" and self.facing == D_RIGHT:
+            elif self.action == "break" and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 3, 50, 100
                 self.frame_count, self.frame_begin = 12, 0
                 self.loop_animation = False
-            elif self.action == "break" and self.facing == D_LEFT:
+            elif self.action == "break" and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 2, 50, 100
                 self.frame_count, self.frame_begin = 12, 0
                 self.loop_animation = False
-            elif self.action == "restore" and self.facing == D_RIGHT:
+            elif self.action == "restore" and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 100 * 1, 50, 100
                 self.frame_count, self.frame_begin = 15, 0
                 self.loop_animation = False
-            elif self.action == "restore" and self.facing == D_LEFT:
+            elif self.action == "restore" and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 50, 100 * 0, 50, 100
                 self.frame_count, self.frame_begin = 15, 0
                 self.loop_animation = False
@@ -585,45 +1076,45 @@ class Object:
                 self.loop_animation = False
 
         elif (self.type_name, self.type_id) == (TN.ENEMIES, TID.GOOMBA):
-            self.bounding_box[HB.COLLISION] = BoundingBox(HB.COLLISION)
+            self.bounding_box[HB.COLLISION_BODY] = BoundingBox(HB.COLLISION_BODY)
             self.bounding_box[HB.STAND] = BoundingBox(HB.STAND)
 
-            if self.action == ACTION.IDLE and self.facing == D_RIGHT:
+            if self.action == ACTION.IDLE and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 5, 50, 50
                 self.frame_count, self.frame_begin = 1, 0
-                self.set_bb(HB.COLLISION, (15, 15, 15, 18))
+                self.set_bb(HB.COLLISION_BODY, (15, 15, 15, 18))
                 self.set_bb(HB.STAND, (15, 15, 15, -14))
                 self.loop_animation = False
-            elif self.action == ACTION.IDLE and self.facing == D_LEFT:
+            elif self.action == ACTION.IDLE and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 4, 50, 50
                 self.frame_count, self.frame_begin = 1, 0
-                self.set_bb(HB.COLLISION, (15, 15, 15, 18))
+                self.set_bb(HB.COLLISION_BODY, (15, 15, 15, 18))
                 self.set_bb(HB.STAND, (15, 15, 15, -14))
                 self.loop_animation = False
-            elif self.action == ACTION.WALK and self.facing == D_RIGHT:
+            elif self.action == ACTION.WALK and self.facing == DIR.RIGHT:
                 self.set_tpa(1.0)
                 self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
                 self.frame_count, self.frame_begin = 16, 0
-                self.set_bb(HB.COLLISION, (15, 15, 15, 18))
+                self.set_bb(HB.COLLISION_BODY, (15, 15, 15, 18))
                 self.set_bb(HB.STAND, (15, 15, 15, -14))
                 self.loop_animation = True
-            elif self.action == ACTION.WALK and self.facing == D_LEFT:
+            elif self.action == ACTION.WALK and self.facing == DIR.LEFT:
                 self.set_tpa(1.0)
                 self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
                 self.frame_count, self.frame_begin = 16, 0
-                self.set_bb(HB.COLLISION, (15, 15, 15, 18))
+                self.set_bb(HB.COLLISION_BODY, (15, 15, 15, 18))
                 self.set_bb(HB.STAND, (15, 15, 15, -14))
                 self.loop_animation = True
             elif self.action == ACTION.DIE_A:
                 self.l, self.b, self.w, self.h = 50, 50 * 1, 50, 50
                 self.frame_count, self.frame_begin = 3, 0
-                self.set_bb(HB.COLLISION, (15, 15, 15, 18))
+                self.set_bb(HB.COLLISION_BODY, (15, 15, 15, 18))
                 self.set_bb(HB.STAND, (15, 15, 15, -14))
                 self.loop_animation = False
             elif self.action == ACTION.DIE_B:
                 self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
                 self.frame_count, self.frame_begin = 1, 0
-                self.set_bb(HB.COLLISION, (15, 15, 15, 18))
+                self.set_bb(HB.COLLISION_BODY, (15, 15, 15, 18))
                 self.set_bb(HB.STAND, (15, 15, 15, -14))
                 self.loop_animation = False
             else:
@@ -632,27 +1123,27 @@ class Object:
                 self.loop_animation = False
 
         elif (self.type_name, self.type_id) == (TN.ENEMIES, TID.BOO):
-            if self.action == "stay" and self.facing == D_RIGHT:
+            if self.action == "stay" and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
                 self.frame_count, self.frame_begin = 1, 0
                 self.loop_animation = False
-            elif self.action == "stay" and self.facing == D_LEFT:
+            elif self.action == "stay" and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
                 self.frame_count, self.frame_begin = 1, 0
                 self.loop_animation = False
-            elif self.action == "fly" and self.facing == D_RIGHT:
+            elif self.action == "fly" and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 1, 50, 50
                 self.frame_count, self.frame_begin = 8, 0
                 self.loop_animation = True
-            elif self.action == "fly" and self.facing == D_LEFT:
+            elif self.action == "fly" and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
                 self.frame_count, self.frame_begin = 8, 0
                 self.loop_animation = True
-            elif self.action == "die" and self.facing == D_RIGHT:
+            elif self.action == "die" and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
                 self.frame_count, self.frame_begin = 1, 1
                 self.loop_animation = False
-            elif self.action == "die" and self.facing == D_LEFT:
+            elif self.action == "die" and self.facing == DIR.LEFT:
                 self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
                 self.frame_count, self.frame_begin = 1, 1
                 self.loop_animation = False
@@ -668,16 +1159,16 @@ class Object:
                 self.loop_animation = False
 
         elif self.type_name == TN.TILESETS:
-            self.bounding_box[HB.COLLISION] = BoundingBox(HB.COLLISION)
+            self.bounding_box[HB.COLLISION_BODY] = BoundingBox(HB.COLLISION_BODY)
 
             if self.type_id == TID.CASTLE_BLOCK_50X50:
-                self.bounding_box[HB.COLLISION].set_bb((25, 25, 25, 25))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((25, 25, 25, 25))
             elif self.type_id == TID.CASTLE_BLOCK_50X100:
-                self.bounding_box[HB.COLLISION].set_bb((25, 50, 25, 50))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((25, 50, 25, 50))
             elif self.type_id == TID.CASTLE_BLOCK_100X50:
-                self.bounding_box[HB.COLLISION].set_bb((50, 25, 50, 25))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((50, 25, 50, 25))
             elif self.type_id == TID.CASTLE_BLOCK_100X100:
-                self.bounding_box[HB.COLLISION].set_bb((50, 50, 50, 50))
+                self.bounding_box[HB.COLLISION_BODY].set_bb((50, 50, 50, 50))
 
         self.frame = self.frame_begin
 
