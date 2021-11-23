@@ -1,7 +1,4 @@
-from ob_player import *
-from ob_tileset import *
-from ob_background import *
-from ob_enemy import *
+import server
 
 from pico2d import *
 import test_keyboard
@@ -14,61 +11,46 @@ import object_manager
 
 name = "StageMainState"
 
-player: Player = None
-enemies: List[Enemy]
-tiles = []
-
-background: Background
-
 show_bb = False
 
 
 def enter():
     print("stage_main enter")
     # Initialization:
-    global background
-    background = Background()
-    object_manager.add_object(background, object_manager.OL_BACKGROUND)
+    server.background = ob_background.Background()
+    object_manager.add_object(server.background, object_manager.OL_BACKGROUND)
 
-    global enemies
-    enemies = []
-    enemies.append(Goomba(950, 450))
-    object_manager.add_objects(enemies, object_manager.OL_FOREGROUND)
+    server.enemies.append(ob_enemy.Goomba(950, 450))
+    object_manager.add_objects(server.enemies, object_manager.OL_FOREGROUND)
 
-    global player
-    player = Player(TID.MARIO_SUPER, 200, 500)
-    object_manager.add_object(player, object_manager.OL_FOREGROUND)
+    server.player = ob_player.Player(TID.MARIO_SUPER, 200, 500)
+    object_manager.add_object(server.player, object_manager.OL_FOREGROUND)
 
-    global tilesxx
-    tiles = []
     for x in range(50, gs_framework.canvas_width, 100):
-        tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, x, 50))
-    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 350, 150))
-    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 350, 250))
-    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 350, 350))
-    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 250, 150))
-    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 450, 150))
-    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 450, 250))
-    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 650, 350))
-    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 750, 350))
-    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 750, 450))
-    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 850, 350))
-    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 950, 350))
-    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 1050, 350))
-    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 1050, 450))
-    object_manager.add_objects(tiles, object_manager.OL_TILESET)
+        server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, x, 50))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 150))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 250))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 350))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 250, 150))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 150))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 250))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 650, 350))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 350))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 450))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 850, 350))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 950, 350))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 350))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 450))
+    object_manager.add_objects(server.tiles, object_manager.OL_TILESET)
 
     test_keyboard.keyboard_init()
 
 
 def exit():
-    global player, enemies, tiles
-    global background
-
-    del player
-    del enemies
-    del tiles
-    del background
+    del server.player
+    del server.enemies
+    del server.tiles
+    del server.background
 
 
 def handle_events():
@@ -90,7 +72,7 @@ def handle_events():
                 for obj in object_manager.all_objects():
                     obj.show_bb = False
         else:
-            player.handle_event(event)
+            server.player.handle_event(event)
             test_keyboard.keyboard_handle(gs_framework.Events)
 
 def update():

@@ -90,6 +90,7 @@ class ACTION(IntEnum):
     CLIMB = auto()
     SWIM = auto()
     RESTORE = auto()
+    ATTACK = auto()
     DIE_A = auto()
     DIE_B = auto()
 
