@@ -155,140 +155,140 @@ class Object:
     def init_bb(self):
         if (self.type_name, self.type_id) == (TN.PLAYER, TID.MARIO_SMALL):
             if len(self.bounding_box) == 0:
-                self.bounding_box[HB.BODY] = BoundingBox(HB.BODY)
-                self.bounding_box[HB.LEFT] = BoundingBox(HB.LEFT)
-                self.bounding_box[HB.BOTTOM] = BoundingBox(HB.BOTTOM)
-                self.bounding_box[HB.RIGHT] = BoundingBox(HB.RIGHT)
-                self.bounding_box[HB.TOP] = BoundingBox(HB.TOP)
+                self.bounding_box[HB.COLLISION_BODY] = BoundingBox(HB.COLLISION_BODY)
+                self.bounding_box[HB.COLLISION_LEFT] = BoundingBox(HB.COLLISION_LEFT)
+                self.bounding_box[HB.COLLISION_BOTTOM] = BoundingBox(HB.COLLISION_BOTTOM)
+                self.bounding_box[HB.COLLISION_RIGHT] = BoundingBox(HB.COLLISION_RIGHT)
+                self.bounding_box[HB.COLLISION_TOP] = BoundingBox(HB.COLLISION_TOP)
             self.switch_bb_all()
 
             # Idle right
             if self.action == ACTION.IDLE and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
 
             # Idle left
             elif self.action == ACTION.IDLE and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
 
             # Walk right
             elif self.action == ACTION.WALK and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
 
             # Walk left
             elif self.action == ACTION.WALK and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
 
             # Run right
             elif self.action == ACTION.RUN and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 18, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 18, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 18, 22))
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 18, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 18, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-17, 15, 18, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 18, 22))
 
             # Run left
             elif self.action == ACTION.RUN and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (18, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (18, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (18, -21, 13, 22))
+                self.set_bb(HB.COLLISION_BODY, (18, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (18, 15, -17, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (18, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (18, -21, 13, 22))
 
             # Break right
             elif self.action == ACTION.BREAK and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 18, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 18, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 18, 22))
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 18, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 18, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-17, 15, 18, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 18, 22))
 
             # Break left
             elif self.action == ACTION.BREAK and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (18, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (18, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (18, -21, 13, 22))
+                self.set_bb(HB.COLLISION_BODY, (18, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (18, 15, -17, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (18, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (18, -21, 13, 22))
 
             # Swim right
             elif self.action == ACTION.SWIM and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 18, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 18, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 18, 22))
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 18, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 18, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-17, 15, 18, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 18, 22))
 
             # Swim Left
             elif self.action == ACTION.SWIM and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (18, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (18, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (18, -21, 13, 22))
+                self.set_bb(HB.COLLISION_BODY, (18, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (18, 15, -17, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (18, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (18, -21, 13, 22))
 
             # Hang
             elif self.action == ACTION.HANG:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
 
             # Climb
             elif self.action == ACTION.CLIMB:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
 
             # Jump right
             elif self.action == ACTION.JUMP and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
 
             # Jump left
             elif self.action == ACTION.JUMP and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
 
             # Fall right
             elif self.action == ACTION.FALL and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
 
             # Fall left
             elif self.action == ACTION.FALL and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.COLLISION_BODY, (13, 15, 13, 22))
+                self.set_bb(HB.COLLISION_LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.COLLISION_BOTTOM, (13, 15, 13, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.COLLISION_TOP, (13, -21, 13, 22))
 
             # Die A
             elif self.action == ACTION.DIE_A:
@@ -301,156 +301,156 @@ class Object:
         # Mario_Super
         elif (self.type_name, self.type_id) == (TN.PLAYER, TID.MARIO_SUPER):
             if len(self.bounding_box) == 0:
-                self.bounding_box[HB.BODY] = BoundingBox(HB.BODY)
-                self.bounding_box[HB.LEFT] = BoundingBox(HB.LEFT)
-                self.bounding_box[HB.BOTTOM] = BoundingBox(HB.BOTTOM)
-                self.bounding_box[HB.RIGHT] = BoundingBox(HB.RIGHT)
-                self.bounding_box[HB.TOP] = BoundingBox(HB.TOP)
+                self.bounding_box[HB.COLLISION_BODY] = BoundingBox(HB.COLLISION_BODY)
+                self.bounding_box[HB.COLLISION_LEFT] = BoundingBox(HB.COLLISION_LEFT)
+                self.bounding_box[HB.COLLISION_BOTTOM] = BoundingBox(HB.COLLISION_BOTTOM)
+                self.bounding_box[HB.COLLISION_RIGHT] = BoundingBox(HB.COLLISION_RIGHT)
+                self.bounding_box[HB.COLLISION_TOP] = BoundingBox(HB.COLLISION_TOP)
             self.switch_bb_all()
 
             # Idle right
             if self.action == ACTION.IDLE and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
 
             # Idle left
             elif self.action == ACTION.IDLE and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
 
             # Walk right
             elif self.action == ACTION.WALK and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
 
             # Walk left
             elif self.action == ACTION.WALK and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
 
             # Run right
             elif self.action == ACTION.RUN and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (25, 40, 25, 20))
-                self.set_bb(HB.LEFT, (15, 40, -14, 20))
-                self.set_bb(HB.BOTTOM, (25, 40, 25, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 20))
-                self.set_bb(HB.TOP, (25, -19, 25, 20))
+                self.set_bb(HB.COLLISION_BODY, (25, 40, 25, 20))
+                self.set_bb(HB.COLLISION_LEFT, (25, 40, -24, 20))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 40, 25, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 40, 25, 20))
+                self.set_bb(HB.COLLISION_TOP, (25, -19, 25, 20))
 
             # Run left
             elif self.action == ACTION.RUN and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (25, 40, 25, 20))
-                self.set_bb(HB.LEFT, (15, 40, -14, 20))
-                self.set_bb(HB.BOTTOM, (25, 40, 25, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 20))
-                self.set_bb(HB.TOP, (25, -19, 25, 20))
+                self.set_bb(HB.COLLISION_BODY, (25, 40, 25, 20))
+                self.set_bb(HB.COLLISION_LEFT, (25, 40, -24, 20))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 40, 25, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 40, 25, 20))
+                self.set_bb(HB.COLLISION_TOP, (25, -19, 25, 20))
 
             # Break right
             elif self.action == ACTION.BREAK and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (25, 40, 25, 20))
-                self.set_bb(HB.LEFT, (15, 40, -14, 20))
-                self.set_bb(HB.BOTTOM, (25, 40, 25, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 20))
-                self.set_bb(HB.TOP, (25, -19, 25, 20))
+                self.set_bb(HB.COLLISION_BODY, (25, 40, 25, 20))
+                self.set_bb(HB.COLLISION_LEFT, (25, 40, -24, 20))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 40, 25, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 40, 25, 20))
+                self.set_bb(HB.COLLISION_TOP, (25, -19, 25, 20))
 
             # Break left
             elif self.action == ACTION.BREAK and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (25, 40, 25, 20))
-                self.set_bb(HB.LEFT, (15, 40, -14, 20))
-                self.set_bb(HB.BOTTOM, (25, 40, 25, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 20))
-                self.set_bb(HB.TOP, (25, -19, 25, 20))
+                self.set_bb(HB.COLLISION_BODY, (25, 40, 25, 20))
+                self.set_bb(HB.COLLISION_LEFT, (25, 40, -24, 20))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 40, 25, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 40, 25, 20))
+                self.set_bb(HB.COLLISION_TOP, (25, -19, 25, 20))
 
             # Swim right
             elif self.action == ACTION.SWIM and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (25, 40, 25, 20))
-                self.set_bb(HB.LEFT, (15, 40, -14, 20))
-                self.set_bb(HB.BOTTOM, (25, 40, 25, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 20))
-                self.set_bb(HB.TOP, (25, -19, 25, 20))
+                self.set_bb(HB.COLLISION_BODY, (25, 40, 25, 20))
+                self.set_bb(HB.COLLISION_LEFT, (25, 40, -24, 20))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 40, 25, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 40, 25, 20))
+                self.set_bb(HB.COLLISION_TOP, (25, -19, 25, 20))
 
             # Swim left
             elif self.action == ACTION.SWIM and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (25, 40, 25, 20))
-                self.set_bb(HB.LEFT, (15, 40, -14, 20))
-                self.set_bb(HB.BOTTOM, (25, 40, 25, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 20))
-                self.set_bb(HB.TOP, (25, -19, 25, 20))
+                self.set_bb(HB.COLLISION_BODY, (25, 40, 25, 20))
+                self.set_bb(HB.COLLISION_LEFT, (25, 40, -24, 20))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 40, 25, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 40, 25, 20))
+                self.set_bb(HB.COLLISION_TOP, (25, -19, 25, 20))
 
             # Hang
             elif self.action == ACTION.HANG:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
 
             # Climb
             elif self.action == ACTION.CLIMB:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
 
             # Sit right
             elif self.action == ACTION.SIT and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (15, 40, 15, -7))
-                self.set_bb(HB.LEFT, (15, 40, -14, -7))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, -7))
-                self.set_bb(HB.TOP, (15, 8, 15, -7))
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, -7))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, -7))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, -7))
+                self.set_bb(HB.COLLISION_TOP, (15, 8, 15, -7))
 
             # Sit left
             elif self.action == ACTION.SIT and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (15, 40, 15, -7))
-                self.set_bb(HB.LEFT, (15, 40, -14, -7))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, -7))
-                self.set_bb(HB.TOP, (15, 8, 15, -7))
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, -7))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, -7))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, -7))
+                self.set_bb(HB.COLLISION_TOP, (15, 8, 15, -7))
 
             # Jump right
             elif self.action == ACTION.JUMP and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 34))
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 34))
 
             # Jump left
             elif self.action == ACTION.JUMP and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 34))
+                self.set_bb(HB.COLLISION_BODY, (15, 40, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 40, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 40, 15, -39))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 40, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 34))
 
             # Fall right
             elif self.action == ACTION.FALL and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (15, 35, 15, 30))
-                self.set_bb(HB.LEFT, (15, 35, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -34))
-                self.set_bb(HB.RIGHT, (-14, 35, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.COLLISION_BODY, (15, 35, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 35, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 37, 15, -34))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 35, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
 
             # Fall left
             elif self.action == ACTION.FALL and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (15, 35, 15, 30))
-                self.set_bb(HB.LEFT, (15, 35, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -34))
-                self.set_bb(HB.RIGHT, (-14, 35, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.COLLISION_BODY, (15, 35, 15, 30))
+                self.set_bb(HB.COLLISION_LEFT, (15, 35, -14, 30))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 37, 15, -34))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 35, 15, 30))
+                self.set_bb(HB.COLLISION_TOP, (15, -29, 15, 30))
 
             else:
                 print("Invalid action: %s" % (str(self.action)))
@@ -459,11 +459,11 @@ class Object:
         # Dry bones
         elif (self.type_name, self.type_id) == (TN.ENEMIES, TID.DRY_BONES):
             if len(self.bounding_box) == 0:
-                self.bounding_box[HB.BODY] = BoundingBox(HB.BODY)
-                self.bounding_box[HB.LEFT] = BoundingBox(HB.LEFT)
-                self.bounding_box[HB.BOTTOM] = BoundingBox(HB.BOTTOM)
-                self.bounding_box[HB.RIGHT] = BoundingBox(HB.RIGHT)
-                self.bounding_box[HB.TOP] = BoundingBox(HB.TOP)
+                self.bounding_box[HB.COLLISION_BODY] = BoundingBox(HB.COLLISION_BODY)
+                self.bounding_box[HB.COLLISION_LEFT] = BoundingBox(HB.COLLISION_LEFT)
+                self.bounding_box[HB.COLLISION_BOTTOM] = BoundingBox(HB.COLLISION_BOTTOM)
+                self.bounding_box[HB.COLLISION_RIGHT] = BoundingBox(HB.COLLISION_RIGHT)
+                self.bounding_box[HB.COLLISION_TOP] = BoundingBox(HB.COLLISION_TOP)
             self.switch_bb_all()
 
             # Idle right
@@ -521,11 +521,11 @@ class Object:
         # Goomba
         elif (self.type_name, self.type_id) == (TN.ENEMIES, TID.GOOMBA):
             if len(self.bounding_box) == 0:
-                self.bounding_box[HB.BODY] = BoundingBox(HB.BODY)
-                self.bounding_box[HB.LEFT] = BoundingBox(HB.LEFT)
-                self.bounding_box[HB.BOTTOM] = BoundingBox(HB.BOTTOM)
-                self.bounding_box[HB.RIGHT] = BoundingBox(HB.RIGHT)
-                self.bounding_box[HB.TOP] = BoundingBox(HB.TOP)
+                self.bounding_box[HB.COLLISION_BODY] = BoundingBox(HB.COLLISION_BODY)
+                self.bounding_box[HB.COLLISION_LEFT] = BoundingBox(HB.COLLISION_LEFT)
+                self.bounding_box[HB.COLLISION_BOTTOM] = BoundingBox(HB.COLLISION_BOTTOM)
+                self.bounding_box[HB.COLLISION_RIGHT] = BoundingBox(HB.COLLISION_RIGHT)
+                self.bounding_box[HB.COLLISION_TOP] = BoundingBox(HB.COLLISION_TOP)
             self.switch_bb_all()
 
             # Idle right or Idle left or Walk right or Walk left
@@ -534,11 +534,11 @@ class Object:
                     self.action == ACTION.WALK and self.facing == DIR.RIGHT or
                     self.action == ACTION.WALK and self.facing == DIR.LEFT
             ):
-                self.set_bb(HB.BODY, (15, 15, 15, 18))
-                self.set_bb(HB.LEFT, (15, 15, -14, 18))
-                self.set_bb(HB.BOTTOM, (15, 15, 15, -14))
-                self.set_bb(HB.RIGHT, (-14, 15, 15, 18))
-                self.set_bb(HB.TOP, (15, -17, 15, 18))
+                self.set_bb(HB.COLLISION_BODY, (15, 15, 15, 18))
+                self.set_bb(HB.COLLISION_LEFT, (15, 15, -14, 18))
+                self.set_bb(HB.COLLISION_BOTTOM, (15, 15, 15, -14))
+                self.set_bb(HB.COLLISION_RIGHT, (-14, 15, 15, 18))
+                self.set_bb(HB.COLLISION_TOP, (15, -17, 15, 18))
 
             # Die A
             elif self.action == ACTION.DIE_A:
@@ -607,36 +607,36 @@ class Object:
         # Tile sets
         elif self.type_name == TN.TILESETS:
             if len(self.bounding_box) == 0:
-                self.bounding_box[HB.BODY] = BoundingBox(HB.BODY)
-                self.bounding_box[HB.LEFT] = BoundingBox(HB.LEFT)
-                self.bounding_box[HB.BOTTOM] = BoundingBox(HB.BOTTOM)
-                self.bounding_box[HB.RIGHT] = BoundingBox(HB.RIGHT)
-                self.bounding_box[HB.TOP] = BoundingBox(HB.TOP)
+                self.bounding_box[HB.COLLISION_BODY] = BoundingBox(HB.COLLISION_BODY)
+                self.bounding_box[HB.COLLISION_LEFT] = BoundingBox(HB.COLLISION_LEFT)
+                self.bounding_box[HB.COLLISION_BOTTOM] = BoundingBox(HB.COLLISION_BOTTOM)
+                self.bounding_box[HB.COLLISION_RIGHT] = BoundingBox(HB.COLLISION_RIGHT)
+                self.bounding_box[HB.COLLISION_TOP] = BoundingBox(HB.COLLISION_TOP)
 
             if self.type_id == TID.CASTLE_BLOCK_50X50:
-                self.set_bb(HB.BODY, (25, 25, 25, 25))
-                self.set_bb(HB.LEFT, (25, 25, -24, 25))
-                self.set_bb(HB.BOTTOM, (24, 25, 24, -24))
-                self.set_bb(HB.RIGHT, (-24, 25, 25, 25))
-                self.set_bb(HB.TOP, (24, -24, 24, 25))
+                self.set_bb(HB.COLLISION_BODY, (25, 25, 25, 25))
+                self.set_bb(HB.COLLISION_LEFT, (25, 25, -24, 25))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 25, 25, -24))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 25, 25, 25))
+                self.set_bb(HB.COLLISION_TOP, (25, -24, 25, 25))
             elif self.type_id == TID.CASTLE_BLOCK_50X100:
-                self.set_bb(HB.BODY, (25, 50, 25, 50))
-                self.set_bb(HB.LEFT, (25, 50, -24, 50))
-                self.set_bb(HB.BOTTOM, (24, 50, 24, -49))
-                self.set_bb(HB.RIGHT, (-24, 50, 25, 50))
-                self.set_bb(HB.TOP, (24, -49, 24, 50))
+                self.set_bb(HB.COLLISION_BODY, (25, 50, 25, 50))
+                self.set_bb(HB.COLLISION_LEFT, (25, 50, -24, 50))
+                self.set_bb(HB.COLLISION_BOTTOM, (25, 50, 25, -49))
+                self.set_bb(HB.COLLISION_RIGHT, (-24, 50, 25, 50))
+                self.set_bb(HB.COLLISION_TOP, (25, -49, 25, 50))
             elif self.type_id == TID.CASTLE_BLOCK_100X50:
-                self.set_bb(HB.BODY, (50, 25, 50, 25))
-                self.set_bb(HB.LEFT, (50, 25, -49, 25))
-                self.set_bb(HB.BOTTOM, (49, 25, 49, -24))
-                self.set_bb(HB.RIGHT, (-49, 25, 50, 25))
-                self.set_bb(HB.TOP, (49, -24, 49, 25))
+                self.set_bb(HB.COLLISION_BODY, (50, 25, 50, 25))
+                self.set_bb(HB.COLLISION_LEFT, (50, 25, -49, 25))
+                self.set_bb(HB.COLLISION_BOTTOM, (50, 25, 50, -24))
+                self.set_bb(HB.COLLISION_RIGHT, (-49, 25, 50, 25))
+                self.set_bb(HB.COLLISION_TOP, (50, -24, 50, 25))
             elif self.type_id == TID.CASTLE_BLOCK_100X100:
-                self.set_bb(HB.BODY, (50, 50, 50, 50))
-                self.set_bb(HB.LEFT, (50, 50, -49, 50))
-                self.set_bb(HB.BOTTOM, (49, 50, 49, -49))
-                self.set_bb(HB.RIGHT, (-49, 50, 50, 50))
-                self.set_bb(HB.TOP, (49, -49, 49, 50))
+                self.set_bb(HB.COLLISION_BODY, (50, 50, 50, 50))
+                self.set_bb(HB.COLLISION_LEFT, (50, 50, -49, 50))
+                self.set_bb(HB.COLLISION_BOTTOM, (50, 50, 50, -49))
+                self.set_bb(HB.COLLISION_RIGHT, (-49, 50, 50, 50))
+                self.set_bb(HB.COLLISION_TOP, (50, -49, 50, 50))
 
         else:
             print("Invalid type: %s / %s" % (str(self.type_name), str(self.type_id)))

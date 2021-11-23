@@ -6,6 +6,6 @@ from ob_enemy import *
 from value import *
 
 player: Player
-enemies: List[Enemy] = []
-tiles: List[TileSet] = []
+enemies: List[Enemy]
+tiles: List[TileSet]
 background: Background
