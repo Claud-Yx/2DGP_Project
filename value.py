@@ -161,12 +161,11 @@ class TID(IntEnum):  # Type ID
 
 
 class HB(IntEnum):  # Hit box
-    COLLISION_BODY = 0
-    STAND = auto()
-    COLLISION_LEFT = auto()
-    COLLISION_BOTTOM = auto()
-    COLLISION_TOP = auto()
-    COLLISION_RIGHT = auto()
+    BODY = 0
+    LEFT = auto()
+    BOTTOM = auto()
+    TOP = auto()
+    RIGHT = auto()
     ATTACK = auto()
     BREAK = auto()
     SIZE = auto()

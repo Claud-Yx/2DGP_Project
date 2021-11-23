@@ -11,6 +11,9 @@ import game_object
 
 
 def collide(a: (0, 0, 0, 0), b: (0, 0, 0, 0)):
+    if a == (-1, -1, -1, -1) or b == (-1, -1, -1, -1):
+        return False
+
     left_a, bottom_a, right_a, top_a = a
     left_b, bottom_b, right_b, top_b = b
 
@@ -21,175 +24,91 @@ def collide(a: (0, 0, 0, 0), b: (0, 0, 0, 0)):
     return True
 
 
-def collide_objects(obj: object, obj_m: object_manager):
-    if (obj.__class__ == ob_background.Background or
-        not obj_m.__name__ == object_manager.
+# def collide_objects(obj: object, obj_m: object_manager):
+#     if (obj.__class__ == ob_background.Background or
+#         not obj_m.__name__ == object_manager.
+#
+#     ):
+#         return
+#
+#     if obj.__class__ == ob_player.Player:
+#         collide_player_to_tiles(obj1, obj2)
 
+
+def collide_player_to_floor(player: ob_player.Player, tile: ob_tileset.TileSet) -> bool:
+    if collide(player.get_bb(HB.BOTTOM), tile.get_bb(HB.TOP)):
+        player.jump_power = 0
+        player.on_floor = True
+        player.is_fall = False
+        player.is_jump = False
+
+        if (player.get_bb(HB.BOTTOM)[POS.BOTTOM] < tile.get_bb(HB.TOP)[POS.TOP] and
+                player.action != ACTION.JUMP
+        ):
+            player.y = (player.get_bb_range(HB.BOTTOM)[POS.BOTTOM] +
+                        tile.get_bb(HB.TOP)[POS.TOP])
+
+        return True
+
+    else:
+        player.on_floor = False
+        return False
+
+
+def collide_player_to_ceiling(player: ob_player.Player, tile: ob_tileset.TileSet):
+    if collide(player.get_bb(HB.BODY), tile.get_bb(HB.BOTTOM)):
+        player.jump_power = 0
+
+        if player.get_bb(HB.TOP)[POS.TOP] > tile.get_bb(HB.BOTTOM)[POS.BOTTOM]:
+            ptop = player.get_bb_range(HB.TOP)[POS.TOP]
+            if ptop < 0:
+                ptop = abs(ptop)
+
+            player.y = (tile.get_bb(HB.BOTTOM)[POS.BOTTOM] -
+                        ptop)
+
+        return True
+
+    return False
+
+
+def collide_player_to_right_wall(player: ob_player.Player, tile: ob_tileset.TileSet):
+    if (collide(player.get_bb(HB.LEFT), tile.get_bb(HB.BODY)) and
+            player.get_bb(HB.BOTTOM)[POS.BOTTOM] < tile.get_bb(HB.TOP)[POS.TOP]
     ):
-        return
+        player.velocity = 0
+        player.is_stuck_left = True
 
-    if obj.__class__ == ob_player.Player:
-        collide_player_to_tiles(obj1, obj2)
+        if player.get_bb(HB.LEFT)[POS.LEFT] < tile.get_bb(HB.RIGHT)[POS.RIGHT]:
+            player.x = (player.get_bb_range(HB.LEFT)[POS.LEFT] +
+                        tile.get_bb(HB.RIGHT)[POS.RIGHT])
 
+        return True
 
-def collide_player_to_tiles(player: ob_player.Player, tiles: List[ob_tileset.TileSet]):
-    for tile in tiles:
-        if (player.get_bb_on(HB.STAND) and tile.get_bb_on(HB.COLLISION_BODY) and
-                collide(player.get_bb(HB.STAND),
-                        tile.get_bb(HB.COLLISION_BODY)
-                        )
-        ):
-            player.jump_power = 0
-            player.on_floor = True
-            player.is_fall = False
-            player.is_jump = False
-
-            if (player.get_bb(HB.STAND)[POS.BOTTOM] < tile.get_bb(HB.COLLISION_BODY)[POS.TOP] and
-                    player.action != ACTION.JUMP):
-                player.y = (
-                        player.bounding_box[HB.STAND].range[POS.BOTTOM] +
-                        tile.get_bb(HB.COLLISION_BODY)[POS.TOP]
-                )
-
-            break
-        elif (player.get_bb_on(HB.STAND) and tile.get_bb_on(HB.COLLISION_BODY) and
-              not collide(
-                  player.get_bb(HB.STAND),
-                  tile.get_bb(HB.COLLISION_BODY)
-              )
-        ):
-            player.on_floor = False
-
-    for tile in tiles:
-        if (player.get_bb_on(HB.COLLISION_BODY) and
-                tile.get_bb_on(HB.COLLISION_BODY) and
-                collide(player.get_bb(HB.COLLISION_BODY),
-                        tile.get_bb(HB.COLLISION_BODY)
-                        ) and
-                player.get_bb(HB.COLLISION_BODY)[POS.BOTTOM] < tile.get_bb(HB.COLLISION_BODY)[POS.TOP]
-        ):
-
-            # ceiling
-            if (tile.get_bb(HB.COLLISION_BODY)[POS.BOTTOM] <=
-                    player.get_bb(HB.COLLISION_BODY)[POS.TOP] <=
-                    tile.get_bb(HB.COLLISION_BODY)[POS.TOP] and
-                    tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                    player.get_bb(HB.COLLISION_BODY)[POS.RIGHT] <=
-                    tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT] and
-                    tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                    player.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                    tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT]
-            ):
-                player.jump_power = 0
-                player.y = (
-                        tile.get_bb(HB.COLLISION_BODY)[POS.BOTTOM] -
-                        player.get_bb_range(HB.COLLISION_BODY)[POS.TOP]
-                )
-
-            else:
-                # left wall
-                if (tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT] >=
-                        player.get_bb(HB.COLLISION_BODY)[POS.RIGHT] >=
-                        tile.get_bb(HB.COLLISION_BODY)[POS.LEFT]
-                ):
-                    if player.facing == DIR.LEFT:
-                        player.velocity = 0
-                    player.x = (
-                            tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] -
-                            player.get_bb_range(HB.COLLISION_BODY)[POS.RIGHT]
-                    )
-
-                # right wall
-                if (tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                        player.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                        tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT]
-                ):
-                    if player.facing == DIR.RIGHT:
-                        player.velocity = 0
-                    player.x = (
-                            tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT] +
-                            player.get_bb_range(HB.COLLISION_BODY)[POS.LEFT]
-                    )
+    else:
+        player.is_stuck_left = False
+        return False
 
 
-def collide_enemies_to_tiles(enemies, tiles):
-    for enemy in enemies:
-        for tile in tiles:
-            if (enemy.get_bb_on(HB.STAND) and tile.get_bb_on(HB.COLLISION_BODY) and
-                    collide(enemy.get_bb(HB.STAND),
-                            tile.get_bb(HB.COLLISION_BODY)
-                            )
-            ):
-                enemy.jump_power = 0
-                enemy.is_fall = False
+def collide_player_to_left_wall(player: ob_player.Player, tile: ob_tileset.TileSet):
+    if (collide(player.get_bb(HB.RIGHT), tile.get_bb(HB.BODY)) and
+            player.get_bb(HB.BOTTOM)[POS.BOTTOM] < tile.get_bb(HB.TOP)[POS.TOP]
+    ):
+        # print("left collide")
+        player.velocity = 0
+        player.is_stuck_right = True
 
-                if (enemy.get_bb(HB.STAND)[POS.BOTTOM] < tile.get_bb(HB.COLLISION_BODY)[POS.TOP] and
-                        enemy.action != ACTION.JUMP):
-                    enemy.y = (
-                            enemy.bounding_box[HB.STAND].range[POS.BOTTOM] +
-                            tile.get_bb(HB.COLLISION_BODY)[POS.TOP]
-                    )
+        if player.get_bb(HB.RIGHT)[POS.RIGHT] > tile.get_bb(HB.LEFT)[POS.LEFT]:
+            player.x = (tile.get_bb(HB.LEFT)[POS.LEFT] -
+                        player.get_bb_range(HB.RIGHT)[POS.RIGHT])
 
-                break
-            elif (enemy.get_bb_on(HB.STAND) and tile.get_bb_on(HB.COLLISION_BODY) and
-                  not collide(
-                      enemy.get_bb(HB.STAND),
-                      tile.get_bb(HB.COLLISION_BODY)
-                  )
-            ):
-                enemy.is_fall = True
 
-        for tile in tiles:
-            if (enemy.get_bb_on(HB.COLLISION_BODY) and
-                    tile.get_bb_on(HB.COLLISION_BODY) and
-                    collide(enemy.get_bb(HB.COLLISION_BODY),
-                            tile.get_bb(HB.COLLISION_BODY)
-                            ) and
-                    enemy.get_bb(HB.COLLISION_BODY)[POS.BOTTOM] < tile.get_bb(HB.COLLISION_BODY)[POS.TOP]
-            ):
+        return True
 
-                # ceiling
-                if (tile.get_bb(HB.COLLISION_BODY)[POS.BOTTOM] <=
-                        enemy.get_bb(HB.COLLISION_BODY)[POS.TOP] <=
-                        tile.get_bb(HB.COLLISION_BODY)[POS.TOP] and
-                        tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                        enemy.get_bb(HB.COLLISION_BODY)[POS.RIGHT] <=
-                        tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT] and
-                        tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                        enemy.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                        tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT]
-                ):
-                    enemy.jump_power = 0
-                    enemy.y = (
-                            tile.get_bb(HB.COLLISION_BODY)[POS.BOTTOM] -
-                            enemy.get_bb_range(HB.COLLISION_BODY)[POS.TOP]
-                    )
+    else:
+        player.is_stuck_right = False
+        return False
 
-                else:
-                    # left wall
-                    if (tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT] >=
-                            enemy.get_bb(HB.COLLISION_BODY)[POS.RIGHT] >=
-                            tile.get_bb(HB.COLLISION_BODY)[POS.LEFT]
-                    ):
-                        print("left")
-                        enemy.x_direction = DIR.LEFT
-                        enemy.facing = enemy.x_direction
-                        enemy.set_info()
-                        enemy.x = (
-                                tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] -
-                                enemy.get_bb_range(HB.COLLISION_BODY)[POS.RIGHT]
-                        )
 
-                    # right wall
-                    if (tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                            enemy.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                            tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT]
-                    ):
-                        print("right")
-                        enemy.x_direction = DIR.RIGHT
-                        enemy.facing = enemy.x_direction
-                        enemy.set_info()
-                        enemy.x = (
-                                tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT] +
-                                enemy.get_bb_range(HB.COLLISION_BODY)[POS.LEFT]
-                        )
+def collide_enemy_to_tile(enemies: ob_enemy, tile: ob_tileset.TileSet):
+    pass

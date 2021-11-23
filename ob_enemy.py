@@ -63,7 +63,7 @@ class Goomba(Enemy):
         if self.is_fall:
             self.fall()
 
-        print(str(self.facing), str(self.x_direction), str(self.action), str(self.velocity))
+        # print(str(self.facing), str(self.x_direction), str(self.action), str(self.velocity))
         self.x += self.velocity * gs_framework.frame_time * self.x_direction
 
 

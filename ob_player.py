@@ -11,7 +11,11 @@ ACCEL_WALK = get_accel_from_pps(MAX_WALK_VELOCITY, 0.8)
 
 MAX_RUN_VELOCITY = get_pps_from_kmph(51.0)
 
-MAX_JUMP_POWER = get_pps_from_mps(20)
+MAX_JUMP_POWER = get_pps_from_mps(19)
+MIN_JUMP_POWER = get_pps_from_mps(8)
+
+JUMP_BOOST_ONE = get_pps_from_mps(2)
+JUMP_BOOST_TWO = get_pps_from_mps(4)
 
 STANDARD_INERTIA = ACCEL_WALK * 2.3
 
@@ -47,8 +51,130 @@ key_event_table = {
 }
 
 
+class Player(game_object.Object):
+    def __init__(self, tid=TID.MARIO_SMALL, x=0, y=0):
+        super().__init__(TN.PLAYER, tid, x, y)
+
+        # Event and state
+        self.event_que = []
+        self.cur_state = IdleState
+
+        # Moving value
+        self.jump_power = 0
+        self.max_jump_power = 0
+        self.additional_jump_power = 0
+
+        self.x_accel = 0
+        self.y_accel = 0
+
+        # Control value
+        self.is_stuck_left = False
+        self.is_stuck_right = False
+
+        self.is_run = False
+        self.is_over_velocity = False
+
+        self.is_sit = False
+        self.on_floor = False
+
+        self.is_fall = False
+        self.is_jump = False
+
+        self.set_info()
+        self.cur_state.enter(self, None)
+
+    def check_state(self, event):
+        if event == EVENT.Z_DOWN:
+            self.is_run = True
+        elif event == EVENT.Z_UP:
+            self.is_run = False
+        elif event == EVENT.DOWN_DOWN:
+            self.is_sit = True
+        elif event == EVENT.DOWN_UP:
+            self.is_sit = False
+
+    def inertia(self):
+        self.velocity -= STANDARD_INERTIA * gs_framework.frame_time * self.forcing
+
+        if -1 < self.velocity < 1:
+            self.velocity = 0
+
+        speed = self.velocity * gs_framework.frame_time
+
+        if speed > 0:
+            self.forcing = DIR.RIGHT
+        elif speed == 0:
+            self.forcing = DIR.NONE
+        else:
+            self.forcing = DIR.LEFT
+
+        self.x += speed
+
+    def jump(self):
+        self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
+                            ) * -1
+
+        self.jump_power = clamp(
+            0, self.jump_power, MAX_JUMP_POWER + self.additional_jump_power
+        )
+
+        if self.jump_power == 0:
+            self.is_fall = True
+            self.is_jump = False
+
+        self.y += self.jump_power * gs_framework.frame_time
+
+    def fall(self):
+        self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
+                            ) * -1
+
+        self.jump_power = clamp(
+            MAX_JUMP_POWER * -1, self.jump_power, 0
+        )
+
+        self.y += self.jump_power * gs_framework.frame_time
+
+    def add_event(self, event):
+        self.event_que.insert(0, event)
+
+    def update(self):
+        if not self.on_floor and not self.is_jump:
+            self.is_fall = True
+
+        self.cur_state.do(self)
+
+        self.x = clamp(25, self.x, gs_framework.canvas_width - 25)
+        self.y = clamp(-150, self.y, gs_framework.canvas_width + 150)
+
+        if len(self.event_que) > 0:
+            event = self.event_que.pop()
+            self.cur_state.exit(self, event)
+            try:
+                self.cur_state = next_state_table[self.cur_state][event]
+            except:
+                print('Error State:', self.cur_state.__name__, "Event:", event)
+                exit(-1)
+            self.cur_state.enter(self, event)
+
+    def draw(self):
+        self.cur_state.draw(self)
+
+        debug_print("additionalJP: " + str(self.additional_jump_power) +
+                    "JP: " + str(self.jump_power))
+
+        if self.show_bb:
+            self.draw_bb()
+
+    def handle_event(self, event):
+        if (event.type, event.key) in key_event_table:
+            key_event = key_event_table[(event.type, event.key)]
+            self.add_event(key_event)
+
+
+# ======================================= State ==========================================
+
 class IdleState:
-    def enter(player, event):
+    def enter(player: Player, event):
         if player.is_sit:
             player.add_event(EVENT.DOWN_DOWN)
 
@@ -60,21 +186,26 @@ class IdleState:
             player.x_direction -= 1
         elif event == EVENT.LEFT_UP:
             player.x_direction += 1
-        elif event == EVENT.X_DOWN and player.on_floor:
+        elif event == EVENT.X_DOWN and not player.is_jump and player.on_floor:
             player.on_floor = False
             player.is_jump = True
-            player.jump_power = MAX_JUMP_POWER
+            player.jump_power = MAX_JUMP_POWER + player.additional_jump_power
+            player.y += 1
             player.set_info(ACTION.JUMP)
+            print("player JP: " + str(player.jump_power))
+        elif event == EVENT.X_UP and player.is_jump:
+            if player.jump_power >= MIN_JUMP_POWER:
+                player.jump_power = MIN_JUMP_POWER
 
         if player.x_direction == DIR.RIGHT:
             player.facing = DIR.RIGHT
         elif player.x_direction == DIR.LEFT:
             player.facing = DIR.LEFT
 
-    def exit(player, event):
+    def exit(player: Player, event):
         player.check_state(event)
 
-    def do(player):
+    def do(player: Player):
         player.update_frame(gs_framework.frame_time)
 
         if player.is_fall:
@@ -87,26 +218,39 @@ class IdleState:
         else:
             player.set_info(ACTION.WALK)
 
+        slice = (MAX_RUN_VELOCITY - MAX_WALK_VELOCITY) / 5
+        if MAX_WALK_VELOCITY + slice * 4 > abs(player.velocity) >= MAX_WALK_VELOCITY + slice / 2:
+            player.additional_jump_power = JUMP_BOOST_ONE
+        elif abs(player.velocity) >= MAX_WALK_VELOCITY + slice * 4:
+            player.additional_jump_power = JUMP_BOOST_TWO
+        elif abs(player.velocity) < MAX_WALK_VELOCITY:
+            player.additional_jump_power = 0
+
         player.inertia()
 
-    def draw(player):
+    def draw(player: Player):
         player.clip_draw()
 
 
 class SitState:
-    def enter(player, event):
-        player.set_info(ACTION.SIT)
+    def enter(player: Player, event):
+        if player.on_floor:
+            player.set_info(ACTION.SIT)
 
-        if event == EVENT.X_DOWN and player.on_floor:
+        if event == EVENT.X_DOWN and not player.is_jump and player.on_floor:
             player.on_floor = False
             player.is_jump = True
             player.jump_power = MAX_JUMP_POWER
-            player.bounding_box[HB.STAND].is_on = False
+            player.y += 1
+            player.set_info(ACTION.JUMP)
+        elif event == EVENT.X_UP and player.is_jump:
+            if player.jump_power >= MIN_JUMP_POWER:
+                player.jump_power = MIN_JUMP_POWER
 
-    def exit(player, event):
+    def exit(player: Player, event):
         player.check_state(event)
 
-    def do(player):
+    def do(player: Player):
         player.update_frame(gs_framework.frame_time)
 
         if player.is_fall:
@@ -114,17 +258,17 @@ class SitState:
             player.set_info(ACTION.FALL)
         elif player.is_jump:
             player.jump()
-        else:
+        elif player.on_floor:
             player.set_info(ACTION.SIT)
 
         player.inertia()
 
-    def draw(player):
+    def draw(player: Player):
         player.clip_draw()
 
 
 class WalkState:
-    def enter(player, event):
+    def enter(player: Player, event):
         if event == EVENT.RIGHT_DOWN:
             player.x_direction += 1
             if player.is_fall:
@@ -143,12 +287,16 @@ class WalkState:
             player.x_direction += 1
 
         # jump key down
-        elif event == EVENT.X_DOWN and player.on_floor:
+        elif event == EVENT.X_DOWN and not player.is_jump and player.on_floor:
             player.on_floor = False
             player.is_jump = True
-            player.jump_power = MAX_JUMP_POWER
+            player.jump_power = MAX_JUMP_POWER + player.additional_jump_power
+            print("player JP: " + str(player.jump_power))
+            player.y += 1
             player.set_info(ACTION.JUMP)
-            print("player jump power: " + str(player.jump_power) + " is_jump: " + str(player.is_jump))
+        elif event == EVENT.X_UP and player.is_jump:
+            if player.jump_power >= MIN_JUMP_POWER:
+                player.jump_power = MIN_JUMP_POWER
 
         if player.x_direction == DIR.RIGHT:
             player.facing = DIR.RIGHT
@@ -166,10 +314,10 @@ class WalkState:
         # print("facing: " + str(player.facing) + " direction: " + str(player.x_direction))
         # print(str(player.x_accel), str(player.max_velocity))
 
-    def exit(player, event):
+    def exit(player: Player, event):
         player.check_state(event)
 
-    def do(player):
+    def do(player: Player):
 
         # set player clip set
         if player.is_fall:
@@ -177,10 +325,12 @@ class WalkState:
             player.set_info(ACTION.FALL)
         elif player.is_jump:
             player.jump()
-        elif player.x_direction != player.forcing:
+        elif player.x_direction != player.forcing and not player.x_direction == DIR.NONE:
             player.set_info(ACTION.BREAK)
         else:
-            if MAX_WALK_VELOCITY * 1.6 * -1 > player.velocity or MAX_WALK_VELOCITY * 1.6 < player.velocity:
+            if player.velocity == 0 and (player.is_stuck_left or player.is_stuck_right):
+                player.set_info(ACTION.IDLE)
+            elif MAX_WALK_VELOCITY * 1.6 * -1 > player.velocity or MAX_WALK_VELOCITY * 1.6 < player.velocity:
                 player.set_info(ACTION.RUN)
             else:
                 player.set_info(ACTION.WALK)
@@ -192,7 +342,10 @@ class WalkState:
         if not player.is_run and player.is_over_velocity:
             player.velocity -= player.x_accel * gs_framework.frame_time * player.x_direction
         else:
-            player.velocity += player.x_accel * gs_framework.frame_time * player.x_direction
+            if player.is_jump:
+                player.velocity += player.x_accel * gs_framework.frame_time * player.x_direction * 3
+            else:
+                player.velocity += player.x_accel * gs_framework.frame_time * player.x_direction
 
         # if player break:
         if player.forcing != player.x_direction:
@@ -211,6 +364,16 @@ class WalkState:
         else:
             player.is_over_velocity = False
 
+        # additional jump power
+
+        slice = (MAX_RUN_VELOCITY - MAX_WALK_VELOCITY) / 5
+        if MAX_WALK_VELOCITY + slice * 4 > abs(player.velocity) >= MAX_WALK_VELOCITY + slice / 2:
+            player.additional_jump_power = JUMP_BOOST_ONE
+        elif abs(player.velocity) >= MAX_WALK_VELOCITY + slice * 4:
+            player.additional_jump_power = JUMP_BOOST_TWO
+        elif abs(player.velocity) < MAX_WALK_VELOCITY:
+            player.additional_jump_power = 0
+
         speed = player.velocity * gs_framework.frame_time
 
         if speed > 0:
@@ -220,37 +383,38 @@ class WalkState:
         else:
             player.forcing = DIR.LEFT
 
+
         player.x += speed
 
-    def draw(player):
+    def draw(player: Player):
         player.clip_draw()
 
 
 class HangState:
-    def enter(player, event):
+    def enter(player: Player, event):
         pass
 
-    def exit(player, event):
+    def exit(player: Player, event):
         pass
 
-    def do(player):
+    def do(player: Player):
         pass
 
-    def draw(player):
+    def draw(player: Player):
         pass
 
 
 class ClimbState:
-    def enter(player, event):
+    def enter(player: Player, event):
         pass
 
-    def exit(player, event):
+    def exit(player: Player, event):
         pass
 
-    def do(player):
+    def do(player: Player):
         pass
 
-    def draw(player):
+    def draw(player: Player):
         pass
 
 
@@ -306,120 +470,6 @@ next_state_table = {
 }
 
 
-class Player(game_object.Object):
-    def __init__(self, tid=TID.MARIO_SMALL, x=0, y=0):
-        super().__init__(TN.PLAYER, tid, x, y)
-
-        # Event and state
-        self.event_que = []
-        self.cur_state = IdleState
-
-        # Moving value
-        self.jump_power = 0
-        self.max_jump_power = 0
-        self.x_accel = 0
-        self.y_accel = 0
-
-        # Control value
-        self.is_run = False
-        self.is_over_velocity = False
-
-        self.is_sit = False
-        self.on_floor = False
-
-        self.is_fall = False
-        self.is_jump = False
-
-        self.set_info()
-        self.cur_state.enter(self, None)
-
-    def check_state(self, event):
-        if event == EVENT.Z_DOWN:
-            self.is_run = True
-        elif event == EVENT.Z_UP:
-            self.is_run = False
-        elif event == EVENT.DOWN_DOWN:
-            self.is_sit = True
-        elif event == EVENT.DOWN_UP:
-            self.is_sit = False
-
-    def inertia(self):
-        self.velocity -= STANDARD_INERTIA * gs_framework.frame_time * self.forcing
-
-        if -1 < self.velocity < 1:
-            self.velocity = 0
-
-        speed = self.velocity * gs_framework.frame_time
-
-        if speed > 0:
-            self.forcing = DIR.RIGHT
-        elif speed == 0:
-            self.forcing = DIR.NONE
-        else:
-            self.forcing = DIR.LEFT
-
-        self.x += speed
-
-    def jump(self):
-        self.jump_power += (
-                                   GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
-                           ) * -1
-
-        self.jump_power = clamp(
-            0, self.jump_power, MAX_JUMP_POWER
-        )
-
-        if self.jump_power == 0:
-            self.is_fall = True
-            self.is_jump = False
-
-        self.y += self.jump_power * gs_framework.frame_time
-
-    def fall(self):
-        self.jump_power += (
-                                   GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
-                           ) * -1
-
-        self.jump_power = clamp(
-            MAX_JUMP_POWER * -1, self.jump_power, 0
-        )
-
-        self.y += self.jump_power * gs_framework.frame_time
-
-    def add_event(self, event):
-        self.event_que.insert(0, event)
-
-    def update(self):
-        if not self.on_floor and not self.is_jump:
-            self.is_fall = True
-
-        self.cur_state.do(self)
-
-        self.x = clamp(25, self.x, gs_framework.canvas_width - 25)
-        self.y = clamp(-150, self.y, gs_framework.canvas_width + 150)
-
-        if len(self.event_que) > 0:
-            event = self.event_que.pop()
-            self.cur_state.exit(self, event)
-            try:
-                self.cur_state = next_state_table[self.cur_state][event]
-            except:
-                print('Error State:', self.cur_state.__name__, "Event:", event)
-                exit(-1)
-            self.cur_state.enter(self, event)
-
-    def draw(self):
-        self.cur_state.draw(self)
-
-        if self.show_bb:
-            self.draw_bb()
-
-    def handle_event(self, event):
-        if (event.type, event.key) in key_event_table:
-            key_event = key_event_table[(event.type, event.key)]
-            self.add_event(key_event)
-
-
 def test_player():
     from ob_tileset import TileSet
     import test_keyboard
@@ -453,9 +503,9 @@ def test_player():
 
     def update():
         for tile in tiles:
-            if (player.get_bb_on(HB.STAND) and tile.get_bb_on(HB.COLLISION_BODY) and
+            if (player.get_bb_on(HB.STAND) and tile.get_bb_on(HB.BODY) and
                     collide(player.get_bb(HB.STAND),
-                            tile.get_bb(HB.COLLISION_BODY)
+                            tile.get_bb(HB.BODY)
                             )
             ):
                 player.jump_power = 0
@@ -463,73 +513,72 @@ def test_player():
                 player.is_fall = False
                 player.is_jump = False
 
-                if (player.get_bb(HB.STAND)[POS.BOTTOM] < tile.get_bb(HB.COLLISION_BODY)[POS.TOP] and
+                if (player.get_bb(HB.STAND)[POS.BOTTOM] < tile.get_bb(HB.BODY)[POS.TOP] and
                         player.action != ACTION.JUMP):
                     player.y = (
                             player.bounding_box[HB.STAND].range[POS.BOTTOM] +
-                            tile.get_bb(HB.COLLISION_BODY)[POS.TOP]
+                            tile.get_bb(HB.BODY)[POS.TOP]
                     )
 
                 break
-            elif (player.get_bb_on(HB.STAND) and tile.get_bb_on(HB.COLLISION_BODY) and
+            elif (player.get_bb_on(HB.STAND) and tile.get_bb_on(HB.BODY) and
                   not collide(
                       player.get_bb(HB.STAND),
-                      tile.get_bb(HB.COLLISION_BODY)
+                      tile.get_bb(HB.BODY)
                   )
             ):
                 player.on_floor = False
 
         for tile in tiles:
-            if (player.get_bb_on(HB.COLLISION_BODY) and
-                    tile.get_bb_on(HB.COLLISION_BODY) and
-                    collide(player.get_bb(HB.COLLISION_BODY),
-                            tile.get_bb(HB.COLLISION_BODY)
+            if (player.get_bb_on(HB.BODY) and
+                    tile.get_bb_on(HB.BODY) and
+                    collide(player.get_bb(HB.BODY),
+                            tile.get_bb(HB.BODY)
                             ) and
-                player.get_bb(HB.COLLISION_BODY)[POS.BOTTOM] < tile.get_bb(HB.COLLISION_BODY)[POS.TOP]
+                    player.get_bb(HB.BODY)[POS.BOTTOM] < tile.get_bb(HB.BODY)[POS.TOP]
             ):
 
                 # ceiling
-                if (tile.get_bb(HB.COLLISION_BODY)[POS.BOTTOM] <=
-                        player.get_bb(HB.COLLISION_BODY)[POS.TOP] <=
-                        tile.get_bb(HB.COLLISION_BODY)[POS.TOP] and
-                        tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                        player.get_bb(HB.COLLISION_BODY)[POS.RIGHT] <=
-                        tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT] and
-                        tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                        player.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                        tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT]
+                if (tile.get_bb(HB.BODY)[POS.BOTTOM] <=
+                        player.get_bb(HB.BODY)[POS.TOP] <=
+                        tile.get_bb(HB.BODY)[POS.TOP] and
+                        tile.get_bb(HB.BODY)[POS.LEFT] <=
+                        player.get_bb(HB.BODY)[POS.RIGHT] <=
+                        tile.get_bb(HB.BODY)[POS.RIGHT] and
+                        tile.get_bb(HB.BODY)[POS.LEFT] <=
+                        player.get_bb(HB.BODY)[POS.LEFT] <=
+                        tile.get_bb(HB.BODY)[POS.RIGHT]
                 ):
                     player.jump_power = 0
                     player.y = (
-                            tile.get_bb(HB.COLLISION_BODY)[POS.BOTTOM] -
-                            player.get_bb_range(HB.COLLISION_BODY)[POS.TOP]
+                            tile.get_bb(HB.BODY)[POS.BOTTOM] -
+                            player.get_bb_range(HB.BODY)[POS.TOP]
                     )
 
                 else:
                     # left wall
-                    if (tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT] >=
-                            player.get_bb(HB.COLLISION_BODY)[POS.RIGHT] >=
-                            tile.get_bb(HB.COLLISION_BODY)[POS.LEFT]
+                    if (tile.get_bb(HB.BODY)[POS.RIGHT] >=
+                            player.get_bb(HB.BODY)[POS.RIGHT] >=
+                            tile.get_bb(HB.BODY)[POS.LEFT]
                     ):
                         if player.facing == DIR.RIGHT:
                             player.velocity = 0
                         player.x = (
-                                tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] -
-                                player.get_bb_range(HB.COLLISION_BODY)[POS.RIGHT]
+                                tile.get_bb(HB.BODY)[POS.LEFT] -
+                                player.get_bb_range(HB.BODY)[POS.RIGHT]
                         )
 
                     # right wall
-                    if (tile.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                            player.get_bb(HB.COLLISION_BODY)[POS.LEFT] <=
-                            tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT]
+                    if (tile.get_bb(HB.BODY)[POS.LEFT] <=
+                            player.get_bb(HB.BODY)[POS.LEFT] <=
+                            tile.get_bb(HB.BODY)[POS.RIGHT]
                     ):
                         if player.facing == DIR.LEFT:
                             player.velocity = 0
                         player.x = (
-                                tile.get_bb(HB.COLLISION_BODY)[POS.RIGHT] +
-                                player.get_bb_range(HB.COLLISION_BODY)[POS.LEFT]
+                                tile.get_bb(HB.BODY)[POS.RIGHT] +
+                                player.get_bb_range(HB.BODY)[POS.LEFT]
                         )
-
 
     Running = True
     show_bb = False
