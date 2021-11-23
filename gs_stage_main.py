@@ -36,7 +36,7 @@ def enter():
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 250))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 650, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 350))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 450))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 450))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 850, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 950, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 350))
@@ -93,6 +93,14 @@ def update():
     for tile in server.tiles:
         if collide_player_to_left_wall(server.player, tile):
             break
+
+    for enemy in server.enemies:
+        for floor in server.tiles:
+            if collide_enemy_to_floor(enemy, floor):
+                break
+        for tile in server.tiles:
+            if collide_enemy_to_wall(enemy, tile):
+                break
 
 def draw():
 

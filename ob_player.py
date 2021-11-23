@@ -159,8 +159,8 @@ class Player(game_object.Object):
     def draw(self):
         self.cur_state.draw(self)
 
-        debug_print("additionalJP: " + str(self.additional_jump_power) +
-                    "JP: " + str(self.jump_power))
+        # debug_print("additionalJP: " + str(self.additional_jump_power) +
+        #             "JP: " + str(self.jump_power))
 
         if self.show_bb:
             self.draw_bb()
@@ -192,7 +192,7 @@ class IdleState:
             player.jump_power = MAX_JUMP_POWER + player.additional_jump_power
             player.y += 1
             player.set_info(ACTION.JUMP)
-            print("player JP: " + str(player.jump_power))
+            # print("player JP: " + str(player.jump_power))
         elif event == EVENT.X_UP and player.is_jump:
             if player.jump_power >= MIN_JUMP_POWER:
                 player.jump_power = MIN_JUMP_POWER
@@ -291,7 +291,7 @@ class WalkState:
             player.on_floor = False
             player.is_jump = True
             player.jump_power = MAX_JUMP_POWER + player.additional_jump_power
-            print("player JP: " + str(player.jump_power))
+            # print("player JP: " + str(player.jump_power))
             player.y += 1
             player.set_info(ACTION.JUMP)
         elif event == EVENT.X_UP and player.is_jump:

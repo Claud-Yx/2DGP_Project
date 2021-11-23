@@ -38,7 +38,7 @@ class Goomba(Enemy):
         self.on_floor = True
         self.is_fall = False
 
-        self.set_info(ACTION.IDLE)
+        self.set_info(ACTION.WALK)
 
     def fall(self):
         self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
@@ -51,16 +51,10 @@ class Goomba(Enemy):
         self.y += self.jump_power * gs_framework.frame_time
 
     def update(self):
-        self.set_info(ACTION.WALK)
-
         self.update_frame(gs_framework.frame_time)
 
-        if self.x_direction == DIR.RIGHT:
-            self.facing = DIR.RIGHT
-        elif self.x_direction == DIR.LEFT:
-            self.facing = DIR.LEFT
-
         if self.is_fall:
+            self.on_floor = False
             self.fall()
 
         # print(str(self.facing), str(self.x_direction), str(self.action), str(self.velocity))
