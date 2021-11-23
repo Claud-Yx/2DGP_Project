@@ -15,7 +15,7 @@ show_bb = False
 
 
 def enter():
-    print("stage_main enter")
+    # print("stage_main enter")
     # Initialization:
     server.background = ob_background.Background()
     object_manager.add_object(server.background, object_manager.OL_BACKGROUND)
@@ -41,6 +41,7 @@ def enter():
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 950, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 450))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X50, 450, 325))
     object_manager.add_objects(server.tiles, object_manager.OL_TILESET)
 
     test_keyboard.keyboard_init()
@@ -48,9 +49,9 @@ def enter():
 
 def exit():
     del server.player
-    del server.enemies
-    del server.tiles
     del server.background
+    server.enemies.clear()
+    server.tiles.clear()
 
 
 def handle_events():
@@ -60,7 +61,6 @@ def handle_events():
         if event.type == SDL_QUIT:
             gs_framework.quit()
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
-            print(exit.__name__)
             gs_framework.change_state(gs_title)
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_F2):
             if not show_bb:
@@ -80,9 +80,19 @@ def update():
         obj.update()
 
     # collision check
-    collide_player_to_tiles(player, tiles)
-    collide_enemies_to_tiles(enemies, tiles)
-
+    for floor in server.tiles:
+        if collide_player_to_floor(server.player, floor):
+            break
+    for ceiling in server.tiles:
+        if server.player.is_jump:
+            if collide_player_to_ceiling(server.player, ceiling):
+                break
+    for tile in server.tiles:
+        if collide_player_to_right_wall(server.player, tile):
+            break
+    for tile in server.tiles:
+        if collide_player_to_left_wall(server.player, tile):
+            break
 
 def draw():
 

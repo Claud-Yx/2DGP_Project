@@ -13,6 +13,9 @@ class BoundingBox:
         self.is_on = True
 
     def get_bb(self, pos):
+        if not self.is_on:
+            return -1, -1, -1, -1
+
         return (
             pos[POS.X] - self.range[POS.LEFT],
             pos[POS.Y] - self.range[POS.BOTTOM],
