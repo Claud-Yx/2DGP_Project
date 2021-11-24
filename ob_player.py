@@ -55,6 +55,11 @@ class Player(game_object.Object):
     def __init__(self, tid=TID.MARIO_SMALL, x=0, y=0):
         super().__init__(TN.PLAYER, tid, x, y)
 
+        # Player inventory
+        self.coin = 0
+        self.score = 0
+        self.life = 3
+
         # Event and state
         self.event_que = []
         self.cur_state = IdleState
@@ -79,6 +84,7 @@ class Player(game_object.Object):
 
         self.is_fall = False
         self.is_jump = False
+        self.pressed_key_jump = False
 
         self.set_info()
         self.cur_state.enter(self, None)
@@ -187,6 +193,7 @@ class IdleState:
         elif event == EVENT.LEFT_UP:
             player.x_direction += 1
         elif event == EVENT.X_DOWN and not player.is_jump and player.on_floor:
+            player.pressed_key_jump = True
             player.on_floor = False
             player.is_jump = True
             player.jump_power = MAX_JUMP_POWER + player.additional_jump_power
@@ -194,6 +201,7 @@ class IdleState:
             player.set_info(ACTION.JUMP)
             # print("player JP: " + str(player.jump_power))
         elif event == EVENT.X_UP and player.is_jump:
+            player.pressed_key_jump = False
             if player.jump_power >= MIN_JUMP_POWER:
                 player.jump_power = MIN_JUMP_POWER
 
@@ -288,13 +296,14 @@ class WalkState:
 
         # jump key down
         elif event == EVENT.X_DOWN and not player.is_jump and player.on_floor:
+            player.pressed_key_jump = True
             player.on_floor = False
             player.is_jump = True
             player.jump_power = MAX_JUMP_POWER + player.additional_jump_power
-            # print("player JP: " + str(player.jump_power))
             player.y += 1
             player.set_info(ACTION.JUMP)
         elif event == EVENT.X_UP and player.is_jump:
+            player.pressed_key_jump = False
             if player.jump_power >= MIN_JUMP_POWER:
                 player.jump_power = MIN_JUMP_POWER
 

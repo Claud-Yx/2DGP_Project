@@ -138,7 +138,7 @@ class Object:
             return
 
         if not self.loop_animation:
-            if self.frame + 1 == self.frame_count:
+            if self.frame + 1 >= self.frame_count:
                 return
 
         self.frame = (self.frame +
@@ -534,19 +534,19 @@ class Object:
                     self.action == ACTION.WALK and self.facing == DIR.RIGHT or
                     self.action == ACTION.WALK and self.facing == DIR.LEFT
             ):
-                self.set_bb(HB.BODY, (15, 15, 15, 18))
-                self.set_bb(HB.LEFT, (15, 15, -14, 18))
-                self.set_bb(HB.BOTTOM, (15, 15, 15, -14))
-                self.set_bb(HB.RIGHT, (-14, 15, 15, 18))
-                self.set_bb(HB.TOP, (15, -17, 15, 18))
+                self.set_bb(HB.BODY, (21, 25, 21, 21))
+                self.set_bb(HB.LEFT, (21, 23, -20, 21))
+                self.set_bb(HB.BOTTOM, (21, 25, 21, -23))
+                self.set_bb(HB.RIGHT, (-20, 23, 21, 21))
+                self.set_bb(HB.TOP, (21, -20, 21, 24))
 
             # Die A
             elif self.action == ACTION.DIE_A:
-                del self.bounding_box
+                pass
 
             # Die B
             elif self.action == ACTION.DIE_B:
-                del self.bounding_box
+                pass
 
             else:
                 print("Invalid action: %s" % (str(self.action)))
@@ -977,6 +977,7 @@ class Object:
 
             # Die A
             elif self.action == ACTION.DIE_A:
+                self.set_tpa(0.2)
                 self.l, self.b, self.w, self.h = 50, 50 * 1, 50, 50
                 self.frame_count, self.frame_begin = 3, 0
                 self.loop_animation = False

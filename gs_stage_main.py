@@ -17,10 +17,12 @@ show_bb = False
 def enter():
     # print("stage_main enter")
     # Initialization:
+    object_manager.objects = [[],[],[],[]]
+
     server.background = ob_background.Background()
     object_manager.add_object(server.background, object_manager.OL_BACKGROUND)
 
-    server.enemies.append(ob_enemy.Goomba(950, 450))
+    server.enemies.append(ob_enemy.Goomba(930, 460))
     object_manager.add_objects(server.enemies, object_manager.OL_FOREGROUND)
 
     server.player = ob_player.Player(TID.MARIO_SUPER, 200, 500)
@@ -36,7 +38,7 @@ def enter():
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 250))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 650, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 350))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 450))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 450))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 850, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 950, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 350))
@@ -52,6 +54,8 @@ def exit():
     del server.background
     server.enemies.clear()
     server.tiles.clear()
+
+    object_manager.destroy()
 
 
 def handle_events():
@@ -95,6 +99,7 @@ def update():
             break
 
     for enemy in server.enemies:
+        collide_player_to_enemy(server.player, enemy)
         for floor in server.tiles:
             if collide_enemy_to_floor(enemy, floor):
                 break

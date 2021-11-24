@@ -1,3 +1,4 @@
+import object_manager
 from game_object import *
 from value import *
 
@@ -16,15 +17,20 @@ class Enemy(game_object.Object):
 
         self.jump_power = 0
 
+        self.timer = 0.0
+
+    @abstractmethod
     def update(self):
         pass
 
+    @abstractmethod
     def draw(self):
         self.clip_draw()
 
         if self.show_bb:
             self.draw_bb()
 
+    @abstractmethod
     def handle_event(self):
         pass
 
@@ -37,6 +43,7 @@ class Goomba(Enemy):
 
         self.on_floor = True
         self.is_fall = False
+        self.is_dead = False
 
         self.set_info(ACTION.WALK)
 
@@ -50,12 +57,34 @@ class Goomba(Enemy):
 
         self.y += self.jump_power * gs_framework.frame_time
 
+    def die(self) -> bool:
+        self.set_info(ACTION.DIE_A)
+
+        if self.timer == 0:
+            self.timer = 1.0
+
+        self.timer -= gs_framework.frame_time
+
+        if self.timer <= 0.0:
+            return True
+        return False
+
     def update(self):
         self.update_frame(gs_framework.frame_time)
+
+        if self.is_dead:
+            if self.die():
+                object_manager.remove_object(self)
+                del self
+            return
+
 
         if self.is_fall:
             self.on_floor = False
             self.fall()
+
+
+        self.x = clamp(25, self.x, gs_framework.canvas_width - 25)
 
         # print(str(self.facing), str(self.x_direction), str(self.action), str(self.velocity))
         self.x += self.velocity * gs_framework.frame_time * self.x_direction
