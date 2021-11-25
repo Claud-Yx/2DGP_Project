@@ -23,6 +23,7 @@ def enter():
     object_manager.add_object(server.background, object_manager.OL_BACKGROUND)
 
     server.enemies.append(ob_enemy.Goomba(930, 460))
+    server.enemies.append(ob_enemy.Goomba(930, 460, DIR.LEFT))
     object_manager.add_objects(server.enemies, object_manager.OL_FOREGROUND)
 
     server.player = ob_player.Player(TID.MARIO_SUPER, 200, 500)

@@ -162,3 +162,13 @@ def collide_player_to_enemy(player: ob_player.Player, enemy: ob_enemy):
     if collide(player.get_bb(HB.BOTTOM), enemy.get_bb(HB.TOP)) and player.is_fall:
         enemy.is_dead = True
 
+        # player
+        player.is_fall = False
+        player.is_jump = True
+        if player.pressed_key_jump:
+            print("press j")
+            player.jump_power = ob_player.MAX_JUMP_POWER + ob_player.JUMP_BOOST_ONE
+        else:
+            player.jump_power = get_pps_from_mps(10)
+        player.y += 1
+        player.set_info(ACTION.JUMP)

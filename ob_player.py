@@ -154,6 +154,11 @@ class Player(game_object.Object):
 
         if len(self.event_que) > 0:
             event = self.event_que.pop()
+            if event == EVENT.X_DOWN:
+                self.pressed_key_jump = True
+            elif event == EVENT.X_UP:
+                self.pressed_key_jump = False
+
             self.cur_state.exit(self, event)
             try:
                 self.cur_state = next_state_table[self.cur_state][event]
@@ -165,8 +170,7 @@ class Player(game_object.Object):
     def draw(self):
         self.cur_state.draw(self)
 
-        # debug_print("additionalJP: " + str(self.additional_jump_power) +
-        #             "JP: " + str(self.jump_power))
+        debug_print("press_key_jump: " + str(self.pressed_key_jump))
 
         if self.show_bb:
             self.draw_bb()
@@ -193,7 +197,6 @@ class IdleState:
         elif event == EVENT.LEFT_UP:
             player.x_direction += 1
         elif event == EVENT.X_DOWN and not player.is_jump and player.on_floor:
-            player.pressed_key_jump = True
             player.on_floor = False
             player.is_jump = True
             player.jump_power = MAX_JUMP_POWER + player.additional_jump_power
@@ -201,7 +204,6 @@ class IdleState:
             player.set_info(ACTION.JUMP)
             # print("player JP: " + str(player.jump_power))
         elif event == EVENT.X_UP and player.is_jump:
-            player.pressed_key_jump = False
             if player.jump_power >= MIN_JUMP_POWER:
                 player.jump_power = MIN_JUMP_POWER
 
@@ -245,16 +247,6 @@ class SitState:
         if player.on_floor:
             player.set_info(ACTION.SIT)
 
-        if event == EVENT.X_DOWN and not player.is_jump and player.on_floor:
-            player.on_floor = False
-            player.is_jump = True
-            player.jump_power = MAX_JUMP_POWER
-            player.y += 1
-            player.set_info(ACTION.JUMP)
-        elif event == EVENT.X_UP and player.is_jump:
-            if player.jump_power >= MIN_JUMP_POWER:
-                player.jump_power = MIN_JUMP_POWER
-
     def exit(player: Player, event):
         player.check_state(event)
 
@@ -296,14 +288,12 @@ class WalkState:
 
         # jump key down
         elif event == EVENT.X_DOWN and not player.is_jump and player.on_floor:
-            player.pressed_key_jump = True
             player.on_floor = False
             player.is_jump = True
             player.jump_power = MAX_JUMP_POWER + player.additional_jump_power
             player.y += 1
             player.set_info(ACTION.JUMP)
         elif event == EVENT.X_UP and player.is_jump:
-            player.pressed_key_jump = False
             if player.jump_power >= MIN_JUMP_POWER:
                 player.jump_power = MIN_JUMP_POWER
 
@@ -442,7 +432,7 @@ next_state_table = {
         EVENT.LEFT_DOWN: WalkState, EVENT.LEFT_UP: WalkState,
         EVENT.RIGHT_DOWN: WalkState, EVENT.RIGHT_UP: WalkState,
         EVENT.Z_DOWN: SitState, EVENT.Z_UP: SitState,
-        EVENT.X_DOWN: SitState, EVENT.X_UP: SitState
+        EVENT.X_DOWN: IdleState, EVENT.X_UP: IdleState
     },
     WalkState: {
         EVENT.UP_DOWN: WalkState, EVENT.UP_UP: WalkState,

@@ -13,7 +13,7 @@ class Enemy(game_object.Object):
         super().__init__(TN.ENEMIES, tid, x, y)
 
         self.x_direction = x_dir
-        self.forcing = x_dir
+        self.facing = x_dir
 
         self.jump_power = 0
 
