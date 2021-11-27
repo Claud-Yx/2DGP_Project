@@ -7,9 +7,10 @@
 OL_BACKGROUND = 0
 OL_BACK_TILESET = 1
 OL_TILESET = 2
-OL_FOREGROUND = 3
+OL_CHARACTER = 3
+OL_FOREGROUND = 4
 
-objects = [[], [], [], []]
+objects = [[], [], [], [], []]
 
 
 def add_object(o, layer):

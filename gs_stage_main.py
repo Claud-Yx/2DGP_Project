@@ -18,7 +18,7 @@ def enter():
     # print("stage_main enter")
     # Initialization:
     server.init()
-    object_manager.objects = [[], [], [], []]
+    object_manager.objects = [[], [], [], [], []]
 
     server.background = ob_background.Background()
     object_manager.add_object(server.background, object_manager.OL_BACKGROUND)
@@ -27,10 +27,10 @@ def enter():
     server.enemies.append(ob_enemy.Goomba(930, 460, DIR.LEFT))
     server.enemies.append(ob_enemy.Goomba(970, 500, DIR.LEFT))
     server.enemies.append(ob_enemy.Goomba(900, 480))
-    object_manager.add_objects(server.enemies, object_manager.OL_FOREGROUND)
+    object_manager.add_objects(server.enemies, object_manager.OL_CHARACTER)
 
     server.player = ob_player.Player(TID.MARIO_SUPER, 200, 500)
-    object_manager.add_object(server.player, object_manager.OL_FOREGROUND)
+    object_manager.add_object(server.player, object_manager.OL_CHARACTER)
 
     for x in range(50, gs_framework.canvas_width, 100):
         server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, x, 50))
