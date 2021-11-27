@@ -60,6 +60,8 @@ def run(start_state):
         stack[-1].update()
         stack[-1].draw()
         frame_time = get_time() - current_time
+        if frame_time >= (1/60):
+            frame_time = (1/60)
         current_time += frame_time
 
     while len(stack) > 0:
