@@ -162,6 +162,7 @@ class Player(game_object.Object):
     def shrink(self) -> bool:
         if self.timer_shrink == 0:
             server.stop_time(True, (TN.NONE, TID.NONE))
+            self.cur_state = IdleState
             self.timer_shrink = MAX_TIMER_SHRINK
 
         self.timer_shrink -= gs_framework.frame_time
@@ -169,10 +170,17 @@ class Player(game_object.Object):
         motion = int(self.timer_shrink * 6) % 2
 
         if motion == 1:
+            if self.type_id == TID.MARIO_SMALL:
+                self.y += 25
             self.type_id = self.prev_id
         else:
-            self.prev_id = self.type_id
+            if not self.type_id == TID.MARIO_SMALL:
+                self.prev_id = self.type_id
+                self.y -= 25
             self.type_id = TID.MARIO_SMALL
+
+        print("shrink_t: %f / motion_n: %d / TID: %s" % (self.timer_shrink, motion, self.type_id))
+        print("-> prev_TID: %s / cur_state: %s" % (self.prev_id, self.cur_state.__name__))
 
         self.set_info()
 
@@ -278,6 +286,7 @@ class IdleState:
         player.update_frame(gs_framework.frame_time)
 
         if player.is_fall:
+            print("in is_fall " + str(player.is_fall))
             player.fall()
             player.set_info(ACTION.FALL)
         elif player.is_jump:
@@ -287,6 +296,7 @@ class IdleState:
         else:
             player.set_info(ACTION.WALK)
 
+        # Running power for jump boosting
         slice = (MAX_RUN_VELOCITY - MAX_WALK_VELOCITY) / 5
         if MAX_WALK_VELOCITY + slice * 4 > abs(player.velocity) >= MAX_WALK_VELOCITY + slice / 2:
             player.additional_jump_power = JUMP_BOOST_ONE
@@ -424,6 +434,7 @@ class WalkState:
 
         # additional jump power
 
+        # Running power for jump boosting
         slice = (MAX_RUN_VELOCITY - MAX_WALK_VELOCITY) / 5
         if MAX_WALK_VELOCITY + slice * 4 > abs(player.velocity) >= MAX_WALK_VELOCITY + slice / 2:
             player.additional_jump_power = JUMP_BOOST_ONE
@@ -440,7 +451,6 @@ class WalkState:
             player.forcing = DIR.NONE
         else:
             player.forcing = DIR.LEFT
-
 
         player.x += speed
 
@@ -530,113 +540,45 @@ next_state_table = {
 
 def test_player():
     from ob_tileset import TileSet
+    from collision import \
+        collide_player_to_ceiling, collide_player_to_floor, \
+        collide_player_to_left_wall, collide_player_to_right_wall
+
     import test_keyboard
 
     gs_framework.canvas_width = 1600
     gs_framework.canvas_height = 600
 
     open_canvas(gs_framework.canvas_width, gs_framework.canvas_height)
-    player = Player(TID.MARIO_SUPER, 800, 500)
+    player = Player(TID.MARIO_SMALL, 800, 500)
     tiles = []
     test_keyboard.keyboard_init()
 
     for x in range(50, 1600, 100):
         tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, x, 50))
 
-    # tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 750, 150))
-    # tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 850, 150))
-    # tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 850, 250))
-    # tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 250, 350))
-    # tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 350, 350))
-
-    def collide(a: (0, 0, 0, 0), b: (0, 0, 0, 0)):
-        left_a, bottom_a, right_a, top_a = a
-        left_b, bottom_b, right_b, top_b = b
-
-        if left_a > right_b: return False
-        if right_a < left_b: return False
-        if top_a < bottom_b: return False
-        if bottom_a > top_b: return False
-        return True
+    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 50, 350))
+    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 150, 350))
+    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 250, 350))
+    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 250, 450))
+    tiles.append(TileSet(TID.CASTLE_BLOCK_100X100, 350, 350))
 
     def update():
-        for tile in tiles:
-            if (player.get_bb_on(HB.STAND) and tile.get_bb_on(HB.BODY) and
-                    collide(player.get_bb(HB.STAND),
-                            tile.get_bb(HB.BODY)
-                            )
-            ):
-                player.jump_power = 0
-                player.on_floor = True
-                player.is_fall = False
-                player.is_jump = False
+        player.update()
 
-                if (player.get_bb(HB.STAND)[POS.BOTTOM] < tile.get_bb(HB.BODY)[POS.TOP] and
-                        player.action != ACTION.JUMP):
-                    player.y = (
-                            player.bounding_box[HB.STAND].range[POS.BOTTOM] +
-                            tile.get_bb(HB.BODY)[POS.TOP]
-                    )
-
+        for floor in tiles:
+            if collide_player_to_floor(player, floor):
                 break
-            elif (player.get_bb_on(HB.STAND) and tile.get_bb_on(HB.BODY) and
-                  not collide(
-                      player.get_bb(HB.STAND),
-                      tile.get_bb(HB.BODY)
-                  )
-            ):
-                player.on_floor = False
-
+        for ceiling in tiles:
+            if player.is_jump:
+                if collide_player_to_ceiling(player, ceiling):
+                    break
         for tile in tiles:
-            if (player.get_bb_on(HB.BODY) and
-                    tile.get_bb_on(HB.BODY) and
-                    collide(player.get_bb(HB.BODY),
-                            tile.get_bb(HB.BODY)
-                            ) and
-                    player.get_bb(HB.BODY)[POS.BOTTOM] < tile.get_bb(HB.BODY)[POS.TOP]
-            ):
-
-                # ceiling
-                if (tile.get_bb(HB.BODY)[POS.BOTTOM] <=
-                        player.get_bb(HB.BODY)[POS.TOP] <=
-                        tile.get_bb(HB.BODY)[POS.TOP] and
-                        tile.get_bb(HB.BODY)[POS.LEFT] <=
-                        player.get_bb(HB.BODY)[POS.RIGHT] <=
-                        tile.get_bb(HB.BODY)[POS.RIGHT] and
-                        tile.get_bb(HB.BODY)[POS.LEFT] <=
-                        player.get_bb(HB.BODY)[POS.LEFT] <=
-                        tile.get_bb(HB.BODY)[POS.RIGHT]
-                ):
-                    player.jump_power = 0
-                    player.y = (
-                            tile.get_bb(HB.BODY)[POS.BOTTOM] -
-                            player.get_bb_range(HB.BODY)[POS.TOP]
-                    )
-
-                else:
-                    # left wall
-                    if (tile.get_bb(HB.BODY)[POS.RIGHT] >=
-                            player.get_bb(HB.BODY)[POS.RIGHT] >=
-                            tile.get_bb(HB.BODY)[POS.LEFT]
-                    ):
-                        if player.facing == DIR.RIGHT:
-                            player.velocity = 0
-                        player.x = (
-                                tile.get_bb(HB.BODY)[POS.LEFT] -
-                                player.get_bb_range(HB.BODY)[POS.RIGHT]
-                        )
-
-                    # right wall
-                    if (tile.get_bb(HB.BODY)[POS.LEFT] <=
-                            player.get_bb(HB.BODY)[POS.LEFT] <=
-                            tile.get_bb(HB.BODY)[POS.RIGHT]
-                    ):
-                        if player.facing == DIR.LEFT:
-                            player.velocity = 0
-                        player.x = (
-                                tile.get_bb(HB.BODY)[POS.RIGHT] +
-                                player.get_bb_range(HB.BODY)[POS.LEFT]
-                        )
+            if collide_player_to_right_wall(player, tile):
+                break
+        for tile in tiles:
+            if collide_player_to_left_wall(player, tile):
+                break
 
     Running = True
     show_bb = False
@@ -678,7 +620,6 @@ def test_player():
                 test_keyboard.keyboard_handle(events)
 
         update()
-        player.update()
 
         keyboard_size = 0.75
         test_keyboard.update_test_keyboard(
@@ -694,7 +635,10 @@ def test_player():
 
         debug_print(" facing = " + str(player.facing) +
                     " x_dir = " + str(player.x_direction) +
-                    " velocity = " + str(player.velocity))
+                    " velocity = " + str(player.velocity) +
+                    " action = " + str(player.action) +
+                    " is_fall = " + str(player.is_fall))
+        print("is_fall: " + str(player.is_fall))
 
         update_canvas()
 
