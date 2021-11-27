@@ -28,3 +28,13 @@ def stop_time(stop, *exceptob: Tuple[int, int]):
 
     for obj in exceptob:
         time_stopper.append(obj)
+
+def init():
+    global start_time, current_time
+    global time_stopper, time_stop
+
+    start_time = 0.0
+    current_time = 0.0
+
+    time_stopper = []
+    time_stop = False

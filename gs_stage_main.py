@@ -17,6 +17,7 @@ show_bb = False
 def enter():
     # print("stage_main enter")
     # Initialization:
+    server.init()
     object_manager.objects = [[], [], [], []]
 
     server.background = ob_background.Background()

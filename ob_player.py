@@ -4,6 +4,7 @@ from value import *
 
 import gs_framework
 import game_object
+import gs_stage_enter
 
 MIN_VELOCITY = get_pps_from_kmph(7.0)
 
@@ -22,8 +23,8 @@ STANDARD_INERTIA = ACCEL_WALK * 2.3
 
 # Player timer
 MAX_TIMER_SHRINK = 1.0
-MAX_TIMER_DIE = 3.0
-MAX_TIMER_INVINCIBLE = 3.0
+MAX_TIMER_DIE = 3.5
+MAX_TIMER_INVINCIBLE = 2.0
 
 
 class EVENT(IntEnum):
@@ -100,6 +101,7 @@ class Player(game_object.Object):
         self.pressed_key_jump = False
 
         self.is_damaged = False
+        self.is_invincible = False
 
         # Setting
         self.set_info()
@@ -107,6 +109,8 @@ class Player(game_object.Object):
 
         # Timer
         self.timer_shrink = 0
+        self.timer_die = 0
+        self.timer_invincible = 0
 
     def check_state(self, event):
         if event == EVENT.Z_DOWN:
@@ -153,16 +157,19 @@ class Player(game_object.Object):
         self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
                             ) * -1
 
-        self.jump_power = clamp(
-            MAX_JUMP_POWER * -1, self.jump_power, 0
-        )
+        if self.timer_die == 0:
+            self.jump_power = clamp(
+                MAX_JUMP_POWER * -1, self.jump_power, 0
+            )
 
         self.y += self.jump_power * gs_framework.frame_time
 
     def shrink(self) -> bool:
         if self.timer_shrink == 0:
             server.stop_time(True, (TN.NONE, TID.NONE))
-            self.cur_state = IdleState
+            if self.cur_state == SitState:
+                self.cur_state = IdleState
+                self.action = ACTION.IDLE
             self.timer_shrink = MAX_TIMER_SHRINK
 
         self.timer_shrink -= gs_framework.frame_time
@@ -179,8 +186,8 @@ class Player(game_object.Object):
                 self.y -= 25
             self.type_id = TID.MARIO_SMALL
 
-        print("shrink_t: %f / motion_n: %d / TID: %s" % (self.timer_shrink, motion, self.type_id))
-        print("-> prev_TID: %s / cur_state: %s" % (self.prev_id, self.cur_state.__name__))
+        # print("shrink_t: %f / motion_n: %d / TID: %s" % (self.timer_shrink, motion, self.type_id))
+        # print("-> prev_TID: %s / cur_state: %s" % (self.prev_id, self.cur_state.__name__))
 
         self.set_info()
 
@@ -190,7 +197,25 @@ class Player(game_object.Object):
         return False
 
     def die(self) -> bool:
-        pass
+        if self.timer_die == 0:
+            server.stop_time(True, (TN.NONE, TID.NONE))
+            self.is_fall = False
+            self.jump_power = MAX_JUMP_POWER
+            self.timer_die = MAX_TIMER_DIE
+            self.set_info(ACTION.DIE_A)
+
+        self.timer_die -= gs_framework.frame_time
+
+        if self.timer_die < 3.0:
+            if not self.is_fall:
+                self.jump()
+            else:
+                self.fall()
+
+        if self.timer_die <= 0.0:
+            self.timer_die = 0
+            return True
+        return False
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -198,12 +223,24 @@ class Player(game_object.Object):
     def update(self):
         if self.is_damaged:
             if self.is_small:
-                self.die()
+                if self.die():
+                    gs_framework.change_state(gs_stage_enter)
             else:
                 if self.shrink():
+                    self.is_invincible = True
                     self.is_damaged = False
                     self.is_small = True
                     server.stop_time(False)
+
+        if self.is_invincible:
+            if self.timer_invincible == 0:
+                self.timer_invincible = MAX_TIMER_INVINCIBLE
+
+            self.timer_invincible -= gs_framework.frame_time
+
+            if self.timer_invincible <= 0.0:
+                self.is_invincible = False
+                self.is_invincible = 0
 
         if server.time_stop:
             return
@@ -235,7 +272,11 @@ class Player(game_object.Object):
     def draw(self):
         self.cur_state.draw(self)
 
-        debug_print("press_key_jump: " + str(self.pressed_key_jump))
+        debug_print_2 = load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 26)
+        debug_print_2.draw(6, gs_framework.canvas_height - 20,
+                           "timer_shrink: %.3f / timer_invincible: %.3f / timer_die: %.3f" %
+                      (self.timer_shrink, self.timer_invincible, self.timer_die),
+                           (0, 255, 0))
 
         if self.show_bb:
             self.draw_bb()
@@ -286,7 +327,6 @@ class IdleState:
         player.update_frame(gs_framework.frame_time)
 
         if player.is_fall:
-            print("in is_fall " + str(player.is_fall))
             player.fall()
             player.set_info(ACTION.FALL)
         elif player.is_jump:
@@ -638,7 +678,6 @@ def test_player():
                     " velocity = " + str(player.velocity) +
                     " action = " + str(player.action) +
                     " is_fall = " + str(player.is_fall))
-        print("is_fall: " + str(player.is_fall))
 
         update_canvas()
 

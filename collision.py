@@ -175,5 +175,5 @@ def collide_player_to_enemy(player: ob_player.Player, enemy: ob_enemy):
         player.set_info(ACTION.JUMP)
 
     # Enemy collides to player
-    elif collide(player.get_bb(HB.BODY), enemy.get_bb(HB.BODY)):
+    elif collide(player.get_bb(HB.BODY), enemy.get_bb(HB.BODY)) and not player.is_invincible:
         player.is_damaged = True

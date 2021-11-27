@@ -35,6 +35,7 @@ def clear():
         l.clear()
 
 
+
 def destroy():
     clear()
     objects.clear()

@@ -292,9 +292,12 @@ class Object:
                 self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
                 self.set_bb(HB.TOP, (13, -21, 13, 22))
 
+            elif self.action == ACTION.SIT:
+                self.switch_bb_all(True)
+
             # Die A
             elif self.action == ACTION.DIE_A:
-                del self.bounding_box
+                pass
 
             else:
                 print("Invalid action: %s" % (str(self.action)))
@@ -761,6 +764,9 @@ class Object:
                 self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
                 self.frame_count, self.frame_begin = 1, 14
                 self.loop_animation = False
+
+            elif self.action == ACTION.SIT:
+                pass
 
             else:
                 self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
