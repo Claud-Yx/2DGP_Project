@@ -208,6 +208,7 @@ class Player(game_object.Object):
         self.x = clamp(25, self.x, gs_framework.canvas_width - 25)
         self.y = clamp(-150, self.y, gs_framework.canvas_width + 150)
 
+        # check jump key(x)
         if len(self.event_que) > 0:
             event = self.event_que.pop()
             if event == EVENT.X_DOWN:

@@ -3,9 +3,6 @@ from value import *
 from ob_tileset import *
 from ob_player import *
 
-from enemy_goomba import *
-from enemy_drybones import *
-
 class StageMap:
     def __init__(self):
         self.world = 0

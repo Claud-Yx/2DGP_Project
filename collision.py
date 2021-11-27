@@ -139,6 +139,7 @@ def collide_enemy_to_wall(enemy: ob_enemy, tile: ob_tileset.TileSet) -> bool:
     ):
         enemy.x_direction *= -1
         enemy.facing = enemy.x_direction
+        enemy.set_info()
 
         if (tile.get_bb(HB.RIGHT)[POS.RIGHT] >=
                 enemy.get_bb(HB.RIGHT)[POS.RIGHT] >
