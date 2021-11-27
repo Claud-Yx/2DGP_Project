@@ -68,6 +68,9 @@ class Object:
         # Animation control value
         self.loop_animation = False
 
+        # Time stop
+        self.is_time_stop = False
+
     def set_tpa(self, tpa):
         self.time_per_action = tpa
         self.action_per_time = 1.0 / self.time_per_action
@@ -126,7 +129,7 @@ class Object:
         pass
 
     @abstractmethod
-    def handle_event(self):
+    def handle_event(self, event):
         pass
 
     def update_frame(self, frame_time):
@@ -150,7 +153,6 @@ class Object:
     def switch_bb_all(self, b=False):
         for key in self.bounding_box.keys():
             self.bounding_box[key].is_on = b
-
 
     def init_bb(self):
         if (self.type_name, self.type_id) == (TN.PLAYER, TID.MARIO_SMALL):

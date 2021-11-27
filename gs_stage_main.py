@@ -17,13 +17,15 @@ show_bb = False
 def enter():
     # print("stage_main enter")
     # Initialization:
-    object_manager.objects = [[],[],[],[]]
+    object_manager.objects = [[], [], [], []]
 
     server.background = ob_background.Background()
     object_manager.add_object(server.background, object_manager.OL_BACKGROUND)
 
     server.enemies.append(ob_enemy.Goomba(930, 460))
     server.enemies.append(ob_enemy.Goomba(930, 460, DIR.LEFT))
+    server.enemies.append(ob_enemy.Goomba(970, 500, DIR.LEFT))
+    server.enemies.append(ob_enemy.Goomba(900, 480))
     object_manager.add_objects(server.enemies, object_manager.OL_FOREGROUND)
 
     server.player = ob_player.Player(TID.MARIO_SUPER, 200, 500)
@@ -48,6 +50,8 @@ def enter():
     object_manager.add_objects(server.tiles, object_manager.OL_TILESET)
 
     test_keyboard.keyboard_init()
+
+    server.start_time = gs_framework.frame_time
 
 
 def exit():
@@ -80,7 +84,17 @@ def handle_events():
             server.player.handle_event(event)
             test_keyboard.keyboard_handle(gs_framework.Events)
 
+
 def update():
+    server.current_time = get_time() - server.start_time
+
+    if server.time_stop:
+        for obj in object_manager.all_objects():
+            obj.is_time_stop = True
+    else:
+        for obj in object_manager.all_objects():
+            obj.is_time_stop = False
+
     for obj in object_manager.all_objects():
         obj.update()
 
@@ -108,8 +122,8 @@ def update():
             if collide_enemy_to_wall(enemy, tile):
                 break
 
-def draw():
 
+def draw():
     clear_canvas()
 
     # Draw
@@ -118,7 +132,7 @@ def draw():
             obj.draw()
         except:
             print(obj.__name__)
-            exit(-1)
+            exit()
 
     # Debug output
     # F2: Tile sets hit box
@@ -131,8 +145,10 @@ def draw():
 
     update_canvas()
 
+
 def pause():
     pass
+
 
 def resume():
     pass

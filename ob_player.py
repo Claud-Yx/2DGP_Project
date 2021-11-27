@@ -1,3 +1,4 @@
+import server
 from game_object import *
 from value import *
 
@@ -18,6 +19,11 @@ JUMP_BOOST_ONE = get_pps_from_mps(2)
 JUMP_BOOST_TWO = get_pps_from_mps(4)
 
 STANDARD_INERTIA = ACCEL_WALK * 2.3
+
+# Player timer
+MAX_TIMER_SHRINK = 1.0
+MAX_TIMER_DIE = 3.0
+MAX_TIMER_INVINCIBLE = 3.0
 
 
 class EVENT(IntEnum):
@@ -55,10 +61,17 @@ class Player(game_object.Object):
     def __init__(self, tid=TID.MARIO_SMALL, x=0, y=0):
         super().__init__(TN.PLAYER, tid, x, y)
 
+        self.prev_id = tid
+        self.is_small = None
+        if tid == TID.MARIO_SMALL:
+            self.is_small = True
+        else:
+            self.is_small = False
+
         # Player inventory
         self.coin = 0
         self.score = 0
-        self.life = 3
+        self.life = 5
 
         # Event and state
         self.event_que = []
@@ -86,8 +99,14 @@ class Player(game_object.Object):
         self.is_jump = False
         self.pressed_key_jump = False
 
+        self.is_damaged = False
+
+        # Setting
         self.set_info()
         self.cur_state.enter(self, None)
+
+        # Timer
+        self.timer_shrink = 0
 
     def check_state(self, event):
         if event == EVENT.Z_DOWN:
@@ -140,10 +159,47 @@ class Player(game_object.Object):
 
         self.y += self.jump_power * gs_framework.frame_time
 
+    def shrink(self) -> bool:
+        if self.timer_shrink == 0:
+            server.stop_time(True, (TN.NONE, TID.NONE))
+            self.timer_shrink = MAX_TIMER_SHRINK
+
+        self.timer_shrink -= gs_framework.frame_time
+
+        motion = int(self.timer_shrink * 6) % 2
+
+        if motion == 1:
+            self.type_id = self.prev_id
+        else:
+            self.prev_id = self.type_id
+            self.type_id = TID.MARIO_SMALL
+
+        self.set_info()
+
+        if self.timer_shrink <= 0.0:
+            self.timer_shrink = 0
+            return True
+        return False
+
+    def die(self) -> bool:
+        pass
+
     def add_event(self, event):
         self.event_que.insert(0, event)
 
     def update(self):
+        if self.is_damaged:
+            if self.is_small:
+                self.die()
+            else:
+                if self.shrink():
+                    self.is_damaged = False
+                    self.is_small = True
+                    server.stop_time(False)
+
+        if server.time_stop:
+            return
+
         if not self.on_floor and not self.is_jump:
             self.is_fall = True
 
@@ -178,6 +234,8 @@ class Player(game_object.Object):
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
+            if (key_event == EVENT.DOWN_DOWN or key_event == EVENT.DOWN_UP) and self.is_small:
+                return
             self.add_event(key_event)
 
 
@@ -428,7 +486,7 @@ next_state_table = {
     },
     SitState: {
         EVENT.UP_DOWN: SitState, EVENT.UP_UP: SitState,
-        EVENT.DOWN_UP: IdleState,
+        EVENT.DOWN_DOWN: SitState, EVENT.DOWN_UP: IdleState,
         EVENT.LEFT_DOWN: WalkState, EVENT.LEFT_UP: WalkState,
         EVENT.RIGHT_DOWN: WalkState, EVENT.RIGHT_UP: WalkState,
         EVENT.Z_DOWN: SitState, EVENT.Z_UP: SitState,

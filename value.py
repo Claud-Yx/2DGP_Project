@@ -103,6 +103,7 @@ class TN(IntEnum):  # Object Type
     INTERACTIVES = auto()
     FOREGROUND = auto()
     SIZE = auto()
+    NONE = 99
 
 
 class EM(IntEnum):  # Edit Menu

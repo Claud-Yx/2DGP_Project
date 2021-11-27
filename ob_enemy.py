@@ -70,6 +70,9 @@ class Goomba(Enemy):
         return False
 
     def update(self):
+        if self.is_time_stop:
+            return
+
         self.update_frame(gs_framework.frame_time)
 
         if self.is_dead:

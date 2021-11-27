@@ -139,7 +139,6 @@ def collide_enemy_to_wall(enemy: ob_enemy, tile: ob_tileset.TileSet) -> bool:
     ):
         enemy.x_direction *= -1
         enemy.facing = enemy.x_direction
-        enemy.set_info()
 
         if (tile.get_bb(HB.RIGHT)[POS.RIGHT] >=
                 enemy.get_bb(HB.RIGHT)[POS.RIGHT] >
@@ -159,6 +158,8 @@ def collide_enemy_to_wall(enemy: ob_enemy, tile: ob_tileset.TileSet) -> bool:
 
 
 def collide_player_to_enemy(player: ob_player.Player, enemy: ob_enemy):
+
+    # Player stomps enemy
     if collide(player.get_bb(HB.BOTTOM), enemy.get_bb(HB.TOP)) and player.is_fall:
         enemy.is_dead = True
 
@@ -166,9 +167,12 @@ def collide_player_to_enemy(player: ob_player.Player, enemy: ob_enemy):
         player.is_fall = False
         player.is_jump = True
         if player.pressed_key_jump:
-            print("press j")
             player.jump_power = ob_player.MAX_JUMP_POWER + ob_player.JUMP_BOOST_ONE
         else:
             player.jump_power = get_pps_from_mps(10)
         player.y += 1
         player.set_info(ACTION.JUMP)
+
+    # Enemy collides to player
+    elif collide(player.get_bb(HB.BODY), enemy.get_bb(HB.BODY)):
+        player.is_damaged = True
