@@ -44,5 +44,6 @@ def destroy():
 
 def all_objects():
     for i in range(len(objects)):
+        # print("objects index: %d" % i)
         for o in objects[i]:
             yield o

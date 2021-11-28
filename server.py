@@ -2,9 +2,11 @@ from ob_player import *
 from ob_tileset import *
 from ob_background import *
 from ob_enemy import *
+from ob_map import *
 
 from value import *
 
+stage: Map
 player: Player
 enemies: List[Enemy] = []
 tiles: List[TileSet] = []
@@ -29,6 +31,7 @@ def stop_time(stop, *exceptob: Tuple[int, int]):
     for obj in exceptob:
         time_stopper.append(obj)
 
+
 def init():
     global start_time, current_time
     global time_stopper, time_stop
@@ -38,3 +41,13 @@ def init():
 
     time_stopper = []
     time_stop = False
+
+
+def destroy():
+    global stage, player, background
+
+    del stage
+    del player
+    del background
+    enemies.clear()
+    tiles.clear()

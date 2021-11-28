@@ -11,7 +11,6 @@ frame_time = get_time()
 
 def change_state(state):
     global stack
-    global Threading
 
     if (len(stack) > 0):
         stack[-1].exit()

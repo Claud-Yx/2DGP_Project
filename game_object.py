@@ -3,6 +3,7 @@ from value import *
 from abc import *
 from bounding_box import *
 
+
 class Object:
     image = None
 
@@ -36,6 +37,7 @@ class Object:
 
         # Bounding Box
         self.bounding_box: Dict[int, BoundingBox] = {}
+        self.bb_size_range = [0, 0, 0, 0]
         self.show_bb = False
 
         # Object moving value
@@ -119,6 +121,28 @@ class Object:
     def draw_bb(self):
         for key in self.bounding_box.keys():
             self.bounding_box[key].draw_bb((self.x, self.y))
+
+    def set_size(self):
+        self.bb_size_range = [0, 0, 0, 0]
+
+        for key in self.bounding_box.keys():
+            bb_range = self.get_bb_range(key)
+            if self.bb_size_range[POS.LEFT] < bb_range[POS.LEFT]:
+                self.bb_size_range[POS.LEFT] = bb_range[POS.LEFT]
+            if self.bb_size_range[POS.BOTTOM] < bb_range[POS.BOTTOM]:
+                self.bb_size_range[POS.BOTTOM] = bb_range[POS.BOTTOM]
+            if self.bb_size_range[POS.RIGHT] < bb_range[POS.RIGHT]:
+                self.bb_size_range[POS.RIGHT] = bb_range[POS.RIGHT]
+            if self.bb_size_range[POS.TOP] < bb_range[POS.TOP]:
+                self.bb_size_range[POS.TOP] = bb_range[POS.TOP]
+
+    def get_size_pos(self) -> Tuple[float, float, float, float]:
+        return (
+            self.x - self.bb_size_range[POS.LEFT],
+            self.y - self.bb_size_range[POS.BOTTOM],
+            self.x + self.bb_size_range[POS.RIGHT],
+            self.y + self.bb_size_range[POS.TOP]
+        )
 
     @abstractmethod
     def draw(self):
@@ -1061,7 +1085,7 @@ class Object:
     def set_info(self, a=None):
         self.set_clip(a)
         self.init_bb()
-
+        self.set_size()
 
 def test_object():
     open_canvas()

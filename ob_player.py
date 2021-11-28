@@ -77,6 +77,8 @@ class Player(game_object.Object):
         # Event and state
         self.event_que = []
         self.cur_state = IdleState
+        self.nearby_tiles: Set = set()
+        self.nearby_objects: Set = set()
 
         # Moving value
         self.jump_power = 0
@@ -206,7 +208,7 @@ class Player(game_object.Object):
 
         self.timer_die -= gs_framework.frame_time
 
-        if self.timer_die < 3.0:
+        if self.timer_die < 3.0 and self.y > -50:
             if not self.is_fall:
                 self.jump()
             else:
@@ -221,10 +223,13 @@ class Player(game_object.Object):
         self.event_que.insert(0, event)
 
     def update(self):
-        if self.is_damaged:
-            if self.is_small:
+        if self.is_damaged or self.y <= -50:
+            if self.y <= -50:
+                self.type_id = TID.MARIO_SMALL
+            if self.is_small or self.y <= -50:
                 if self.die():
                     gs_framework.change_state(gs_stage_enter)
+                    return -1
             else:
                 if self.shrink():
                     self.is_invincible = True

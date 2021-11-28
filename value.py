@@ -172,6 +172,16 @@ class HB(IntEnum):  # Hit box
     SIZE = auto()
 
 
+class L(IntEnum):  # Layer
+    BACKGROUND = 0
+    PLAYER = 3
+    TILESETS = 2
+    ENEMIES = 3
+    ITEMS = 3
+    INTERACTIVES = 1
+    FOREGROUND = 4
+
+
 class Numbering:
     number = 0
 
