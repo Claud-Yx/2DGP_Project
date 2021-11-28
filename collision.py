@@ -158,8 +158,9 @@ def collide_enemy_to_wall(enemy: ob_enemy, tile: ob_tileset.TileSet) -> bool:
     return False
 
 
-def collide_player_to_enemy(player: ob_player.Player, enemy: ob_enemy):
-
+def stomp_player_to_enemy(player: ob_player.Player, enemy: ob_enemy) -> bool:
+    # print("player.bb_bottom pos: %d / enemy.bb_top pos: %d" %
+    #       (player.get_bb(HB.BOTTOM)[POS.BOTTOM], enemy.get_bb(HB.TOP)[POS.TOP]))
     # Player stomps enemy
     if collide(player.get_bb(HB.BOTTOM), enemy.get_bb(HB.TOP)) and player.is_fall:
         enemy.is_dead = True
@@ -171,9 +172,18 @@ def collide_player_to_enemy(player: ob_player.Player, enemy: ob_enemy):
             player.jump_power = ob_player.MAX_JUMP_POWER + ob_player.JUMP_BOOST_ONE
         else:
             player.jump_power = get_pps_from_mps(10)
-        player.y += 1
+        player.y = (player.get_bb_range(HB.BOTTOM)[POS.BOTTOM] + enemy.get_bb(HB.TOP)[POS.TOP]) + 1
         player.set_info(ACTION.JUMP)
+        enemy.switch_bb_all()
+
+        return True
+    return False
+
+
+def hit_enemy_to_player(player: ob_player.Player, enemy: ob_enemy) -> bool:
 
     # Enemy collides to player
-    elif collide(player.get_bb(HB.BODY), enemy.get_bb(HB.BODY)) and not player.is_invincible:
+    if collide(player.get_bb(HB.BODY), enemy.get_bb(HB.BODY)) and not player.is_invincible:
         player.is_damaged = True
+        return True
+    return False

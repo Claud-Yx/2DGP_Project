@@ -60,7 +60,8 @@ class Map:
                         self.object_index[x][y].append(obj)
                     except:
                         print("out range pos: %s(%d, %d) / max(%d, %d)" % (obj.__class__.__name__, x, y,
-                                                                           len(self.object_index), len(self.object_index[0])))
+                                                                           len(self.object_index),
+                                                                           len(self.object_index[0])))
                         exit(-1)
 
     def clear_index(self):

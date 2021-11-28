@@ -17,6 +17,8 @@ class Enemy(game_object.Object):
 
         self.jump_power = 0
 
+        self.nearby_tiles: Set = set()
+
         self.timer = 0.0
 
     @abstractmethod
@@ -70,6 +72,9 @@ class Goomba(Enemy):
         return False
 
     def update(self):
+        if self.y <= -50:
+            self.is_dead = True
+
         if self.is_time_stop:
             return
 
@@ -85,9 +90,6 @@ class Goomba(Enemy):
         if self.is_fall:
             self.on_floor = False
             self.fall()
-
-
-        self.x = clamp(25, self.x, gs_framework.canvas_width - 25)
 
         # print(str(self.facing), str(self.x_direction), str(self.action), str(self.velocity))
         self.x += self.velocity * gs_framework.frame_time * self.x_direction

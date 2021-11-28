@@ -567,7 +567,7 @@ class Object:
                 self.set_bb(HB.LEFT, (21, 23, -20, 21))
                 self.set_bb(HB.BOTTOM, (21, 25, 21, -23))
                 self.set_bb(HB.RIGHT, (-20, 23, 21, 21))
-                self.set_bb(HB.TOP, (21, -20, 21, 24))
+                self.set_bb(HB.TOP, (20, 0, 20, 24))
 
             # Die A
             elif self.action == ACTION.DIE_A:

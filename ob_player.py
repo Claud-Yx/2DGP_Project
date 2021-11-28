@@ -78,7 +78,7 @@ class Player(game_object.Object):
         self.event_que = []
         self.cur_state = IdleState
         self.nearby_tiles: Set = set()
-        self.nearby_objects: Set = set()
+        self.nearby_enemies: Set = set()
 
         # Moving value
         self.jump_power = 0
@@ -168,6 +168,7 @@ class Player(game_object.Object):
 
     def shrink(self) -> bool:
         if self.timer_shrink == 0:
+            self.is_invincible = True
             server.stop_time(True, (TN.NONE, TID.NONE))
             if self.cur_state == SitState:
                 self.cur_state = IdleState
@@ -232,12 +233,11 @@ class Player(game_object.Object):
                     return -1
             else:
                 if self.shrink():
-                    self.is_invincible = True
                     self.is_damaged = False
                     self.is_small = True
                     server.stop_time(False)
 
-        if self.is_invincible:
+        if self.is_invincible and not self.is_damaged:
             if self.timer_invincible == 0:
                 self.timer_invincible = MAX_TIMER_INVINCIBLE
 

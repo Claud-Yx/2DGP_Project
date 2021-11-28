@@ -1,4 +1,5 @@
 import game_object
+import ob_enemy
 import server
 
 from pico2d import *
@@ -23,8 +24,8 @@ def enter():
     object_manager.objects = [[], [], [], [], []]
 
     server.stage = ob_map.Map(0, 0)
-    server.stage.set_size(gs_framework.canvas_width + ob_map.TILE_WIDTH,
-                          gs_framework.canvas_height + ob_map.TILE_HEIGHT)
+    server.stage.set_size(gs_framework.canvas_width * 2,
+                          gs_framework.canvas_height * 2)
     server.background = ob_background.Background()
     object_manager.add_object(server.background, object_manager.OL_BACKGROUND)
 
@@ -47,7 +48,7 @@ def enter():
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 250))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 650, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 350))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 450))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 450))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 850, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 950, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 350))
@@ -88,6 +89,7 @@ def handle_events():
 
 
 def update():
+    s_time = get_time()
     server.current_time = get_time() - server.start_time
 
     if server.time_stop:
@@ -105,6 +107,11 @@ def update():
     server.stage.clear_index()
     server.stage.update()
 
+    # collision check
+    # player collision indexing
+    server.player.nearby_tiles.clear()
+    server.player.nearby_enemies.clear()
+
     player_index_x = int(server.player.x // ob_map.TILE_WIDTH)
     player_index_y = int(server.player.y // ob_map.TILE_HEIGHT)
     for x in range(player_index_x - 2, player_index_x + 2):
@@ -120,10 +127,11 @@ def update():
                 obj: game_object.Object
                 if obj.type_name == TN.TILESETS:
                     server.player.nearby_tiles.add(obj)
-                else:
-                    server.player.nearby_objects.add(obj)
+                elif obj.type_name == TN.ENEMIES:
+                    server.player.nearby_enemies.add(obj)
 
-    # collision check
+    # player collision check
+    # player to tile sets
     for floor in server.player.nearby_tiles:
         if collide_player_to_floor(server.player, floor):
             break
@@ -138,19 +146,50 @@ def update():
         if collide_player_to_left_wall(server.player, tile):
             break
 
-    for obj in server.player.nearby_objects:
-        obj: game_object.Object
-        if obj.type_name == TN.ENEMIES:
-            collide_player_to_enemy(server.player, obj)
+    # player to enemy
+    for enemy in server.player.nearby_enemies:
+        enemy: ob_enemy.Enemy
+        if stomp_player_to_enemy(server.player, enemy):
+            break
 
+    for enemy in server.player.nearby_enemies:
+        enemy: ob_enemy.Enemy
+        if hit_enemy_to_player(server.player, enemy):
+            break
+
+    # if len(server.player.nearby_objects) != 0:
+    #     print(server.player.nearby_objects)
+
+    # enemy collision indexing
     for enemy in server.enemies:
-        for floor in server.tiles:
+        enemy.nearby_tiles.clear()
+
+        enemy_index_x = int(enemy.x // ob_map.TILE_WIDTH)
+        enemy_index_y = int(enemy.y // ob_map.TILE_HEIGHT)
+
+        for x in range(enemy_index_x - 2, enemy_index_x + 2):
+            if x < 0 or len(server.stage.object_index) <= x:
+                continue
+
+            for y in range(enemy_index_y - 2, enemy_index_y + 2):
+                if y < 0 or len(server.stage.object_index[x]) <= y:
+                    continue
+
+                nearby_list = server.stage.object_index[x][y]
+                for obj in nearby_list:
+                    obj: game_object.Object
+                    if obj.type_name == TN.TILESETS:
+                        enemy.nearby_tiles.add(obj)
+
+        for floor in enemy.nearby_tiles:
             if collide_enemy_to_floor(enemy, floor):
                 break
-        for tile in server.tiles:
+        for tile in enemy.nearby_tiles:
             if collide_enemy_to_wall(enemy, tile):
                 break
 
+    e_time = get_time() - s_time
+    print(e_time)
 
 def draw():
     clear_canvas()
