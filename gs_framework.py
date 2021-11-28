@@ -56,7 +56,7 @@ def run(start_state):
     while Running:
         Events = get_events()
         stack[-1].handle_events()
-        stack[-1].update()
+        stack[-1].update_index()
         stack[-1].draw()
         frame_time = get_time() - current_time
         current_time += frame_time

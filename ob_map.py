@@ -17,23 +17,39 @@ class Map:
         self.stage = stage
         self.map = map
 
+        self.x, self.y = 0, 0
+        self.range = [0, 0, 0, 0]
+
         self.size_width = 0
         self.size_height = 0
 
         # Game object index, 3D list
         self.object_index = [[]]
 
+    def move(self, x, y):
+        self.x += x
+        self.y += y
+
+        self.range[POS.LEFT] = x
+        self.range[POS.BOTTOM] = y
+        self.range[POS.RIGHT] = x + TILE_WIDTH
+        self.range[POS.TOP] = y + TILE_HEIGHT
+
     def set_size(self, w, h):
         width = w // TILE_WIDTH
         height = h // TILE_HEIGHT
         self.size_width = width * TILE_WIDTH
         self.size_height = height * TILE_HEIGHT
+        self.range = [
+            0, 0, self.size_width, self.size_height
+        ]
+
         self.object_index = [[] for i in range(width)]
 
         for i in range(len(self.object_index)):
             self.object_index[i] = [[] for j in range(height)]
 
-    def update(self):
+    def update_index(self):
         for obj in object_manager.all_objects():
             obj: game_object.Object
             if obj.__class__ == ob_background.Background:

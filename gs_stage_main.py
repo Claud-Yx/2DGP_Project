@@ -105,7 +105,7 @@ def update():
 
     # indexing
     server.stage.clear_index()
-    server.stage.update()
+    server.stage.update_index()
 
     # collision check
     # player collision indexing
