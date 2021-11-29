@@ -237,3 +237,12 @@ def collide_item_to_wall(item: ob_item.Item, tile: ob_tileset.TileSet) -> bool:
 
         return True
     return False
+
+
+def collide_item_to_player(player: ob_player.Player, item: ob_item.Item) -> bool:
+    # Item collides to player
+    if collide(player.get_bb(HB.BODY), item.get_bb(HB.BODY)):
+        player.taken_item = (item.type_name, item.type_id)
+        item.is_dead = True
+        return True
+    return False

@@ -22,6 +22,8 @@ class Item(game_object.Object, ABC):
 
         self.nearby_tiles: Set = set()
 
+        self.is_dead = False
+
     @abstractmethod
     def update(self):
         pass
@@ -44,7 +46,6 @@ class SuperMushroom(Item, ABC):
 
         self.on_floor = False
         self.is_fall = False
-        self.is_dead = False
 
         self.set_info(ACTION.WALK)
 

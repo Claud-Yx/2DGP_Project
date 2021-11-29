@@ -23,6 +23,7 @@ STANDARD_INERTIA = ACCEL_WALK * 2.3
 
 # Player timer
 MAX_TIMER_SHRINK = 1.0
+MAX_TIMER_GROW = 1.0
 MAX_TIMER_DIE = 3.5
 MAX_TIMER_INVINCIBLE = 2.0
 
@@ -79,6 +80,7 @@ class Player(game_object.Object):
         self.cur_state = IdleState
         self.nearby_tiles: Set = set()
         self.nearby_enemies: Set = set()
+        self.nearby_items: Set = set()
 
         # Moving value
         self.jump_power = 0
@@ -105,8 +107,7 @@ class Player(game_object.Object):
         self.is_damaged = False
         self.is_invincible = False
 
-        self.taken_super = False
-        self.taken_flame = False
+        self.taken_item = [TN.ITEMS, TID.NONE]
 
         # Setting
         self.set_info()
@@ -116,6 +117,7 @@ class Player(game_object.Object):
         self.timer_shrink = 0
         self.timer_die = 0
         self.timer_invincible = 0
+        self.timer_grow = 0
 
     def check_state(self, event):
         if event == EVENT.Z_DOWN:
@@ -186,19 +188,46 @@ class Player(game_object.Object):
             if self.type_id == TID.MARIO_SMALL:
                 self.y += 25
             self.type_id = self.prev_id
+            self.set_clip()
         else:
             if not self.type_id == TID.MARIO_SMALL:
                 self.prev_id = self.type_id
                 self.y -= 25
             self.type_id = TID.MARIO_SMALL
-
-        # print("shrink_t: %f / motion_n: %d / TID: %s" % (self.timer_shrink, motion, self.type_id))
-        # print("-> prev_TID: %s / cur_state: %s" % (self.prev_id, self.cur_state.__name__))
+            self.set_clip()
 
         self.set_info()
 
         if self.timer_shrink <= 0.0:
             self.timer_shrink = 0
+            return True
+        return False
+
+    def grow(self):
+        if self.timer_grow == 0:
+            server.stop_time(True, (TN.NONE, TID.NONE))
+            self.timer_grow = MAX_TIMER_GROW
+
+        self.timer_grow -= gs_framework.frame_time
+
+        motion = int(self.timer_grow * 6) % 2
+
+        if motion == 0:
+            if self.type_id == TID.MARIO_SMALL:
+                self.y += 25
+            self.type_id = self.prev_id
+            self.set_clip()
+        else:
+            if not self.type_id == TID.MARIO_SMALL:
+                self.prev_id = self.type_id
+                self.y -= 25
+            self.type_id = TID.MARIO_SMALL
+            self.set_clip()
+
+            self.set_info()
+
+        if self.timer_grow <= 0.0:
+            self.timer_grow = 0
             return True
         return False
 
@@ -237,12 +266,7 @@ class Player(game_object.Object):
                     self.is_small = True
                     server.stop_time(False)
 
-    def add_event(self, event):
-        self.event_que.insert(0, event)
-
-    def update(self):
-        self.damaged()
-
+    def invincible(self):
         if self.is_invincible and not self.is_damaged:
             if self.timer_invincible == 0:
                 self.timer_invincible = MAX_TIMER_INVINCIBLE
@@ -250,11 +274,32 @@ class Player(game_object.Object):
             self.timer_invincible -= gs_framework.frame_time
 
             if self.timer_invincible <= 0.0:
+                self.timer_invincible = 0.0
                 self.is_invincible = False
-                self.is_invincible = 0
+
+    def taken_item(self):
+        if self.taken_item == (TN.ITEMS, TID.SUPER_MUSHROOM):
+            if self.is_small:
+                if self.grow():
+                    self.taken_item = (TN.ITEMS, TN.NONE)
+                    self.is_small = False
+                    server.stop_time(False)
+            else:
+                self.taken_item = (TN.ITEMS, TN.NONE)
+                self.score += 1000
+
+    def add_event(self, event):
+        self.event_que.insert(0, event)
+
+    def update(self):
+        if self.damaged() == -1:
+            return -1
+        Player.taken_item(self)
 
         if server.time_stop:
             return
+
+        self.invincible()
 
         if not self.on_floor and not self.is_jump:
             self.is_fall = True
@@ -295,9 +340,8 @@ class Player(game_object.Object):
 
         debug_print_2 = load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 26)
         debug_print_2.draw(6, gs_framework.canvas_height - 16,
-                           "player.x: %.1f / super_mushroom pos: (%.1f, %.1f)" %
-                           (server.player.x - server.stage.x,
-                            server.items[0].x - server.stage.x, server.items[0].y),
+                           "timer_invincible: %.2f / taken_item: (%s, %s)" %
+                           (self.timer_invincible, self.taken_item[0], self.taken_item[1]),
                            (0, 255, 0))
 
         if self.show_bb:

@@ -123,6 +123,7 @@ def update():
     # player collision indexing
     server.player.nearby_tiles.clear()
     server.player.nearby_enemies.clear()
+    server.player.nearby_items.clear()
 
     player_index_x = int((server.player.x - server.stage.x) // ob_map.TILE_WIDTH)
     player_index_y = int(server.player.y // ob_map.TILE_HEIGHT)
@@ -141,6 +142,8 @@ def update():
                     server.player.nearby_tiles.add(obj)
                 elif obj.type_name == TN.ENEMIES:
                     server.player.nearby_enemies.add(obj)
+                elif obj.type_name == TN.ITEMS:
+                    server.player.nearby_items.add(obj)
 
     # player collision check
     # player to tile sets
@@ -167,6 +170,12 @@ def update():
     for enemy in server.player.nearby_enemies:
         enemy: ob_enemy.Enemy
         if hit_enemy_to_player(server.player, enemy):
+            break
+
+    # player to item
+    for item in server.player.nearby_items:
+        item: ob_item.Item
+        if collide_item_to_player(server.player, item):
             break
 
     # if len(server.player.nearby_tiles) != 0:
