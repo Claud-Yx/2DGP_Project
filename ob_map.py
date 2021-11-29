@@ -26,14 +26,11 @@ class Map:
         # Game object index, 3D list
         self.object_index = [[]]
 
-    def move(self, x, y):
-        self.x += x
-        self.y += y
-
-        self.range[POS.LEFT] = x
-        self.range[POS.BOTTOM] = y
-        self.range[POS.RIGHT] = x + TILE_WIDTH
-        self.range[POS.TOP] = y + TILE_HEIGHT
+    def set_range(self):
+        self.range[POS.LEFT] = self.x
+        self.range[POS.BOTTOM] = self.y
+        self.range[POS.RIGHT] = self.x + self.size_width
+        self.range[POS.TOP] = self.y + self.size_height
 
     def set_size(self, w, h):
         width = w // TILE_WIDTH
@@ -49,6 +46,19 @@ class Map:
         for i in range(len(self.object_index)):
             self.object_index[i] = [[] for j in range(height)]
 
+    def update(self):
+        self.clear_index()
+        self.update_index()
+
+        prev_x = self.x
+
+        if (server.player.x == gs_framework.canvas_width // 2 + 50 or
+            server.player.x == gs_framework.canvas_width // 2 - 50
+        ):
+            self.x -= server.player.velocity * gs_framework.frame_time
+
+        self.x = clamp(gs_framework.canvas_width - self.size_width, self.x, 0)
+
     def update_index(self):
         for obj in object_manager.all_objects():
             obj: game_object.Object
@@ -58,6 +68,14 @@ class Map:
                 continue
 
             x1, y1, x2, y2 = obj.get_size_pos()
+
+            x1 -= self.x
+            x2 -= self.x
+            y1 -= self.y
+            y2 -= self.y
+
+            # if obj.type_name == TN.ENEMIES:
+            #     print("%d, %d" % (obj.x - 21, x1))
 
             x1 //= TILE_WIDTH
             x2 //= TILE_WIDTH

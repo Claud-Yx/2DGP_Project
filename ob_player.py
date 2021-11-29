@@ -255,7 +255,13 @@ class Player(game_object.Object):
 
         self.cur_state.do(self)
 
-        self.x = clamp(25, self.x, gs_framework.canvas_width - 25)
+        x_min, x_max = gs_framework.canvas_width // 2 - 50, gs_framework.canvas_width // 2 + 50
+        if server.stage.x == 0:
+            x_min = 25
+        elif server.stage.x == gs_framework.canvas_width - server.stage.size_width:
+            x_max = gs_framework.canvas_width - 25
+
+        self.x = clamp(x_min, self.x, x_max)
         self.y = clamp(-150, self.y, gs_framework.canvas_width + 150)
 
         # check jump key(x)
@@ -278,9 +284,9 @@ class Player(game_object.Object):
         self.cur_state.draw(self)
 
         debug_print_2 = load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 26)
-        debug_print_2.draw(6, gs_framework.canvas_height - 20,
-                           "timer_shrink: %.3f / timer_invincible: %.3f / timer_die: %.3f" %
-                      (self.timer_shrink, self.timer_invincible, self.timer_die),
+        debug_print_2.draw(6, gs_framework.canvas_height - 16,
+                           "player.x: %.1f" %
+                           server.player.x,
                            (0, 255, 0))
 
         if self.show_bb:

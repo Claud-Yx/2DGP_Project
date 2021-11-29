@@ -4,6 +4,7 @@ from abc import *
 from bounding_box import *
 
 
+
 class Object:
     image = None
 
@@ -33,7 +34,6 @@ class Object:
 
         # Object location point
         self.x, self.y = x, y
-        self.px, self.py = self.x, self.y
 
         # Bounding Box
         self.bounding_box: Dict[int, BoundingBox] = {}

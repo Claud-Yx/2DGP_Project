@@ -1,5 +1,6 @@
 from value import *
 
+import server
 import gs_framework
 import game_object
 
@@ -34,7 +35,8 @@ class TileSet(game_object.Object):
         del self.loop_animation
 
     def update(self):
-        pass
+        server.move_camera_x(self)
+        # self.y -= server.player.jump_power * gs_framework.frame_time
 
     def draw(self):
         self.image_draw()

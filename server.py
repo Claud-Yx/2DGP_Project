@@ -8,8 +8,8 @@ from value import *
 
 stage: Map
 player: Player
-enemies: List[Enemy] = []
-tiles: List[TileSet] = []
+enemies = []
+tiles = []
 background: Background
 
 start_time = 0.0
@@ -51,3 +51,12 @@ def destroy():
     del background
     enemies.clear()
     tiles.clear()
+
+
+def move_camera_x(self: game_object.Object):
+    global player, stage
+
+    if (server.player.x == gs_framework.canvas_width // 2 + 50 or
+            server.player.x == gs_framework.canvas_width // 2 - 50
+    ):
+        self.x -= server.player.velocity * gs_framework.frame_time

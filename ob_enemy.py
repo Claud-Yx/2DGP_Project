@@ -5,6 +5,8 @@ from value import *
 import gs_framework
 import game_object
 
+import server
+
 MAX_JUMP_POWER = get_pps_from_mps(20)
 
 
@@ -43,7 +45,7 @@ class Goomba(Enemy):
 
         self.velocity = get_pps_from_kmph(8)
 
-        self.on_floor = True
+        self.on_floor = False
         self.is_fall = False
         self.is_dead = False
 
@@ -72,8 +74,10 @@ class Goomba(Enemy):
         return False
 
     def update(self):
-        if self.y <= -50:
-            self.is_dead = True
+        server.move_camera_x(self)
+
+        # if self.y <= -50:
+        #     self.is_dead = True
 
         if self.is_time_stop:
             return
@@ -86,6 +90,8 @@ class Goomba(Enemy):
                 del self
             return
 
+        if not self.on_floor and not self.is_fall:
+            self.is_fall = True
 
         if self.is_fall:
             self.on_floor = False
@@ -93,7 +99,6 @@ class Goomba(Enemy):
 
         # print(str(self.facing), str(self.x_direction), str(self.action), str(self.velocity))
         self.x += self.velocity * gs_framework.frame_time * self.x_direction
-
 
 def test_enemy():
     from ob_tileset import TileSet

@@ -29,16 +29,16 @@ def enter():
     server.background = ob_background.Background()
     object_manager.add_object(server.background, object_manager.OL_BACKGROUND)
 
-    server.enemies.append(ob_enemy.Goomba(930, 460))
-    server.enemies.append(ob_enemy.Goomba(930, 460, DIR.LEFT))
-    server.enemies.append(ob_enemy.Goomba(970, 500, DIR.LEFT))
+    # server.enemies.append(ob_enemy.Goomba(930, 460))
+    # server.enemies.append(ob_enemy.Goomba(930, 460, DIR.LEFT))
+    # server.enemies.append(ob_enemy.Goomba(970, 500, DIR.LEFT))
     server.enemies.append(ob_enemy.Goomba(900, 480))
     object_manager.add_objects(server.enemies, object_manager.OL_CHARACTER)
 
     server.player = ob_player.Player(TID.MARIO_SUPER, 200, 500)
     object_manager.add_object(server.player, object_manager.OL_CHARACTER)
 
-    for x in range(150, gs_framework.canvas_width, 100):
+    for x in range(150, gs_framework.canvas_width * 2, 100):
         server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, x, 50))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 150))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 250))
@@ -48,7 +48,7 @@ def enter():
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 250))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 650, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 350))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 450))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 450))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 850, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 950, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 350))
@@ -89,7 +89,7 @@ def handle_events():
 
 
 def update():
-    s_time = get_time()
+    # s_time = get_time()
     server.current_time = get_time() - server.start_time
 
     if server.time_stop:
@@ -103,16 +103,20 @@ def update():
         if obj.update() == -1:
             return
 
+
     # indexing
-    server.stage.clear_index()
-    server.stage.update_index()
+    stage_prev_x = server.stage.x
+    server.stage.update()
+
+    # if stage_prev_x != server.stage.x:
+    #     print("map pos: (%.2f, %.2f)" % (server.stage.x, server.stage.y))
 
     # collision check
     # player collision indexing
     server.player.nearby_tiles.clear()
     server.player.nearby_enemies.clear()
 
-    player_index_x = int(server.player.x // ob_map.TILE_WIDTH)
+    player_index_x = int((server.player.x - server.stage.x) // ob_map.TILE_WIDTH)
     player_index_y = int(server.player.y // ob_map.TILE_HEIGHT)
     for x in range(player_index_x - 2, player_index_x + 2):
         if x < 0 or len(server.stage.object_index) <= x:
@@ -157,14 +161,14 @@ def update():
         if hit_enemy_to_player(server.player, enemy):
             break
 
-    # if len(server.player.nearby_objects) != 0:
-    #     print(server.player.nearby_objects)
+    # if len(server.player.nearby_tiles) != 0:
+    #     print(server.player.nearby_tiles)
 
     # enemy collision indexing
     for enemy in server.enemies:
         enemy.nearby_tiles.clear()
 
-        enemy_index_x = int(enemy.x // ob_map.TILE_WIDTH)
+        enemy_index_x = int((enemy.x - server.stage.x) // ob_map.TILE_WIDTH)
         enemy_index_y = int(enemy.y // ob_map.TILE_HEIGHT)
 
         for x in range(enemy_index_x - 2, enemy_index_x + 2):
@@ -188,8 +192,9 @@ def update():
             if collide_enemy_to_wall(enemy, tile):
                 break
 
-    e_time = get_time() - s_time
-    print(e_time)
+    # e_time = get_time() - s_time
+    # print(e_time)
+
 
 def draw():
     clear_canvas()
