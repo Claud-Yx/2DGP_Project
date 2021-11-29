@@ -9,7 +9,7 @@ import game_object
 import gs_framework
 
 MAX_JUMP_POWER = get_pps_from_mps(15)
-MAX_VELOCITY = get_pps_from_kmph(8)
+MAX_VELOCITY = get_pps_from_kmph(10)
 
 
 class Item(game_object.Object, ABC):

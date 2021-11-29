@@ -110,7 +110,7 @@ class EM(IntEnum):  # Edit Menu
     MAIN = 0
     TILESETS = auto()
     ENEMIES = auto()
-    ITMES = auto()
+    ITEMS = auto()
     INTERACTIVES = auto()
     BACKGROUNDS = auto()
     SIZE = auto()
@@ -140,6 +140,14 @@ class TID(IntEnum):  # Type ID
     CASTLE_BLOCK_50X100 = auto()
     CASTLE_BLOCK_100X50 = auto()
     CASTLE_BLOCK_100X100 = auto()
+    BREAKABLE_BRICK = 10
+    UNBREAKABLE_BRICK = auto()
+    RANDOM_BOX = auto()
+    PLAT_FORM = auto()
+    SPIKE_UP = 20
+    SPIKE_DOWN = auto()
+    SPIKE_LEFT = auto()
+    SPIKE_RIGHT = auto()
 
     COIN = 0
     SUPER_MUSHROOM = auto()
@@ -148,15 +156,7 @@ class TID(IntEnum):  # Type ID
     SUPER_STAR = auto()
     STAR_COIN = auto()
 
-    BREAKABLE_BRICK = 0
-    UNBREAKABLE_BRICK = auto()
-    RANDOM_BOX = auto()
-    PLAT_FORM = auto()
-    SPIKE_UP = 10
-    SPIKE_DOWN = auto()
-    SPIKE_LEFT = auto()
-    SPIKE_RIGHT = auto()
-    WIRE_MESH = auto()
+    WIRE_MESH = 0
 
     NONE = 99
 

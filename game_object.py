@@ -18,6 +18,7 @@ class Object:
                 (TN.TILESETS, TID.CASTLE_BLOCK_50X100): load_image('resource\\tileset\\block50x100.png'),
                 (TN.TILESETS, TID.CASTLE_BLOCK_100X50): load_image('resource\\tileset\\block100x50.png'),
                 (TN.TILESETS, TID.CASTLE_BLOCK_100X100): load_image('resource\\tileset\\block100x100.png'),
+                (TN.TILESETS, TID.UNBREAKABLE_BRICK): load_image('')
                 (TN.ENEMIES, TID.GOOMBA): load_image('resource\\characters\\goomba.png'),
                 (TN.ENEMIES, TID.DRY_BONES): load_image('resource\\characters\\dry_bones.png'),
                 (TN.ENEMIES, TID.BOO): load_image('resource\\characters\\boo.png'),
