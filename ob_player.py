@@ -255,11 +255,15 @@ class Player(game_object.Object):
 
         self.cur_state.do(self)
 
+        # scroll and clamping
         x_min, x_max = gs_framework.canvas_width // 2 - 50, gs_framework.canvas_width // 2 + 50
-        if server.stage.x == 0:
-            x_min = 25
-        elif server.stage.x == gs_framework.canvas_width - server.stage.size_width:
-            x_max = gs_framework.canvas_width - 25
+        if server.stage.size_width > gs_framework.canvas_width:
+            if server.stage.x == 0:
+                x_min = 25
+            elif server.stage.x == gs_framework.canvas_width - server.stage.size_width:
+                x_max = gs_framework.canvas_width - 25
+        else:
+            x_min, x_max = 25, gs_framework.canvas_width - 25
 
         self.x = clamp(x_min, self.x, x_max)
         self.y = clamp(-150, self.y, gs_framework.canvas_width + 150)

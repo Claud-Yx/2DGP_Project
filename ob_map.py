@@ -50,14 +50,15 @@ class Map:
         self.clear_index()
         self.update_index()
 
-        prev_x = self.x
+        if self.size_width > gs_framework.canvas_width:
+            if (server.player.x == gs_framework.canvas_width // 2 + 50 or
+                    server.player.x == gs_framework.canvas_width // 2 - 50
+            ):
+                self.x -= server.player.velocity * gs_framework.frame_time
 
-        if (server.player.x == gs_framework.canvas_width // 2 + 50 or
-            server.player.x == gs_framework.canvas_width // 2 - 50
-        ):
-            self.x -= server.player.velocity * gs_framework.frame_time
-
-        self.x = clamp(gs_framework.canvas_width - self.size_width, self.x, 0)
+            self.x = clamp(gs_framework.canvas_width - self.size_width, self.x, 0)
+        else:
+            self.x = (gs_framework.canvas_width - self.size_width) / 2
 
     def update_index(self):
         for obj in object_manager.all_objects():
