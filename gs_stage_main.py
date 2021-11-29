@@ -24,8 +24,8 @@ def enter():
     object_manager.objects = [[], [], [], [], []]
 
     server.stage = ob_map.Map(0, 0)
-    server.stage.set_size(gs_framework.canvas_width,
-                          gs_framework.canvas_height)
+    server.stage.set_size(gs_framework.canvas_width * 2,
+                         222xzx gs_framework.canvas_height * 2)
     server.background = ob_background.Background()
     object_manager.add_object(server.background, object_manager.OL_BACKGROUND)
 
