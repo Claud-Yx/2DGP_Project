@@ -34,6 +34,10 @@ def enter():
     object_manager.add_object(server.background, L.BACKGROUND)
 
     # item
+    server.items.append(ob_item.Coin(525, 125))
+    server.items.append(ob_item.Coin(525, 175))
+    server.items.append(ob_item.Coin(575, 125))
+    server.items.append(ob_item.Coin(575, 175))
     server.items.append(ob_item.SuperMushroom(800, 480))
     object_manager.add_objects(server.items, L.ITEMS)
 
@@ -61,8 +65,16 @@ def enter():
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 850, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 950, 350))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 350))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 450))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1150, 350))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 350))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 450))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X50, 450, 325))
+
+    server.tiles.append(ob_tileset.RandomBox(125, 375))
+    server.tiles.append(ob_tileset.RandomBox(175, 375))
+    server.tiles.append(ob_tileset.RandomBox(125, 575))
+    server.tiles.append(ob_tileset.RandomBox(175, 675))
+
     object_manager.add_objects(server.tiles, object_manager.OL_TILESET)
 
     test_keyboard.keyboard_init()
@@ -214,6 +226,9 @@ def update():
 
     # item collision checking and indexing
     for item in server.items:
+        if item.type_id == TID.COIN:
+            continue
+
         item.nearby_tiles.clear()
 
         item_index_x = int((item.x - server.stage.x) // ob_map.TILE_WIDTH)

@@ -81,6 +81,34 @@ class SuperMushroom(Item, ABC):
         pass
 
 
+class Coin(Item, ABC):
+    def __init__(self, x=0, y=0):
+        super().__init__(TID.COIN, x, y)
+
+        self.is_dead = False
+
+        self.set_info()
+
+    def update(self):
+        if self.is_time_stop:
+            return
+
+        server.move_camera_x(self)
+
+        self.update_frame(gs_framework.frame_time)
+
+        if self.is_dead:
+            object_manager.remove_object(self)
+            del self
+            return
+
+    def draw(self):
+        self.clip_draw()
+
+        if self.show_bb:
+            self.draw_bb()
+
+
 
 
 

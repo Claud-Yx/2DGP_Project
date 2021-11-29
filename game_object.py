@@ -18,7 +18,9 @@ class Object:
                 (TN.TILESETS, TID.CASTLE_BLOCK_50X100): load_image('resource\\tileset\\block50x100.png'),
                 (TN.TILESETS, TID.CASTLE_BLOCK_100X50): load_image('resource\\tileset\\block100x50.png'),
                 (TN.TILESETS, TID.CASTLE_BLOCK_100X100): load_image('resource\\tileset\\block100x100.png'),
-                (TN.TILESETS, TID.UNBREAKABLE_BRICK): load_image('')
+                (TN.TILESETS, TID.EMPTY_BOX): load_image('resource\\tileset\\empty_box50x50.png'),
+                (TN.TILESETS, TID.BREAKABLE_BRICK): load_image('resource\\tileset\\breakable_brick50x50.png'),
+                (TN.TILESETS, TID.RANDOM_BOX): load_image('resource\\tileset\\random_box50x50.png'),
                 (TN.ENEMIES, TID.GOOMBA): load_image('resource\\characters\\goomba.png'),
                 (TN.ENEMIES, TID.DRY_BONES): load_image('resource\\characters\\dry_bones.png'),
                 (TN.ENEMIES, TID.BOO): load_image('resource\\characters\\boo.png'),
@@ -287,34 +289,34 @@ class Object:
 
             # Jump right
             elif self.action == ACTION.JUMP and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.BODY, (13, 15, 13, 18))
+                self.set_bb(HB.LEFT, (13, 15, -12, 18))
                 self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.RIGHT, (-12, 15, 13, 18))
+                self.set_bb(HB.TOP, (12, -21, 12, 22))
 
             # Jump left
             elif self.action == ACTION.JUMP and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.BODY, (13, 15, 13, 18))
+                self.set_bb(HB.LEFT, (13, 15, -12, 18))
                 self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.RIGHT, (-12, 15, 13, 18))
+                self.set_bb(HB.TOP, (12, -21, 12, 22))
 
             # Fall right
             elif self.action == ACTION.FALL and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.BODY, (13, 10, 13, 22))
+                self.set_bb(HB.LEFT, (13, 10, -12, 22))
                 self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.RIGHT, (-12, 10, 13, 22))
                 self.set_bb(HB.TOP, (13, -21, 13, 22))
 
             # Fall left
             elif self.action == ACTION.FALL and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
+                self.set_bb(HB.BODY, (13, 10, 13, 22))
+                self.set_bb(HB.LEFT, (13, 10, -12, 22))
                 self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
+                self.set_bb(HB.RIGHT, (-12, 10, 13, 22))
                 self.set_bb(HB.TOP, (13, -21, 13, 22))
 
             elif self.action == ACTION.SIT:
@@ -456,7 +458,7 @@ class Object:
                 self.set_bb(HB.LEFT, (15, 40, -14, 30))
                 self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
                 self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 34))
+                self.set_bb(HB.TOP, (14, -29, 14, 34))
 
             # Jump left
             elif self.action == ACTION.JUMP and self.facing == DIR.LEFT:
@@ -464,7 +466,7 @@ class Object:
                 self.set_bb(HB.LEFT, (15, 40, -14, 30))
                 self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
                 self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 34))
+                self.set_bb(HB.TOP, (14, -29, 14, 34))
 
             # Fall right
             elif self.action == ACTION.FALL and self.facing == DIR.RIGHT:
@@ -643,24 +645,28 @@ class Object:
                 self.bounding_box[HB.RIGHT] = BoundingBox(HB.RIGHT)
                 self.bounding_box[HB.TOP] = BoundingBox(HB.TOP)
 
-            if self.type_id == TID.CASTLE_BLOCK_50X50:
+            if (self.type_id == TID.CASTLE_BLOCK_50X50 or
+                self.type_id == TID.BREAKABLE_BRICK or
+                self.type_id == TID.EMPTY_BOX or
+                self.type_id == TID.RANDOM_BOX
+            ):
                 self.set_bb(HB.BODY, (25, 25, 25, 25))
-                self.set_bb(HB.LEFT, (25, 25, -24, 25))
-                self.set_bb(HB.BOTTOM, (24, 25, 24, -24))
-                self.set_bb(HB.RIGHT, (-24, 25, 25, 25))
-                self.set_bb(HB.TOP, (24, -24, 24, 25))
+                self.set_bb(HB.LEFT, (25, 25, -20, 25))
+                self.set_bb(HB.BOTTOM, (24, 25, 24, -20))
+                self.set_bb(HB.RIGHT, (-20, 25, 25, 25))
+                self.set_bb(HB.TOP, (24, -20, 24, 25))
             elif self.type_id == TID.CASTLE_BLOCK_50X100:
                 self.set_bb(HB.BODY, (25, 50, 25, 50))
-                self.set_bb(HB.LEFT, (25, 50, -24, 50))
-                self.set_bb(HB.BOTTOM, (24, 50, 24, -49))
-                self.set_bb(HB.RIGHT, (-24, 50, 25, 50))
-                self.set_bb(HB.TOP, (24, -49, 24, 50))
+                self.set_bb(HB.LEFT, (25, 50, -20, 50))
+                self.set_bb(HB.BOTTOM, (24, 50, 24, -45))
+                self.set_bb(HB.RIGHT, (-20, 50, 25, 50))
+                self.set_bb(HB.TOP, (24, -45, 24, 50))
             elif self.type_id == TID.CASTLE_BLOCK_100X50:
                 self.set_bb(HB.BODY, (50, 25, 50, 25))
-                self.set_bb(HB.LEFT, (50, 25, -49, 25))
-                self.set_bb(HB.BOTTOM, (49, 25, 49, -24))
-                self.set_bb(HB.RIGHT, (-49, 25, 50, 25))
-                self.set_bb(HB.TOP, (49, -24, 49, 25))
+                self.set_bb(HB.LEFT, (50, 25, -45, 25))
+                self.set_bb(HB.BOTTOM, (49, 25, 49, -20))
+                self.set_bb(HB.RIGHT, (-45, 25, 50, 25))
+                self.set_bb(HB.TOP, (49, -20, 49, 25))
             elif self.type_id == TID.CASTLE_BLOCK_100X100:
                 self.set_bb(HB.BODY, (50, 50, 50, 50))
                 self.set_bb(HB.LEFT, (50, 50, -45, 50))
@@ -683,6 +689,9 @@ class Object:
                 self.set_bb(HB.BOTTOM, (24, 25, 24, -20))
                 self.set_bb(HB.RIGHT, (-20, 25, 25, 25))
                 self.set_bb(HB.TOP, (24, -20, 24, 25))
+
+            elif self.type_id == TID.COIN:
+                self.set_bb(HB.BODY, (25, 25, 25, 25))
 
         else:
             print("Invalid type: %s / %s" % (str(self.type_name), str(self.type_id)))
@@ -1097,7 +1106,27 @@ class Object:
                 self.l, self.b, self.w, self.h = 50, 100 * 4, 50, 50
                 self.loop_animation = False
 
+        # Items
+        elif self.type_name == TN.ITEMS:
+            if self.type_id == TID.COIN:
+                self.set_tpa(0.8)
+                self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
+                self.frame_count, self.frame_begin = 4, 0
+                self.loop_animation = True
 
+        # Tile sets
+        elif self.type_name == TN.TILESETS:
+            if self.type_id == TID.RANDOM_BOX:
+                self.set_tpa(0.8)
+                self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
+                self.frame_count, self.frame_begin = 4, 0
+                self.loop_animation = True
+
+            elif self.type_id == TID.BREAKABLE_BRICK:
+                self.set_tpa(0.8)
+                self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
+                self.frame_count, self.frame_begin = 4, 0
+                self.loop_animation = True
 
         self.frame = self.frame_begin
 

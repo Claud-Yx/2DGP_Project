@@ -141,7 +141,7 @@ class TID(IntEnum):  # Type ID
     CASTLE_BLOCK_100X50 = auto()
     CASTLE_BLOCK_100X100 = auto()
     BREAKABLE_BRICK = 10
-    UNBREAKABLE_BRICK = auto()
+    EMPTY_BOX = auto()
     RANDOM_BOX = auto()
     PLAT_FORM = auto()
     SPIKE_UP = 20

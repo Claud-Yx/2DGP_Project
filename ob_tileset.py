@@ -1,9 +1,14 @@
+import object_manager
 from value import *
 
 import server
 import gs_framework
 import game_object
 
+import pico2d
+
+MAX_HIT_TIMER = 0.2
+VELOCITY_HIT = get_pps_from_mps(10)
 
 class TileSet(game_object.Object):
 
@@ -51,7 +56,84 @@ class TileSet(game_object.Object):
         pass
 
 
-class
+class RandomBox(TileSet):
+    def __init__(self, x=0, y=0, item=TID.COIN):
+        super().__init__(TID.RANDOM_BOX, x, y)
+
+        self.min_y, self.max_y = y, y+20
+
+        self.x_direction = DIR.RIGHT
+        self.action = ACTION.IDLE
+
+        self.item = item
+
+        self.is_invisible = False
+
+        self.is_empty = False
+        self.is_hit = False
+
+        self.timer_hit = 0.0
+
+        if self.item == TID.NONE:
+            self.is_empty = True
+            self.is_hit = True
+
+        # Animation frame value
+        self.time_per_action = 0.0
+        self.action_per_time = 0.0
+        self.frame = 0
+        self.frame_begin = 0
+        self.frame_count = 0
+
+        # Animation control value
+        self.loop_animation = False
+        self.set_info()
+
+    def update(self):
+        if self.is_time_stop:
+            return
+
+        server.move_camera_x(self)
+
+        if self.is_hit and not self.is_empty:
+            if self.timer_hit == 0:
+                self.type_id = TID.EMPTY_BOX
+                self.set_info()
+                self.timer_hit = MAX_HIT_TIMER
+
+            self.timer_hit -= gs_framework.frame_time
+
+            if self.timer_hit >= MAX_HIT_TIMER / 2:
+                self.y += VELOCITY_HIT * gs_framework.frame_time
+            else:
+                self.y -= VELOCITY_HIT * gs_framework.frame_time
+            self.y = pico2d.clamp(self.min_y, self.y, self.max_y)
+
+            if self.timer_hit <= 0.0:
+                self.is_empty = True
+                server.tiles.append(TileSet(TID.EMPTY_BOX, self.x, self.y))
+                object_manager.add_object(server.tiles[-1], L.TILESETS)
+
+            # pico2d.delay(0.1)
+
+        if self.is_hit and self.is_empty:
+            object_manager.remove_object(self)
+            del self
+        else:
+            self.update_frame(gs_framework.frame_time)
+
+    def draw(self):
+        if self.type_id == TID.EMPTY_BOX:
+            self.image_draw()
+        elif self.is_invisible:
+            pass
+        else:
+            self.clip_draw()
+
+        if self.show_bb:
+            self.draw_bb()
+
+        # self.y -= server.player.jump_power * gs_framework.frame_time
 
 
 def test_tileset():

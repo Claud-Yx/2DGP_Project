@@ -68,6 +68,10 @@ def collide_player_to_ceiling(player: ob_player.Player, tile: ob_tileset.TileSet
             player.y = (tile.get_bb(HB.BOTTOM)[POS.BOTTOM] -
                         ptop)
 
+        tile: ob_tileset.RandomBox
+        if tile.type_id == TID.RANDOM_BOX and not tile.is_empty:
+            tile.is_hit = True
+
         return True
 
     return False

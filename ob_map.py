@@ -47,6 +47,8 @@ class Map:
             self.object_index[i] = [[] for j in range(height)]
 
     def update(self):
+        if server.time_stop:
+            return
         self.clear_index()
         self.update_index()
 
