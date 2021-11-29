@@ -1,5 +1,6 @@
 import game_object
 import ob_enemy
+import ob_item
 import server
 
 from pico2d import *
@@ -23,17 +24,25 @@ def enter():
     server.init()
     object_manager.objects = [[], [], [], [], []]
 
+    # stage map
     server.stage = ob_map.Map(0, 0)
     server.stage.set_size(gs_framework.canvas_width * 2,
-                         222xzx gs_framework.canvas_height * 2)
-    server.background = ob_background.Background()
-    object_manager.add_object(server.background, object_manager.OL_BACKGROUND)
+                          gs_framework.canvas_height * 2)
 
+    # background
+    server.background = ob_background.Background()
+    object_manager.add_object(server.background, L.BACKGROUND)
+
+    # item
+    server.items.append(ob_item.SuperMushroom(800, 480))
+    object_manager.add_objects(server.items, L.ITEMS)
+
+    # enemy
     # server.enemies.append(ob_enemy.Goomba(930, 460))
     # server.enemies.append(ob_enemy.Goomba(930, 460, DIR.LEFT))
     # server.enemies.append(ob_enemy.Goomba(970, 500, DIR.LEFT))
     server.enemies.append(ob_enemy.Goomba(900, 480))
-    object_manager.add_objects(server.enemies, object_manager.OL_CHARACTER)
+    object_manager.add_objects(server.enemies, L.ENEMIES)
 
     server.player = ob_player.Player(TID.MARIO_SUPER, 200, 500)
     object_manager.add_object(server.player, object_manager.OL_CHARACTER)
@@ -103,7 +112,6 @@ def update():
         if obj.update() == -1:
             return
 
-
     # indexing
     stage_prev_x = server.stage.x
     server.stage.update()
@@ -164,7 +172,7 @@ def update():
     # if len(server.player.nearby_tiles) != 0:
     #     print(server.player.nearby_tiles)
 
-    # enemy collision indexing
+    # enemy collision checking and indexing
     for enemy in server.enemies:
         enemy.nearby_tiles.clear()
 
@@ -185,11 +193,45 @@ def update():
                     if obj.type_name == TN.TILESETS:
                         enemy.nearby_tiles.add(obj)
 
+        # enemy to floor tile
         for floor in enemy.nearby_tiles:
             if collide_enemy_to_floor(enemy, floor):
                 break
+
+        # enemy to wall tile
         for tile in enemy.nearby_tiles:
             if collide_enemy_to_wall(enemy, tile):
+                break
+
+    # item collision checking and indexing
+    for item in server.items:
+        item.nearby_tiles.clear()
+
+        item_index_x = int((item.x - server.stage.x) // ob_map.TILE_WIDTH)
+        item_index_y = int(item.y // ob_map.TILE_HEIGHT)
+
+        for x in range(item_index_x - 2, item_index_x + 2):
+            if x < 0 or len(server.stage.object_index) <= x:
+                continue
+
+            for y in range(item_index_y - 2, item_index_y + 2):
+                if y < 0 or len(server.stage.object_index[x]) <= y:
+                    continue
+
+                nearby_list = server.stage.object_index[x][y]
+                for obj in nearby_list:
+                    obj: game_object.Object
+                    if obj.type_name == TN.TILESETS:
+                        item.nearby_tiles.add(obj)
+
+        # item to floor tile
+        for floor in item.nearby_tiles:
+            if collide_item_to_floor(item, floor):
+                break
+
+        # item to wall tile
+        for wall in item.nearby_tiles:
+            if collide_item_to_wall(item, wall):
                 break
 
     # e_time = get_time() - s_time

@@ -1,3 +1,5 @@
+from abc import ABC
+
 import object_manager
 from game_object import *
 from value import *
@@ -8,9 +10,10 @@ import game_object
 import server
 
 MAX_JUMP_POWER = get_pps_from_mps(20)
+GOOMBA_MAX_VELOCITY = get_pps_from_kmph(8)
 
 
-class Enemy(game_object.Object):
+class Enemy(game_object.Object, ABC):
     def __init__(self, tid=TID.NONE, x=0, y=0, x_dir=DIR.RIGHT):
         super().__init__(TN.ENEMIES, tid, x, y)
 
@@ -27,23 +30,21 @@ class Enemy(game_object.Object):
     def update(self):
         pass
 
-    @abstractmethod
     def draw(self):
         self.clip_draw()
 
         if self.show_bb:
             self.draw_bb()
 
-    @abstractmethod
     def handle_event(self):
         pass
 
 
-class Goomba(Enemy):
+class Goomba(Enemy, ABC):
     def __init__(self, x=0, y=0, x_dir=DIR.RIGHT):
         super().__init__(TID.GOOMBA, x, y, x_dir)
 
-        self.velocity = get_pps_from_kmph(8)
+        self.velocity = GOOMBA_MAX_VELOCITY
 
         self.on_floor = False
         self.is_fall = False
@@ -74,13 +75,13 @@ class Goomba(Enemy):
         return False
 
     def update(self):
+        if self.is_time_stop:
+            return
+
         server.move_camera_x(self)
 
         # if self.y <= -50:
         #     self.is_dead = True
-
-        if self.is_time_stop:
-            return
 
         self.update_frame(gs_framework.frame_time)
 
@@ -99,6 +100,7 @@ class Goomba(Enemy):
 
         # print(str(self.facing), str(self.x_direction), str(self.action), str(self.velocity))
         self.x += self.velocity * gs_framework.frame_time * self.x_direction
+
 
 def test_enemy():
     from ob_tileset import TileSet

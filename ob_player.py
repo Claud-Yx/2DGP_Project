@@ -105,6 +105,9 @@ class Player(game_object.Object):
         self.is_damaged = False
         self.is_invincible = False
 
+        self.taken_super = False
+        self.taken_flame = False
+
         # Setting
         self.set_info()
         self.cur_state.enter(self, None)
@@ -220,10 +223,7 @@ class Player(game_object.Object):
             return True
         return False
 
-    def add_event(self, event):
-        self.event_que.insert(0, event)
-
-    def update(self):
+    def damaged(self):
         if self.is_damaged or self.y <= -50:
             if self.y <= -50:
                 self.type_id = TID.MARIO_SMALL
@@ -236,6 +236,12 @@ class Player(game_object.Object):
                     self.is_damaged = False
                     self.is_small = True
                     server.stop_time(False)
+
+    def add_event(self, event):
+        self.event_que.insert(0, event)
+
+    def update(self):
+        self.damaged()
 
         if self.is_invincible and not self.is_damaged:
             if self.timer_invincible == 0:
@@ -289,8 +295,9 @@ class Player(game_object.Object):
 
         debug_print_2 = load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 26)
         debug_print_2.draw(6, gs_framework.canvas_height - 16,
-                           "player.x: %.1f" %
-                           server.player.x,
+                           "player.x: %.1f / super_mushroom pos: (%.1f, %.1f)" %
+                           (server.player.x - server.stage.x,
+                            server.items[0].x - server.stage.x, server.items[0].y),
                            (0, 255, 0))
 
         if self.show_bb:

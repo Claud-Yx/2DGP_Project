@@ -35,6 +35,9 @@ class TileSet(game_object.Object):
         del self.loop_animation
 
     def update(self):
+        if self.is_time_stop:
+            return
+
         server.move_camera_x(self)
         # self.y -= server.player.jump_power * gs_framework.frame_time
 

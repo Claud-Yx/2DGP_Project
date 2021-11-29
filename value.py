@@ -177,7 +177,7 @@ class L(IntEnum):  # Layer
     PLAYER = 3
     TILESETS = 2
     ENEMIES = 3
-    ITEMS = 3
+    ITEMS = 1
     INTERACTIVES = 1
     FOREGROUND = 4
 

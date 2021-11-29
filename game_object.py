@@ -662,10 +662,26 @@ class Object:
                 self.set_bb(HB.TOP, (49, -24, 49, 25))
             elif self.type_id == TID.CASTLE_BLOCK_100X100:
                 self.set_bb(HB.BODY, (50, 50, 50, 50))
-                self.set_bb(HB.LEFT, (50, 50, -49, 50))
-                self.set_bb(HB.BOTTOM, (49, 50, 49, -49))
-                self.set_bb(HB.RIGHT, (-49, 50, 50, 50))
-                self.set_bb(HB.TOP, (49, -49, 49, 50))
+                self.set_bb(HB.LEFT, (50, 50, -45, 50))
+                self.set_bb(HB.BOTTOM, (49, 50, 49, -45))
+                self.set_bb(HB.RIGHT, (-45, 50, 50, 50))
+                self.set_bb(HB.TOP, (49, -45, 49, 50))
+
+        elif self.type_name == TN.ITEMS:
+            if len(self.bounding_box) == 0:
+                self.bounding_box[HB.BODY] = BoundingBox(HB.BODY)
+                self.bounding_box[HB.LEFT] = BoundingBox(HB.LEFT)
+                self.bounding_box[HB.BOTTOM] = BoundingBox(HB.BOTTOM)
+                self.bounding_box[HB.RIGHT] = BoundingBox(HB.RIGHT)
+                self.bounding_box[HB.TOP] = BoundingBox(HB.TOP)
+            self.switch_bb_all()
+
+            if self.type_id == TID.SUPER_MUSHROOM:
+                self.set_bb(HB.BODY, (24, 24, 24, 24))
+                self.set_bb(HB.LEFT, (25, 25, -20, 25))
+                self.set_bb(HB.BOTTOM, (24, 25, 24, -20))
+                self.set_bb(HB.RIGHT, (-20, 25, 25, 25))
+                self.set_bb(HB.TOP, (24, -20, 24, 25))
 
         else:
             print("Invalid type: %s / %s" % (str(self.type_name), str(self.type_id)))
@@ -1079,6 +1095,8 @@ class Object:
                 self.frame_count, self.frame_begin = 78, 0
                 self.l, self.b, self.w, self.h = 50, 100 * 4, 50, 50
                 self.loop_animation = False
+
+
 
         self.frame = self.frame_begin
 

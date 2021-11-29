@@ -9,6 +9,7 @@ from value import *
 stage: Map
 player: Player
 enemies = []
+items = []
 tiles = []
 background: Background
 
@@ -44,11 +45,12 @@ def init():
 
 
 def destroy():
-    global stage, player, background
+    global stage, player, background, items
 
     del stage
     del player
     del background
+    items.clear()
     enemies.clear()
     tiles.clear()
 

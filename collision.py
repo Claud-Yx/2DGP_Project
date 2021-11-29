@@ -1,3 +1,4 @@
+import ob_item
 import ob_player
 import ob_tileset
 import ob_enemy
@@ -181,9 +182,58 @@ def stomp_player_to_enemy(player: ob_player.Player, enemy: ob_enemy) -> bool:
 
 
 def hit_enemy_to_player(player: ob_player.Player, enemy: ob_enemy) -> bool:
-
     # Enemy collides to player
     if collide(player.get_bb(HB.BODY), enemy.get_bb(HB.BODY)) and not player.is_invincible:
         player.is_damaged = True
+        return True
+    return False
+
+
+def collide_item_to_floor(item: ob_item.Item, floor: ob_tileset.TileSet) -> bool:
+    if collide(item.get_bb(HB.BOTTOM), floor.get_bb(HB.TOP)):
+        item.jump_power = 0
+        item.is_fall = False
+        item.on_floor = True
+
+        # print("enemy.action: " + str(enemy.action) +
+        #       "enemy.pos: " + str(enemy.x) + ", " + str(enemy.y))
+        # print("enemy.bottom: " + str(enemy.get_bb(HB.BOTTOM)[POS.BOTTOM]) + " / floor.top: " +
+        #       str(floor.get_bb(HB.TOP)[POS.TOP]))
+        if item.get_bb(HB.BOTTOM)[POS.BOTTOM] < floor.get_bb(HB.TOP)[POS.TOP]:
+            # print("enemy.bb_range.bottom: " + str(enemy.get_bb_range(HB.BOTTOM)))
+            # print("enemy.get_bb_range.bottom: " + str(enemy.get_bb_range(HB.BOTTOM)[HB.BOTTOM]) +
+            #       " / floor.get_bb.top: " + str(floor.get_bb(HB.TOP)[HB.TOP]) +
+            #       " / sum: " + str(enemy.get_bb_range(HB.BOTTOM)[HB.BOTTOM] + floor.get_bb(HB.TOP)[HB.TOP]))
+            item.y = (item.get_bb_range(HB.BOTTOM)[POS.BOTTOM] +
+                      floor.get_bb(HB.TOP)[POS.TOP]) + 1
+
+        return True
+    else:
+        item.is_fall = True
+        return False
+
+
+def collide_item_to_wall(item: ob_item.Item, tile: ob_tileset.TileSet) -> bool:
+    if ((collide(item.get_bb(HB.RIGHT), tile.get_bb(HB.BODY)) or
+         collide(item.get_bb(HB.LEFT), tile.get_bb(HB.BODY))) and
+            item.get_bb(HB.BOTTOM)[POS.BOTTOM] < tile.get_bb(HB.TOP)[POS.TOP]
+    ):
+        item.x_direction *= -1
+        item.facing = item.x_direction
+        item.set_info()
+
+        if (tile.get_bb(HB.RIGHT)[POS.RIGHT] >=
+                item.get_bb(HB.RIGHT)[POS.RIGHT] >
+                tile.get_bb(HB.LEFT)[POS.LEFT]
+        ):
+            item.x = (tile.get_bb(HB.LEFT)[POS.LEFT] -
+                      item.get_bb_range(HB.RIGHT)[POS.RIGHT])
+        elif (tile.get_bb(HB.LEFT)[POS.LEFT] <=
+              item.get_bb(HB.LEFT)[POS.LEFT] <
+              tile.get_bb(HB.RIGHT)[POS.RIGHT]
+        ):
+            item.x = (tile.get_bb(HB.RIGHT)[POS.RIGHT] +
+                      item.get_bb_range(HB.LEFT)[POS.LEFT])
+
         return True
     return False
