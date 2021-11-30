@@ -70,7 +70,7 @@ class Map:
             if obj.bb_size_range == [-1, -1, -1, -1]:
                 continue
 
-            x1, y1, x2, y2 = obj.get_size_pos()
+            x1, y1, x2, y2 = obj.get_bb_size_pos()
 
             x1 -= self.x
             x2 -= self.x

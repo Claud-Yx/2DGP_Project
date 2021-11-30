@@ -1,3 +1,4 @@
+import ob_item
 import object_manager
 from value import *
 
@@ -9,6 +10,13 @@ import pico2d
 
 MAX_HIT_TIMER = 0.2
 VELOCITY_HIT = get_pps_from_mps(10)
+
+
+class RS(IntEnum):  # Random box state
+    NORMAL = 0
+    POLYMORPH = 1
+    INVISIBLE = 2
+
 
 class TileSet(game_object.Object):
 
@@ -57,17 +65,18 @@ class TileSet(game_object.Object):
 
 
 class RandomBox(TileSet):
-    def __init__(self, x=0, y=0, item=TID.COIN):
+    def __init__(self, x=0, y=0, item=TID.COIN, state=RS.NORMAL):
+
         super().__init__(TID.RANDOM_BOX, x, y)
 
         self.min_y, self.max_y = y, y+20
 
         self.x_direction = DIR.RIGHT
+        self.state = state
+
         self.action = ACTION.IDLE
 
         self.item = item
-
-        self.is_invisible = False
 
         self.is_empty = False
         self.is_hit = False
@@ -96,7 +105,15 @@ class RandomBox(TileSet):
         server.move_camera_x(self)
 
         if self.is_hit and not self.is_empty:
+            if server.player.x > self.x:
+                self.x_direction = DIR.LEFT
+
             if self.timer_hit == 0:
+                if self.item == TID.COIN:
+                    server.player.coin += 1
+                    server.items.append(ob_item.Coin(self.x, self.y + self.h, True))
+                    object_manager.add_object(server.items[-1], L.FOREGROUND)
+
                 self.type_id = TID.EMPTY_BOX
                 self.set_info()
                 self.timer_hit = MAX_HIT_TIMER
@@ -110,6 +127,10 @@ class RandomBox(TileSet):
             self.y = pico2d.clamp(self.min_y, self.y, self.max_y)
 
             if self.timer_hit <= 0.0:
+                if self.item == TID.SUPER_MUSHROOM:
+                    server.items.append(ob_item.SuperMushroom(self.x, self.y, self.x_direction, True))
+                    object_manager.add_object(server.items[-1], L.ITEMS)
+
                 self.is_empty = True
                 server.tiles.append(TileSet(TID.EMPTY_BOX, self.x, self.y))
                 object_manager.add_object(server.tiles[-1], L.TILESETS)
@@ -125,8 +146,10 @@ class RandomBox(TileSet):
     def draw(self):
         if self.type_id == TID.EMPTY_BOX:
             self.image_draw()
-        elif self.is_invisible:
+        elif self.state == RS.INVISIBLE:
             pass
+        elif self.state == RS.POLYMORPH:
+            self.clip_draw(TN.TILESETS, TID.BREAKABLE_BRICK)
         else:
             self.clip_draw()
 

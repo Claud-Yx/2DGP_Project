@@ -34,11 +34,11 @@ def enter():
     object_manager.add_object(server.background, L.BACKGROUND)
 
     # item
-    server.items.append(ob_item.Coin(525, 125))
-    server.items.append(ob_item.Coin(525, 175))
-    server.items.append(ob_item.Coin(575, 125))
-    server.items.append(ob_item.Coin(575, 175))
-    server.items.append(ob_item.SuperMushroom(800, 480))
+    # server.items.append(ob_item.Coin(525, 125))
+    # server.items.append(ob_item.Coin(525, 175))
+    # server.items.append(ob_item.Coin(575, 125))
+    # server.items.append(ob_item.Coin(575, 175))
+    # server.items.append(ob_item.SuperMushroom(800, 480))
     object_manager.add_objects(server.items, L.ITEMS)
 
     # enemy
@@ -71,9 +71,9 @@ def enter():
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X50, 450, 325))
 
     server.tiles.append(ob_tileset.RandomBox(125, 375))
-    server.tiles.append(ob_tileset.RandomBox(175, 375))
-    server.tiles.append(ob_tileset.RandomBox(125, 575))
-    server.tiles.append(ob_tileset.RandomBox(175, 675))
+    server.tiles.append(ob_tileset.RandomBox(175, 375, item=TID.SUPER_MUSHROOM, state=ob_tileset.RS.POLYMORPH))
+    server.tiles.append(ob_tileset.RandomBox(225, 375, state=ob_tileset.RS.INVISIBLE))
+    server.tiles.append(ob_tileset.RandomBox(525, 225, state=ob_tileset.RS.INVISIBLE))
 
     object_manager.add_objects(server.tiles, object_manager.OL_TILESET)
 

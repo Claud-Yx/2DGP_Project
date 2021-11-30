@@ -343,8 +343,8 @@ class Player(game_object.Object):
 
         debug_print_2 = load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 26)
         debug_print_2.draw(6, gs_framework.canvas_height - 16,
-                           "stage pos: (%2.f, %2.f) / time_stop: %s" %
-                           (server.stage.x, server.stage.y, server.time_stop),
+                           "Coin: %d / Score: %d" %
+                           (self.coin, self.score),
                            (0, 255, 0))
 
         if self.show_bb:

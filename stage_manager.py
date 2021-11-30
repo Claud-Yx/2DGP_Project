@@ -41,7 +41,7 @@ def decode_stage_file(self):
         print("ERROR: Undefined INFO w/h code")
         return False
 
-    self.set_size(
+    self.set_bb_size(
         [int(file_info[12]) * 10 + int(file_info[13]),
          int(file_info[15]) * 10 + int(file_info[16])]
     )

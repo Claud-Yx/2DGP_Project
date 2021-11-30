@@ -38,6 +38,10 @@ def collide(a: (0, 0, 0, 0), b: (0, 0, 0, 0)):
 
 def collide_player_to_floor(player: ob_player.Player, tile: ob_tileset.TileSet) -> bool:
     if collide(player.get_bb(HB.BOTTOM), tile.get_bb(HB.TOP)):
+
+        if tile.__class__ == ob_tileset.RandomBox and tile.state == ob_tileset.RS.INVISIBLE:
+            return False
+
         player.jump_power = 0
         player.on_floor = True
         player.is_fall = False
@@ -81,6 +85,10 @@ def collide_player_to_right_wall(player: ob_player.Player, tile: ob_tileset.Tile
     if (collide(player.get_bb(HB.LEFT), tile.get_bb(HB.BODY)) and
             player.get_bb(HB.BOTTOM)[POS.BOTTOM] < tile.get_bb(HB.TOP)[POS.TOP]
     ):
+
+        if tile.__class__ == ob_tileset.RandomBox and tile.state == ob_tileset.RS.INVISIBLE:
+            return False
+
         player.velocity = 0
         player.is_stuck_left = True
 
@@ -99,6 +107,10 @@ def collide_player_to_left_wall(player: ob_player.Player, tile: ob_tileset.TileS
     if (collide(player.get_bb(HB.RIGHT), tile.get_bb(HB.BODY)) and
             player.get_bb(HB.BOTTOM)[POS.BOTTOM] < tile.get_bb(HB.TOP)[POS.TOP]
     ):
+
+        if tile.__class__ == ob_tileset.RandomBox and tile.state == ob_tileset.RS.INVISIBLE:
+            return False
+
         player.velocity = 0
         player.is_stuck_right = True
 
@@ -115,6 +127,10 @@ def collide_player_to_left_wall(player: ob_player.Player, tile: ob_tileset.TileS
 
 def collide_enemy_to_floor(enemy: ob_enemy, floor: ob_tileset.TileSet) -> bool:
     if collide(enemy.get_bb(HB.BOTTOM), floor.get_bb(HB.TOP)):
+
+        if floor.__class__ == ob_tileset.RandomBox and floor.state == ob_tileset.RS.INVISIBLE:
+            return False
+
         enemy.jump_power = 0
         enemy.is_fall = False
         enemy.on_floor = True
@@ -142,6 +158,10 @@ def collide_enemy_to_wall(enemy: ob_enemy, tile: ob_tileset.TileSet) -> bool:
          collide(enemy.get_bb(HB.LEFT), tile.get_bb(HB.BODY))) and
             enemy.get_bb(HB.BOTTOM)[POS.BOTTOM] < tile.get_bb(HB.TOP)[POS.TOP]
     ):
+
+        if tile.__class__ == ob_tileset.RandomBox and tile.state == ob_tileset.RS.INVISIBLE:
+            return False
+
         enemy.x_direction *= -1
         enemy.facing = enemy.x_direction
         enemy.set_info()
@@ -167,7 +187,7 @@ def stomp_player_to_enemy(player: ob_player.Player, enemy: ob_enemy) -> bool:
     # print("player.bb_bottom pos: %d / enemy.bb_top pos: %d" %
     #       (player.get_bb(HB.BOTTOM)[POS.BOTTOM], enemy.get_bb(HB.TOP)[POS.TOP]))
     # Player stomps enemy
-    if collide(player.get_bb(HB.BOTTOM), enemy.get_bb(HB.TOP)) and player.is_fall:
+    if collide(player.get_bb(HB.BOTTOM), enemy.get_bb(HB.TOP)) and not player.is_jump:
         enemy.is_dead = True
 
         # player
@@ -195,6 +215,10 @@ def hit_enemy_to_player(player: ob_player.Player, enemy: ob_enemy) -> bool:
 
 def collide_item_to_floor(item: ob_item.Item, floor: ob_tileset.TileSet) -> bool:
     if collide(item.get_bb(HB.BOTTOM), floor.get_bb(HB.TOP)):
+
+        if floor.__class__ == ob_tileset.RandomBox and floor.state == ob_tileset.RS.INVISIBLE:
+            return False
+
         item.jump_power = 0
         item.is_fall = False
         item.on_floor = True
@@ -222,6 +246,10 @@ def collide_item_to_wall(item: ob_item.Item, tile: ob_tileset.TileSet) -> bool:
          collide(item.get_bb(HB.LEFT), tile.get_bb(HB.BODY))) and
             item.get_bb(HB.BOTTOM)[POS.BOTTOM] < tile.get_bb(HB.TOP)[POS.TOP]
     ):
+
+        if tile.__class__ == ob_tileset.RandomBox and tile.state == ob_tileset.RS.INVISIBLE:
+            return False
+
         item.x_direction *= -1
         item.facing = item.x_direction
         item.set_info()

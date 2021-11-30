@@ -49,6 +49,7 @@ class Object:
 
         # Animation sprite value
         self.l, self.b, self.w, self.h = 0, 0, 0, 0
+        self.wp, self.hp = 1.0, 1.0
 
         # Animation Direction
         self.facing = DIR.RIGHT
@@ -89,18 +90,27 @@ class Object:
         else:
             Object.image[(self.type_name, self.type_id)].draw(self.x, self.y)
 
-    def clip_draw(self):
+    def clip_draw(self, tn=None, tid=None):
+        if tn is None:
+            tn = self.type_name
+        if tid is None:
+            tid = self.type_id
 
-        if self.type_id == TID.NONE:
-            Object.image[self.type_id].draw(self.x, self.y)
+        if tid == TID.NONE:
+            Object.image[tid].draw(self.x, self.y)
             return
 
         if self.frame_count == 1:
             self.frame = 0
 
-        Object.image[(self.type_name, self.type_id)].clip_draw(
+        Object.image[(tn, tid)].clip_draw(
             int((self.frame + self.frame_begin)) * self.l, self.b,
-            self.w, self.h, self.x, self.y)
+            self.w, self.h, self.x, self.y, self.w * self.wp, self.h * self.hp)
+
+    def set_size(self, wp=1.0, hp=1.0):
+        self.wp = wp
+        self.hp = hp
+        self.set_info()
 
     def get_bb_range(self, bid):
         return self.bounding_box[bid].range
@@ -112,9 +122,20 @@ class Object:
         self.bounding_box[bid].is_on = b
         return self.bounding_box[bid].is_on
 
-    def set_bb(self, bid, range):
+    def set_bb(self, bid, range: List[int]):
         if not self.bounding_box[bid].is_on:
             self.bounding_box[bid].is_on = True
+
+        if range.__class__ == tuple:
+            range = list(range)
+
+        if self.wp != 1.0:
+            range[POS.LEFT] *= self.wp
+            range[POS.RIGHT] *= self.wp
+
+        if self.hp != 1.0:
+            range[POS.BOTTOM] *= self.hp
+            range[POS.TOP] *= self.hp
 
         self.bounding_box[bid].set_bb(range)
 
@@ -125,7 +146,7 @@ class Object:
         for key in self.bounding_box.keys():
             self.bounding_box[key].draw_bb((self.x, self.y))
 
-    def set_size(self):
+    def set_bb_size(self):
         self.bb_size_range = [0, 0, 0, 0]
 
         for key in self.bounding_box.keys():
@@ -139,7 +160,7 @@ class Object:
             if self.bb_size_range[POS.TOP] < bb_range[POS.TOP]:
                 self.bb_size_range[POS.TOP] = bb_range[POS.TOP]
 
-    def get_size_pos(self) -> Tuple[float, float, float, float]:
+    def get_bb_size_pos(self) -> Tuple[float, float, float, float]:
         return (
             self.x - self.bb_size_range[POS.LEFT],
             self.y - self.bb_size_range[POS.BOTTOM],
@@ -1109,7 +1130,7 @@ class Object:
         # Items
         elif self.type_name == TN.ITEMS:
             if self.type_id == TID.COIN:
-                self.set_tpa(0.8)
+                self.set_tpa(0.5)
                 self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
                 self.frame_count, self.frame_begin = 4, 0
                 self.loop_animation = True
@@ -1133,7 +1154,7 @@ class Object:
     def set_info(self, a=None):
         self.set_clip(a)
         self.init_bb()
-        self.set_size()
+        self.set_bb_size()
 
 def test_object():
     open_canvas()
