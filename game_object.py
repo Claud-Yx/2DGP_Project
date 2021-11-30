@@ -1,17 +1,19 @@
 from pico2d import *
+
+import ob_item
 from value import *
 from abc import *
 from bounding_box import *
 
 
 
-class Object:
+class GameObject:
     image = None
 
     def __init__(self, type_name, type_id, x=0, y=0):
         # Image initialization
-        if None == Object.image:
-            Object.image = {
+        if None == GameObject.image:
+            GameObject.image = {
                 (TN.PLAYER, TID.MARIO_SMALL): load_image('resource\\characters\\mario_small.png'),
                 (TN.PLAYER, TID.MARIO_SUPER): load_image('resource\\characters\\mario_super.png'),
                 (TN.TILESETS, TID.CASTLE_BLOCK_50X50): load_image('resource\\tileset\\block50x50.png'),
@@ -86,9 +88,9 @@ class Object:
 
     def image_draw(self):
         if self.type_id == TID.NONE:
-            Object.image[self.type_id].draw(self.x, self.y)
+            GameObject.image[self.type_id].draw(self.x, self.y)
         else:
-            Object.image[(self.type_name, self.type_id)].draw(self.x, self.y)
+            GameObject.image[(self.type_name, self.type_id)].draw(self.x, self.y)
 
     def clip_draw(self, tn=None, tid=None):
         if tn is None:
@@ -97,13 +99,13 @@ class Object:
             tid = self.type_id
 
         if tid == TID.NONE:
-            Object.image[tid].draw(self.x, self.y)
+            GameObject.image[tid].draw(self.x, self.y)
             return
 
         if self.frame_count == 1:
             self.frame = 0
 
-        Object.image[(tn, tid)].clip_draw(
+        GameObject.image[(tn, tid)].clip_draw(
             int((self.frame + self.frame_begin)) * self.l, self.b,
             self.w, self.h, self.x, self.y, self.w * self.wp, self.h * self.hp)
 
@@ -125,9 +127,6 @@ class Object:
     def set_bb(self, bid, range: List[int]):
         if not self.bounding_box[bid].is_on:
             self.bounding_box[bid].is_on = True
-
-        if range.__class__ == tuple:
-            range = list(range)
 
         if self.wp != 1.0:
             range[POS.LEFT] *= self.wp
@@ -214,131 +213,131 @@ class Object:
 
             # Idle right
             if self.action == ACTION.IDLE and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.BODY, [13, 15, 13, 22])
+                self.set_bb(HB.LEFT, [13, 15, -12, 22])
+                self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
+                self.set_bb(HB.RIGHT, [-12, 15, 13, 22])
+                self.set_bb(HB.TOP, [13, -21, 13, 22])
 
             # Idle left
             elif self.action == ACTION.IDLE and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.BODY, [13, 15, 13, 22])
+                self.set_bb(HB.LEFT, [13, 15, -12, 22])
+                self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
+                self.set_bb(HB.RIGHT, [-12, 15, 13, 22])
+                self.set_bb(HB.TOP, [13, -21, 13, 22])
 
             # Walk right
             elif self.action == ACTION.WALK and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.BODY, [13, 15, 13, 22])
+                self.set_bb(HB.LEFT, [13, 15, -12, 22])
+                self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
+                self.set_bb(HB.RIGHT, [-12, 15, 13, 22])
+                self.set_bb(HB.TOP, [13, -21, 13, 22])
 
             # Walk left
             elif self.action == ACTION.WALK and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.BODY, [13, 15, 13, 22])
+                self.set_bb(HB.LEFT, [13, 15, -12, 22])
+                self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
+                self.set_bb(HB.RIGHT, [-12, 15, 13, 22])
+                self.set_bb(HB.TOP, [13, -21, 13, 22])
 
             # Run right
             elif self.action == ACTION.RUN and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 18, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 18, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 18, 22))
+                self.set_bb(HB.BODY, [13, 15, 18, 22])
+                self.set_bb(HB.LEFT, [13, 15, -12, 22])
+                self.set_bb(HB.BOTTOM, [13, 15, 18, -14])
+                self.set_bb(HB.RIGHT, [-12, 15, 13, 22])
+                self.set_bb(HB.TOP, [13, -21, 18, 22])
 
             # Run left
             elif self.action == ACTION.RUN and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (18, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (18, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (18, -21, 13, 22))
+                self.set_bb(HB.BODY, [18, 15, 13, 22])
+                self.set_bb(HB.LEFT, [13, 15, -12, 22])
+                self.set_bb(HB.BOTTOM, [18, 15, 13, -14])
+                self.set_bb(HB.RIGHT, [-12, 15, 13, 22])
+                self.set_bb(HB.TOP, [18, -21, 13, 22])
 
             # Break right
             elif self.action == ACTION.BREAK and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 18, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 18, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 18, 22))
+                self.set_bb(HB.BODY, [13, 15, 18, 22])
+                self.set_bb(HB.LEFT, [13, 15, -12, 22])
+                self.set_bb(HB.BOTTOM, [13, 15, 18, -14])
+                self.set_bb(HB.RIGHT, [-12, 15, 13, 22])
+                self.set_bb(HB.TOP, [13, -21, 18, 22])
 
             # Break left
             elif self.action == ACTION.BREAK and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (18, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (18, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (18, -21, 13, 22))
+                self.set_bb(HB.BODY, [18, 15, 13, 22])
+                self.set_bb(HB.LEFT, [13, 15, -12, 22])
+                self.set_bb(HB.BOTTOM, [18, 15, 13, -14])
+                self.set_bb(HB.RIGHT, [-12, 15, 13, 22])
+                self.set_bb(HB.TOP, [18, -21, 13, 22])
 
             # Swim right
             elif self.action == ACTION.SWIM and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 18, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 18, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 18, 22))
+                self.set_bb(HB.BODY, [13, 15, 18, 22])
+                self.set_bb(HB.LEFT, [13, 15, -12, 22])
+                self.set_bb(HB.BOTTOM, [13, 15, 18, -14])
+                self.set_bb(HB.RIGHT, [-12, 15, 13, 22])
+                self.set_bb(HB.TOP, [13, -21, 18, 22])
 
             # Swim Left
             elif self.action == ACTION.SWIM and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (18, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (18, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (18, -21, 13, 22))
+                self.set_bb(HB.BODY, [18, 15, 13, 22])
+                self.set_bb(HB.LEFT, [13, 15, -12, 22])
+                self.set_bb(HB.BOTTOM, [18, 15, 13, -14])
+                self.set_bb(HB.RIGHT, [-12, 15, 13, 22])
+                self.set_bb(HB.TOP, [18, -21, 13, 22])
 
             # Hang
             elif self.action == ACTION.HANG:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.BODY, [13, 15, 13, 22])
+                self.set_bb(HB.LEFT, [13, 15, -12, 22])
+                self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
+                self.set_bb(HB.RIGHT, [-12, 15, 13, 22])
+                self.set_bb(HB.TOP, [13, -21, 13, 22])
 
             # Climb
             elif self.action == ACTION.CLIMB:
-                self.set_bb(HB.BODY, (13, 15, 13, 22))
-                self.set_bb(HB.LEFT, (13, 15, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.BODY, [13, 15, 13, 22])
+                self.set_bb(HB.LEFT, [13, 15, -12, 22])
+                self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
+                self.set_bb(HB.RIGHT, [-12, 15, 13, 22])
+                self.set_bb(HB.TOP, [13, -21, 13, 22])
 
             # Jump right
             elif self.action == ACTION.JUMP and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 15, 13, 18))
-                self.set_bb(HB.LEFT, (13, 15, -12, 18))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 18))
-                self.set_bb(HB.TOP, (12, -21, 12, 22))
+                self.set_bb(HB.BODY, [13, 15, 13, 18])
+                self.set_bb(HB.LEFT, [13, 15, -12, 18])
+                self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
+                self.set_bb(HB.RIGHT, [-12, 15, 13, 18])
+                self.set_bb(HB.TOP, [12, -21, 12, 22])
 
             # Jump left
             elif self.action == ACTION.JUMP and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (13, 15, 13, 18))
-                self.set_bb(HB.LEFT, (13, 15, -12, 18))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 15, 13, 18))
-                self.set_bb(HB.TOP, (12, -21, 12, 22))
+                self.set_bb(HB.BODY, [13, 15, 13, 18])
+                self.set_bb(HB.LEFT, [13, 15, -12, 18])
+                self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
+                self.set_bb(HB.RIGHT, [-12, 15, 13, 18])
+                self.set_bb(HB.TOP, [12, -21, 12, 22])
 
             # Fall right
             elif self.action == ACTION.FALL and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (13, 10, 13, 22))
-                self.set_bb(HB.LEFT, (13, 10, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 10, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.BODY, [13, 10, 13, 22])
+                self.set_bb(HB.LEFT, [13, 10, -12, 22])
+                self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
+                self.set_bb(HB.RIGHT, [-12, 10, 13, 22])
+                self.set_bb(HB.TOP, [13, -21, 13, 22])
 
             # Fall left
             elif self.action == ACTION.FALL and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (13, 10, 13, 22))
-                self.set_bb(HB.LEFT, (13, 10, -12, 22))
-                self.set_bb(HB.BOTTOM, (13, 15, 13, -14))
-                self.set_bb(HB.RIGHT, (-12, 10, 13, 22))
-                self.set_bb(HB.TOP, (13, -21, 13, 22))
+                self.set_bb(HB.BODY, [13, 10, 13, 22])
+                self.set_bb(HB.LEFT, [13, 10, -12, 22])
+                self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
+                self.set_bb(HB.RIGHT, [-12, 10, 13, 22])
+                self.set_bb(HB.TOP, [13, -21, 13, 22])
 
             elif self.action == ACTION.SIT:
                 self.switch_bb_all(True)
@@ -363,147 +362,147 @@ class Object:
 
             # Idle right
             if self.action == ACTION.IDLE and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.BODY, [15, 40, 15, 30])
+                self.set_bb(HB.LEFT, [15, 40, -14, 30])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, 30])
+                self.set_bb(HB.TOP, [15, -29, 15, 30])
 
             # Idle left
             elif self.action == ACTION.IDLE and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.BODY, [15, 40, 15, 30])
+                self.set_bb(HB.LEFT, [15, 40, -14, 30])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, 30])
+                self.set_bb(HB.TOP, [15, -29, 15, 30])
 
             # Walk right
             elif self.action == ACTION.WALK and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.BODY, [15, 40, 15, 30])
+                self.set_bb(HB.LEFT, [15, 40, -14, 30])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, 30])
+                self.set_bb(HB.TOP, [15, -29, 15, 30])
 
             # Walk left
             elif self.action == ACTION.WALK and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.BODY, [15, 40, 15, 30])
+                self.set_bb(HB.LEFT, [15, 40, -14, 30])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, 30])
+                self.set_bb(HB.TOP, [15, -29, 15, 30])
 
             # Run right
             elif self.action == ACTION.RUN and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (25, 40, 25, 20))
-                self.set_bb(HB.LEFT, (15, 40, -14, 20))
-                self.set_bb(HB.BOTTOM, (25, 40, 25, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 20))
-                self.set_bb(HB.TOP, (25, -19, 25, 20))
+                self.set_bb(HB.BODY, [25, 40, 25, 20])
+                self.set_bb(HB.LEFT, [15, 40, -14, 20])
+                self.set_bb(HB.BOTTOM, [25, 40, 25, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, 20])
+                self.set_bb(HB.TOP, [25, -19, 25, 20])
 
             # Run left
             elif self.action == ACTION.RUN and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (25, 40, 25, 20))
-                self.set_bb(HB.LEFT, (15, 40, -14, 20))
-                self.set_bb(HB.BOTTOM, (25, 40, 25, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 20))
-                self.set_bb(HB.TOP, (25, -19, 25, 20))
+                self.set_bb(HB.BODY, [25, 40, 25, 20])
+                self.set_bb(HB.LEFT, [15, 40, -14, 20])
+                self.set_bb(HB.BOTTOM, [25, 40, 25, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, 20])
+                self.set_bb(HB.TOP, [25, -19, 25, 20])
 
             # Break right
             elif self.action == ACTION.BREAK and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (25, 40, 25, 20))
-                self.set_bb(HB.LEFT, (15, 40, -14, 20))
-                self.set_bb(HB.BOTTOM, (25, 40, 25, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 20))
-                self.set_bb(HB.TOP, (25, -19, 25, 20))
+                self.set_bb(HB.BODY, [25, 40, 25, 20])
+                self.set_bb(HB.LEFT, [15, 40, -14, 20])
+                self.set_bb(HB.BOTTOM, [25, 40, 25, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, 20])
+                self.set_bb(HB.TOP, [25, -19, 25, 20])
 
             # Break left
             elif self.action == ACTION.BREAK and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (25, 40, 25, 20))
-                self.set_bb(HB.LEFT, (15, 40, -14, 20))
-                self.set_bb(HB.BOTTOM, (25, 40, 25, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 20))
-                self.set_bb(HB.TOP, (25, -19, 25, 20))
+                self.set_bb(HB.BODY, [25, 40, 25, 20])
+                self.set_bb(HB.LEFT, [15, 40, -14, 20])
+                self.set_bb(HB.BOTTOM, [25, 40, 25, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, 20])
+                self.set_bb(HB.TOP, [25, -19, 25, 20])
 
             # Swim right
             elif self.action == ACTION.SWIM and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (25, 40, 25, 20))
-                self.set_bb(HB.LEFT, (15, 40, -14, 20))
-                self.set_bb(HB.BOTTOM, (25, 40, 25, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 20))
-                self.set_bb(HB.TOP, (25, -19, 25, 20))
+                self.set_bb(HB.BODY, [25, 40, 25, 20])
+                self.set_bb(HB.LEFT, [15, 40, -14, 20])
+                self.set_bb(HB.BOTTOM, [25, 40, 25, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, 20])
+                self.set_bb(HB.TOP, [25, -19, 25, 20])
 
             # Swim left
             elif self.action == ACTION.SWIM and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (25, 40, 25, 20))
-                self.set_bb(HB.LEFT, (15, 40, -14, 20))
-                self.set_bb(HB.BOTTOM, (25, 40, 25, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 20))
-                self.set_bb(HB.TOP, (25, -19, 25, 20))
+                self.set_bb(HB.BODY, [25, 40, 25, 20])
+                self.set_bb(HB.LEFT, [15, 40, -14, 20])
+                self.set_bb(HB.BOTTOM, [25, 40, 25, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, 20])
+                self.set_bb(HB.TOP, [25, -19, 25, 20])
 
             # Hang
             elif self.action == ACTION.HANG:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.BODY, [15, 40, 15, 30])
+                self.set_bb(HB.LEFT, [15, 40, -14, 30])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, 30])
+                self.set_bb(HB.TOP, [15, -29, 15, 30])
 
             # Climb
             elif self.action == ACTION.CLIMB:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.BODY, [15, 40, 15, 30])
+                self.set_bb(HB.LEFT, [15, 40, -14, 30])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, 30])
+                self.set_bb(HB.TOP, [15, -29, 15, 30])
 
             # Sit right
             elif self.action == ACTION.SIT and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (15, 40, 15, -7))
-                self.set_bb(HB.LEFT, (15, 40, -14, -7))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, -7))
-                self.set_bb(HB.TOP, (15, 8, 15, -7))
+                self.set_bb(HB.BODY, [15, 40, 15, -7])
+                self.set_bb(HB.LEFT, [15, 40, -14, -7])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, -7])
+                self.set_bb(HB.TOP, [15, 8, 15, -7])
 
             # Sit left
             elif self.action == ACTION.SIT and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (15, 40, 15, -7))
-                self.set_bb(HB.LEFT, (15, 40, -14, -7))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, -7))
-                self.set_bb(HB.TOP, (15, 8, 15, -7))
+                self.set_bb(HB.BODY, [15, 40, 15, -7])
+                self.set_bb(HB.LEFT, [15, 40, -14, -7])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, -7])
+                self.set_bb(HB.TOP, [15, 8, 15, -7])
 
             # Jump right
             elif self.action == ACTION.JUMP and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (14, -29, 14, 34))
+                self.set_bb(HB.BODY, [15, 40, 15, 30])
+                self.set_bb(HB.LEFT, [15, 40, -14, 30])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, 30])
+                self.set_bb(HB.TOP, [14, -29, 14, 34])
 
             # Jump left
             elif self.action == ACTION.JUMP and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (15, 40, 15, 30))
-                self.set_bb(HB.LEFT, (15, 40, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -39))
-                self.set_bb(HB.RIGHT, (-14, 40, 15, 30))
-                self.set_bb(HB.TOP, (14, -29, 14, 34))
+                self.set_bb(HB.BODY, [15, 40, 15, 30])
+                self.set_bb(HB.LEFT, [15, 40, -14, 30])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
+                self.set_bb(HB.RIGHT, [-14, 40, 15, 30])
+                self.set_bb(HB.TOP, [14, -29, 14, 34])
 
             # Fall right
             elif self.action == ACTION.FALL and self.facing == DIR.RIGHT:
-                self.set_bb(HB.BODY, (15, 35, 15, 30))
-                self.set_bb(HB.LEFT, (15, 35, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -34))
-                self.set_bb(HB.RIGHT, (-14, 35, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.BODY, [15, 35, 15, 30])
+                self.set_bb(HB.LEFT, [15, 35, -14, 30])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -34])
+                self.set_bb(HB.RIGHT, [-14, 35, 15, 30])
+                self.set_bb(HB.TOP, [15, -29, 15, 30])
 
             # Fall left
             elif self.action == ACTION.FALL and self.facing == DIR.LEFT:
-                self.set_bb(HB.BODY, (15, 35, 15, 30))
-                self.set_bb(HB.LEFT, (15, 35, -14, 30))
-                self.set_bb(HB.BOTTOM, (15, 40, 15, -34))
-                self.set_bb(HB.RIGHT, (-14, 35, 15, 30))
-                self.set_bb(HB.TOP, (15, -29, 15, 30))
+                self.set_bb(HB.BODY, [15, 35, 15, 30])
+                self.set_bb(HB.LEFT, [15, 35, -14, 30])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -34])
+                self.set_bb(HB.RIGHT, [-14, 35, 15, 30])
+                self.set_bb(HB.TOP, [15, -29, 15, 30])
 
             else:
                 print("Invalid action: %s" % (str(self.action)))
@@ -587,11 +586,11 @@ class Object:
                     self.action == ACTION.WALK and self.facing == DIR.RIGHT or
                     self.action == ACTION.WALK and self.facing == DIR.LEFT
             ):
-                self.set_bb(HB.BODY, (21, 25, 21, 21))
-                self.set_bb(HB.LEFT, (21, 23, -20, 21))
-                self.set_bb(HB.BOTTOM, (21, 25, 21, -23))
-                self.set_bb(HB.RIGHT, (-20, 23, 21, 21))
-                self.set_bb(HB.TOP, (20, 0, 20, 24))
+                self.set_bb(HB.BODY, [21, 25, 21, 21])
+                self.set_bb(HB.LEFT, [21, 23, -20, 21])
+                self.set_bb(HB.BOTTOM, [21, 25, 21, -23])
+                self.set_bb(HB.RIGHT, [-20, 23, 21, 21])
+                self.set_bb(HB.TOP, [20, 0, 20, 24])
 
             # Die A
             elif self.action == ACTION.DIE_A:
@@ -671,29 +670,29 @@ class Object:
                 self.type_id == TID.EMPTY_BOX or
                 self.type_id == TID.RANDOM_BOX
             ):
-                self.set_bb(HB.BODY, (25, 25, 25, 25))
-                self.set_bb(HB.LEFT, (25, 25, -20, 25))
-                self.set_bb(HB.BOTTOM, (24, 25, 24, -20))
-                self.set_bb(HB.RIGHT, (-20, 25, 25, 25))
-                self.set_bb(HB.TOP, (24, -20, 24, 25))
+                self.set_bb(HB.BODY, [25, 25, 25, 25])
+                self.set_bb(HB.LEFT, [25, 25, -20, 25])
+                self.set_bb(HB.BOTTOM, [24, 25, 24, -20])
+                self.set_bb(HB.RIGHT, [-20, 25, 25, 25])
+                self.set_bb(HB.TOP, [24, -20, 24, 25])
             elif self.type_id == TID.CASTLE_BLOCK_50X100:
-                self.set_bb(HB.BODY, (25, 50, 25, 50))
-                self.set_bb(HB.LEFT, (25, 50, -20, 50))
-                self.set_bb(HB.BOTTOM, (24, 50, 24, -45))
-                self.set_bb(HB.RIGHT, (-20, 50, 25, 50))
-                self.set_bb(HB.TOP, (24, -45, 24, 50))
+                self.set_bb(HB.BODY, [25, 50, 25, 50])
+                self.set_bb(HB.LEFT, [25, 50, -20, 50])
+                self.set_bb(HB.BOTTOM, [24, 50, 24, -45])
+                self.set_bb(HB.RIGHT, [-20, 50, 25, 50])
+                self.set_bb(HB.TOP, [24, -45, 24, 50])
             elif self.type_id == TID.CASTLE_BLOCK_100X50:
-                self.set_bb(HB.BODY, (50, 25, 50, 25))
-                self.set_bb(HB.LEFT, (50, 25, -45, 25))
-                self.set_bb(HB.BOTTOM, (49, 25, 49, -20))
-                self.set_bb(HB.RIGHT, (-45, 25, 50, 25))
-                self.set_bb(HB.TOP, (49, -20, 49, 25))
+                self.set_bb(HB.BODY, [50, 25, 50, 25])
+                self.set_bb(HB.LEFT, [50, 25, -45, 25])
+                self.set_bb(HB.BOTTOM, [49, 25, 49, -20])
+                self.set_bb(HB.RIGHT, [-45, 25, 50, 25])
+                self.set_bb(HB.TOP, [49, -20, 49, 25])
             elif self.type_id == TID.CASTLE_BLOCK_100X100:
-                self.set_bb(HB.BODY, (50, 50, 50, 50))
-                self.set_bb(HB.LEFT, (50, 50, -45, 50))
-                self.set_bb(HB.BOTTOM, (49, 50, 49, -45))
-                self.set_bb(HB.RIGHT, (-45, 50, 50, 50))
-                self.set_bb(HB.TOP, (49, -45, 49, 50))
+                self.set_bb(HB.BODY, [50, 50, 50, 50])
+                self.set_bb(HB.LEFT, [50, 50, -45, 50])
+                self.set_bb(HB.BOTTOM, [49, 50, 49, -45])
+                self.set_bb(HB.RIGHT, [-45, 50, 50, 50])
+                self.set_bb(HB.TOP, [49, -45, 49, 50])
 
         elif self.type_name == TN.ITEMS:
             if len(self.bounding_box) == 0:
@@ -705,14 +704,14 @@ class Object:
             self.switch_bb_all()
 
             if self.type_id == TID.SUPER_MUSHROOM:
-                self.set_bb(HB.BODY, (24, 24, 24, 24))
-                self.set_bb(HB.LEFT, (25, 25, -20, 25))
-                self.set_bb(HB.BOTTOM, (24, 25, 24, -20))
-                self.set_bb(HB.RIGHT, (-20, 25, 25, 25))
-                self.set_bb(HB.TOP, (24, -20, 24, 25))
+                self.set_bb(HB.BODY, [24, 24, 24, 24])
+                self.set_bb(HB.LEFT, [25, 25, -20, 25])
+                self.set_bb(HB.BOTTOM, [24, 25, 24, -20])
+                self.set_bb(HB.RIGHT, [-20, 25, 25, 25])
+                self.set_bb(HB.TOP, [24, -20, 24, 25])
 
             elif self.type_id == TID.COIN:
-                self.set_bb(HB.BODY, (25, 25, 25, 25))
+                self.set_bb(HB.BODY, [25, 25, 25, 25])
 
         else:
             print("Invalid type: %s / %s" % (str(self.type_name), str(self.type_id)))
@@ -1159,7 +1158,7 @@ class Object:
 def test_object():
     open_canvas()
 
-    object = Object()
+    object = GameObject()
 
     close_canvas()
 

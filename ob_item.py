@@ -19,7 +19,7 @@ ITEM_POPUP_DISTANCE = 50
 ITEM_POPUP_VELOCITY = 50
 
 
-class Item(game_object.Object, ABC):
+class Item(game_object.GameObject, ABC):
     def __init__(self, tid=TID.NONE, x=0, y=0, x_dir=DIR.RIGHT):
         super().__init__(TN.ITEMS, tid, x, y)
 
@@ -114,7 +114,8 @@ class Coin(Item, ABC):
         self.pop_y_min = 0
         self.y_acceleration = 0
 
-        self.set_info()
+        self.set_size(0.8, 0.8)
+
 
         # print("in box coin, pos: (%.2f, %.2f) / in_box: %s" % (self.x, self.y, self.in_box))
 
@@ -127,7 +128,7 @@ class Coin(Item, ABC):
         if self.in_box:
             if self.pop_y_max == 0:  # init
                 self.switch_bb_all()
-                self.set_size(0.8, 0.8)
+                self.set_size(0.6, 0.8)
                 self.pop_y_max = self.y + COIN_POPUP_DISTANCE
                 self.pop_y_min = self.pop_y_max - COIN_POPUP_DISTANCE // 2
                 self.set_tpa(0.2)

@@ -18,7 +18,7 @@ class RS(IntEnum):  # Random box state
     INVISIBLE = 2
 
 
-class TileSet(game_object.Object):
+class TileSet(game_object.GameObject):
 
     def __init__(self, tid=TID.NONE, x=0, y=0):
         super().__init__(TN.TILESETS, tid, x, y)
@@ -157,6 +157,10 @@ class RandomBox(TileSet):
             self.draw_bb()
 
         # self.y -= server.player.jump_power * gs_framework.frame_time
+
+
+class Brick(TileSet):
+    pass
 
 
 def test_tileset():

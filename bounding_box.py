@@ -25,6 +25,7 @@ class BoundingBox:
 
     def set_bb(self, ran):
         self.range = [ran[POS.LEFT], ran[POS.BOTTOM], ran[POS.RIGHT], ran[POS.TOP]]
+        # print("range: (%.2f, %.2f, %.2f, %.2f)" % (self.range[0], self.range[1], self.range[2], self.range[3]))
 
     def draw_bb(self, pos):
         if not self.is_on:

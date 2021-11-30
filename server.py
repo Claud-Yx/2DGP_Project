@@ -1,7 +1,4 @@
-from ob_player import *
-from ob_tileset import *
 from ob_background import *
-from ob_enemy import *
 from ob_map import *
 
 from value import *
@@ -55,7 +52,7 @@ def destroy():
     tiles.clear()
 
 
-def move_camera_x(self: game_object.Object):
+def move_camera_x(self: game_object.GameObject):
     global player, stage
 
     if (server.player.x == gs_framework.canvas_width // 2 + 50 or

@@ -1,7 +1,3 @@
-from pico2d import *
-
-import game_object
-from value import *
 from ob_tileset import *
 from ob_player import *
 
@@ -64,7 +60,7 @@ class Map:
 
     def update_index(self):
         for obj in object_manager.all_objects():
-            obj: game_object.Object
+            obj: game_object.GameObject
             if obj.__class__ == ob_background.Background:
                 continue
             if obj.bb_size_range == [-1, -1, -1, -1]:
@@ -85,10 +81,10 @@ class Map:
             y1 //= TILE_HEIGHT
             y2 //= TILE_HEIGHT
 
-            for x in range(int(x1), int(x2)):
+            for x in range(int(x1), int(x2)+1):
                 if x < 0 or x >= len(self.object_index):
                     continue
-                for y in range(int(y1), int(y2)):
+                for y in range(int(y1), int(y2)+1):
                     if y < 0 or y >= len(self.object_index[0]):
                         continue
                     # print("index_num: (%d, %d)" % (x, y))

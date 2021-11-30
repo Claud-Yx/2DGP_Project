@@ -1,6 +1,3 @@
-import game_object
-import ob_enemy
-import ob_item
 import server
 
 from pico2d import *
@@ -34,10 +31,10 @@ def enter():
     object_manager.add_object(server.background, L.BACKGROUND)
 
     # item
-    # server.items.append(ob_item.Coin(525, 125))
-    # server.items.append(ob_item.Coin(525, 175))
-    # server.items.append(ob_item.Coin(575, 125))
-    # server.items.append(ob_item.Coin(575, 175))
+    server.items.append(ob_item.Coin(525, 125))
+    server.items.append(ob_item.Coin(525, 175))
+    server.items.append(ob_item.Coin(575, 125))
+    server.items.append(ob_item.Coin(575, 175))
     # server.items.append(ob_item.SuperMushroom(800, 480))
     object_manager.add_objects(server.items, L.ITEMS)
 
@@ -149,7 +146,7 @@ def update():
 
             nearby_list = server.stage.object_index[x][y]
             for obj in nearby_list:
-                obj: game_object.Object
+                obj: game_object.GameObject
                 if obj.type_name == TN.TILESETS:
                     server.player.nearby_tiles.add(obj)
                 elif obj.type_name == TN.ENEMIES:
@@ -190,8 +187,8 @@ def update():
         if collide_item_to_player(server.player, item):
             break
 
-    # if len(server.player.nearby_tiles) != 0:
-    #     print(server.player.nearby_tiles)
+    # if len(server.player.nearby_items) != 0:
+    #     print(server.player.nearby_items)
 
     # enemy collision checking and indexing
     for enemy in server.enemies:
@@ -210,7 +207,7 @@ def update():
 
                 nearby_list = server.stage.object_index[x][y]
                 for obj in nearby_list:
-                    obj: game_object.Object
+                    obj: game_object.GameObject
                     if obj.type_name == TN.TILESETS:
                         enemy.nearby_tiles.add(obj)
 
@@ -244,7 +241,7 @@ def update():
 
                 nearby_list = server.stage.object_index[x][y]
                 for obj in nearby_list:
-                    obj: game_object.Object
+                    obj: game_object.GameObject
                     if obj.type_name == TN.TILESETS:
                         item.nearby_tiles.add(obj)
 

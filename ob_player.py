@@ -3,7 +3,6 @@ from game_object import *
 from value import *
 
 import gs_framework
-import game_object
 import gs_stage_enter
 
 MIN_VELOCITY = get_pps_from_kmph(7.0)
@@ -59,7 +58,7 @@ key_event_table = {
 }
 
 
-class Player(game_object.Object):
+class Player(GameObject):
     def __init__(self, tid=TID.MARIO_SMALL, x=0, y=0):
         super().__init__(TN.PLAYER, tid, x, y)
 

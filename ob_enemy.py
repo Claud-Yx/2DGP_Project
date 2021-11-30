@@ -13,7 +13,7 @@ MAX_JUMP_POWER = get_pps_from_mps(20)
 GOOMBA_MAX_VELOCITY = get_pps_from_kmph(8)
 
 
-class Enemy(game_object.Object, ABC):
+class Enemy(game_object.GameObject, ABC):
     def __init__(self, tid=TID.NONE, x=0, y=0, x_dir=DIR.RIGHT):
         super().__init__(TN.ENEMIES, tid, x, y)
 
