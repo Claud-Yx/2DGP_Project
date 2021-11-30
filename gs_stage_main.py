@@ -70,7 +70,8 @@ def enter():
     server.tiles.append(ob_tileset.RandomBox(125, 375))
     server.tiles.append(ob_tileset.RandomBox(175, 375, item=TID.SUPER_MUSHROOM, state=ob_tileset.RS.POLYMORPH))
     server.tiles.append(ob_tileset.RandomBox(225, 375, state=ob_tileset.RS.INVISIBLE))
-    server.tiles.append(ob_tileset.RandomBox(525, 225, state=ob_tileset.RS.INVISIBLE))
+    server.tiles.append(ob_tileset.RandomBox(525, 225, state=ob_tileset.RS.POLYMORPH))
+    # server.tiles.append(ob_tileset.RandomBox(575, 325))
 
     object_manager.add_objects(server.tiles, object_manager.OL_TILESET)
 

@@ -76,10 +76,10 @@ def collide_player_to_ceiling(player: ob_player.Player, tile: ob_tileset.TileSet
         if tile.type_id == TID.RANDOM_BOX and not tile.is_empty:
             tile.is_hit = True
 
-        if tile.type_id == TID.RANDOM_BOX or tile.type_id == TID.BREAKABLE_BRICK:
-            return False
+        # if tile.type_id == TID.RANDOM_BOX or tile.type_id == TID.BREAKABLE_BRICK:
+        #     return False
 
-        return True
+        return False
 
     return False
 
