@@ -6,7 +6,6 @@ from abc import *
 from bounding_box import *
 
 
-
 class GameObject:
     image = None
 
@@ -78,6 +77,10 @@ class GameObject:
 
         # Time stop
         self.is_time_stop = False
+
+    def set_alpha(self, a=255):
+        """Setting alpha value to image"""
+        SDL_SetTextureAlphaMod(GameObject.image[self.type_name, self.type_id].texture, a)
 
     def set_tpa(self, tpa):
         self.time_per_action = tpa
