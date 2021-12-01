@@ -1,7 +1,6 @@
 from pico2d import *
 
 import ob_foreground
-import ob_item
 from value import *
 from abc import *
 from bounding_box import *
@@ -52,6 +51,7 @@ class GameObject:
         # Animation sprite value
         self.l, self.b, self.w, self.h = 0, 0, 0, 0
         self.wp, self.hp = 1.0, 1.0
+        self.rad = 0
 
         # Animation Direction
         self.facing = DIR.RIGHT
@@ -100,10 +100,14 @@ class GameObject:
         else:
             if rad == 0:
                 GameObject.image[(tn, tid)].draw(
-                    self.x, self.y , self.w * self.wp, self.h * self.hp)
+                    self.x, self.y,
+                    GameObject.image[(tn, tid)].w * self.wp,
+                    GameObject.image[(tn, tid)].h * self.hp)
             else:
                 GameObject.image[(tn, tid)].composite_draw(
-                    rad, '', self.x, self.y, self.w * self.wp, self.h * self.hp)
+                    rad, '', self.x, self.y,
+                    GameObject.image[(tn, tid)].w * self.wp,
+                    GameObject.image[(tn, tid)].h * self.hp)
 
         self.set_alpha()
 

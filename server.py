@@ -8,6 +8,7 @@ player: Player
 enemies = []
 items = []
 tiles = []
+foreground = []
 background: Background
 
 start_time = 0.0
@@ -50,6 +51,7 @@ def destroy():
     items.clear()
     enemies.clear()
     tiles.clear()
+    foreground.clear()
 
 
 def move_camera_x(self: game_object.GameObject):

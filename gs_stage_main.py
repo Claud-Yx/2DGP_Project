@@ -77,9 +77,15 @@ def enter():
     server.tiles.append(ob_tileset.RandomBox(1475, 325, state=ob_tileset.RS.INVISIBLE))
     server.tiles.append(ob_tileset.RandomBox(1525, 275, state=ob_tileset.RS.INVISIBLE))
     server.tiles.append(ob_tileset.RandomBox(1575, 275, state=ob_tileset.RS.INVISIBLE))
+
+    server.tiles.append(ob_tileset.Brick(125, 575))
     # server.tiles.append(ob_tileset.RandomBox(575, 325))
 
     object_manager.add_objects(server.tiles, object_manager.OL_TILESET)
+
+    # Foreground
+    server.foreground = []
+    object_manager.add_objects(server.foreground, L.FOREGROUND)
 
     test_keyboard.keyboard_init()
 

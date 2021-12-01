@@ -5,7 +5,6 @@ import server
 from game_object import *
 from value import *
 
-import game_object
 import gs_framework
 
 MAX_JUMP_POWER = get_pps_from_mps(15)
@@ -19,7 +18,7 @@ ITEM_POPUP_DISTANCE = 50
 ITEM_POPUP_VELOCITY = 50
 
 
-class Item(game_object.GameObject, ABC):
+class Item(GameObject, ABC):
     def __init__(self, tid=TID.NONE, x=0, y=0, x_dir=DIR.RIGHT):
         super().__init__(TN.ITEMS, tid, x, y)
 

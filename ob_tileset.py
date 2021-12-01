@@ -1,3 +1,4 @@
+import ob_foreground
 import ob_item
 import object_manager
 from value import *
@@ -98,12 +99,7 @@ class RandomBox(TileSet):
         self.loop_animation = False
         self.set_info()
 
-    def update(self):
-        if self.is_time_stop:
-            return
-
-        server.move_camera_x(self)
-
+    def hit(self):
         if self.is_hit and not self.is_empty:
             if server.player.x > self.x:
                 self.x_direction = DIR.LEFT
@@ -135,13 +131,21 @@ class RandomBox(TileSet):
                 server.tiles.append(TileSet(TID.EMPTY_BOX, self.x, self.y))
                 object_manager.add_object(server.tiles[-1], L.TILESETS)
 
-            # pico2d.delay(0.1)
-
+    def empty(self):
         if self.is_hit and self.is_empty:
             object_manager.remove_object(self)
             del self
         else:
             self.update_frame(gs_framework.frame_time)
+
+    def update(self):
+        if self.is_time_stop:
+            return
+
+        server.move_camera_x(self)
+
+        self.hit()
+        self.empty()
 
     def draw(self):
         if self.type_id == TID.EMPTY_BOX:
@@ -160,8 +164,81 @@ class RandomBox(TileSet):
 
 
 class Brick(TileSet):
-    pass
+    def __init__(self, x, y):
+        super().__init__(TID.BREAKABLE_BRICK, x, y)
 
+        self.min_y, self.max_y = y, y+20
+
+        self.x_direction = DIR.RIGHT
+
+        self.hit_by = None
+        self.timer_hit = 0
+
+        self.action = ACTION.IDLE
+
+        # Animation frame value
+        self.time_per_action = 0.0
+        self.action_per_time = 0.0
+        self.frame = 0
+        self.frame_begin = 0
+        self.frame_count = 0
+
+        # Animation control value
+        self.loop_animation = False
+        self.set_info()
+
+    def hit(self):
+        if server.player.x > self.x:
+            self.x_direction = DIR.LEFT
+
+        if self.hit_by == TID.MARIO_SMALL:
+            if self.timer_hit == 0:
+                self.timer_hit = MAX_HIT_TIMER
+
+            self.timer_hit -= gs_framework.frame_time
+
+            if self.timer_hit >= MAX_HIT_TIMER / 2:
+                self.y += VELOCITY_HIT * gs_framework.frame_time
+            else:
+                self.y -= VELOCITY_HIT * gs_framework.frame_time
+            self.y = pico2d.clamp(self.min_y, self.y, self.max_y)
+
+            if self.timer_hit <= 0.0:
+                self.timer_hit = 0
+
+        elif self.hit_by is not None:
+            server.foreground.append(ob_foreground.BrickPiece(
+                self.x - self.w * (1/4), self.y + self.h * (1/4), ACTION.PIECE_LT))
+            object_manager.add_object(server.foreground[-1], L.FOREGROUND)
+            server.foreground.append(ob_foreground.BrickPiece(
+                self.x - self.w * (1/4), self.y - self.h * (1/4), ACTION.PIECE_LB))
+            object_manager.add_object(server.foreground[-1], L.FOREGROUND)
+            server.foreground.append(ob_foreground.BrickPiece(
+                self.x + self.w * (1/4), self.y - self.h * (1/4), ACTION.PIECE_RT))
+            object_manager.add_object(server.foreground[-1], L.FOREGROUND)
+            server.foreground.append(ob_foreground.BrickPiece(
+                self.x + self.w * (1/4), self.y + self.h * (1/4), ACTION.PIECE_RB))
+            object_manager.add_object(server.foreground[-1], L.FOREGROUND)
+
+            object_manager.remove_object(self)
+            del self
+            return
+
+    def update(self):
+        if self.is_time_stop:
+            return
+
+        server.move_camera_x(self)
+        self.update_frame(gs_framework.frame_time)
+
+        self.hit()
+
+    def draw(self):
+
+        self.clip_draw()
+
+        if self.show_bb:
+            self.draw_bb()
 
 def test_tileset():
     import pico2d
