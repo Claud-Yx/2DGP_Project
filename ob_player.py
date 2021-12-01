@@ -87,7 +87,6 @@ class Player(GameObject):
         self.additional_jump_power = 0
 
         self.x_accel = 0
-        self.y_accel = 0
 
         # Control value
         self.is_stuck_left = False

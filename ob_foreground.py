@@ -3,11 +3,18 @@ import random
 from pico2d import *
 import game_object
 import gs_framework
+import object_manager
+import server
 
 from value import *
 
-BRICK_PIECE_RAD = 360
+BRICK_PIECE_RAD_RPS = 360
 
+MIN_BP_VELOCITY = get_pps_from_kmph(5.0)
+MAX_BP_VELOCITY = get_pps_from_kmph(12.0)
+
+MAX_JUMP_POWER = get_pps_from_mps(19)
+MIN_JUMP_POWER = get_pps_from_mps(8)
 
 class Foreground(game_object.GameObject):
     def __init__(self, x, y, ptn=TN.NONE, ptid=TID.NONE):
@@ -45,8 +52,44 @@ class BrickPiece(Foreground):
         self.action = piece
         self.set_clip()
 
+        if self.action == ACTION.PIECE_LB or self.action == ACTION.PIECE_LT:
+            self.x_direction = DIR.LEFT
+        elif self.action == ACTION.PIECE_RT or self.action == ACTION.PIECE_RB:
+            self.x_direction = DIR.RIGHT
+
+        self.velocity = random.randrange(MIN_BP_VELOCITY, MAX_BP_VELOCITY)
+        self.jump_power = random.randrange(MIN_JUMP_POWER, MAX_JUMP_POWER)
+
+    def jump(self):
+        self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
+                            ) * -1
+
+        self.y += self.jump_power * gs_framework.frame_time
+
+    def fall(self):
+        self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
+                            ) * -1
+
+        self.y += self.jump_power * gs_framework.frame_time
+
     def update(self):
-        pass
+        if server.time_stop:
+            return
+
+        server.move_camera_x(self)
+
+        if self.y <= -50:
+            object_manager.remove_object(self)
+            del self
+            return
+
+        if self.jump_power > 0:
+            self.jump()
+        else:
+            self.fall()
+
+        self.rad += BRICK_PIECE_RAD_RPS * gs_framework.frame_time * -self.x_direction
+        self.x += self.velocity * gs_framework.frame_time * self.x_direction
 
     def draw(self):
         self.update_frame(gs_framework.frame_time)
