@@ -8,13 +8,16 @@ import server
 
 from value import *
 
-BRICK_PIECE_RAD_RPS = 360
+MIN_BRICK_PIECE_RAD_RPS = 360
+MAX_BRICK_PIECE_RAD_RPS = 360 * 3
+STEP_BRICK_PIECE_RAD_RPS = 90
 
-MIN_BP_VELOCITY = get_pps_from_kmph(5.0)
-MAX_BP_VELOCITY = get_pps_from_kmph(12.0)
+MIN_BP_VELOCITY = int(get_pps_from_kmph(7.0))
+MAX_BP_VELOCITY = int(get_pps_from_kmph(15.0))
 
-MAX_JUMP_POWER = get_pps_from_mps(19)
-MIN_JUMP_POWER = get_pps_from_mps(8)
+MAX_JUMP_POWER = int(get_pps_from_mps(25))
+MIN_JUMP_POWER = int(get_pps_from_mps(20))
+
 
 class Foreground(game_object.GameObject):
     def __init__(self, x, y, ptn=TN.NONE, ptid=TID.NONE):
@@ -59,16 +62,19 @@ class BrickPiece(Foreground):
 
         self.velocity = random.randrange(MIN_BP_VELOCITY, MAX_BP_VELOCITY)
         self.jump_power = random.randrange(MIN_JUMP_POWER, MAX_JUMP_POWER)
+        self.rps = random.randrange(MIN_BRICK_PIECE_RAD_RPS, MAX_BRICK_PIECE_RAD_RPS, STEP_BRICK_PIECE_RAD_RPS)
 
     def jump(self):
-        self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
+        self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 6
                             ) * -1
 
         self.y += self.jump_power * gs_framework.frame_time
 
     def fall(self):
-        self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
+        self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 6
                             ) * -1
+
+        self.jump_power = clamp(-MAX_JUMP_POWER * 2, self.jump_power, 0)
 
         self.y += self.jump_power * gs_framework.frame_time
 
@@ -88,9 +94,9 @@ class BrickPiece(Foreground):
         else:
             self.fall()
 
-        self.rad += BRICK_PIECE_RAD_RPS * gs_framework.frame_time * -self.x_direction
+        self.rad += self.rps * gs_framework.frame_time * -self.x_direction
         self.x += self.velocity * gs_framework.frame_time * self.x_direction
 
     def draw(self):
         self.update_frame(gs_framework.frame_time)
-        self.clip_draw(self.pm_type_id, self.pm_type_id, self.rad)
+        self.clip_draw(self.pm_type_name, self.pm_type_id, self.rad)

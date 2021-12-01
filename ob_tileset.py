@@ -204,6 +204,7 @@ class Brick(TileSet):
             self.y = pico2d.clamp(self.min_y, self.y, self.max_y)
 
             if self.timer_hit <= 0.0:
+                self.hit_by = None
                 self.timer_hit = 0
 
         elif self.hit_by is not None:

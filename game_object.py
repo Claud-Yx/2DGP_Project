@@ -33,6 +33,7 @@ class GameObject:
                 (TN.ITEMS, TID.STAR_COIN): load_image('resource\\items\\starcoin.png'),
                 (TN.ITEMS, TID.SUPER_MUSHROOM): load_image('resource\\items\\super_mushroom.png'),
                 (TN.ITEMS, TID.SUPER_STAR): load_image('resource\\items\\super_star.png'),
+                (TN.FOREGROUND, TID.BRICK_PIECE): load_image('resource\\foreground\\brick_piece25x25.png'),
                 TID.NONE: load_image('resource\\no_image.png')
             }
 
@@ -81,7 +82,10 @@ class GameObject:
 
     def set_alpha(self, a=255):
         """Setting alpha value to image"""
-        SDL_SetTextureAlphaMod(GameObject.image[self.type_name, self.type_id].texture, a)
+        if self.type_name == TN.FOREGROUND:
+            SDL_SetTextureAlphaMod(GameObject.image[self.pm_type_name, self.pm_type_id].texture, a)
+        else:
+            SDL_SetTextureAlphaMod(GameObject.image[self.type_name, self.type_id].texture, a)
 
     def set_tpa(self, tpa):
         self.time_per_action = tpa

@@ -79,6 +79,15 @@ def enter():
     server.tiles.append(ob_tileset.RandomBox(1575, 275, state=ob_tileset.RS.INVISIBLE))
 
     server.tiles.append(ob_tileset.Brick(125, 575))
+    server.tiles.append(ob_tileset.Brick(175, 575))
+    server.tiles.append(ob_tileset.Brick(225, 575))
+    server.tiles.append(ob_tileset.Brick(275, 575))
+    server.tiles.append(ob_tileset.Brick(325, 575))
+    server.tiles.append(ob_tileset.Brick(375, 575))
+    server.tiles.append(ob_tileset.Brick(425, 575))
+    server.tiles.append(ob_tileset.Brick(475, 575))
+    server.tiles.append(ob_tileset.Brick(525, 575))
+    server.tiles.append(ob_tileset.Brick(575, 575))
     # server.tiles.append(ob_tileset.RandomBox(575, 325))
 
     object_manager.add_objects(server.tiles, object_manager.OL_TILESET)

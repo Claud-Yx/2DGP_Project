@@ -61,7 +61,10 @@ class Map:
     def update_index(self):
         for obj in object_manager.all_objects():
             obj: game_object.GameObject
-            if obj.__class__ == ob_background.Background:
+            if (obj.__class__ == ob_background.Background or
+                obj.__class__ == ob_foreground.BrickPiece or
+                obj.__class__ == ob_foreground.Foreground
+            ):
                 continue
             if obj.bb_size_range == [-1, -1, -1, -1]:
                 continue
