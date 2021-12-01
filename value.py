@@ -93,6 +93,10 @@ class ACTION(IntEnum):
     ATTACK = auto()
     DIE_A = auto()
     DIE_B = auto()
+    PIECE_LT = auto()
+    PIECE_RT = auto()
+    PIECE_LB = auto()
+    PIECE_RB = auto()
 
 
 class TN(IntEnum):  # Object Type
@@ -141,6 +145,7 @@ class TID(IntEnum):  # Type ID
     CASTLE_BLOCK_100X50 = auto()
     CASTLE_BLOCK_100X100 = auto()
     BREAKABLE_BRICK = 10
+    BRICK_PIECE = auto()
     EMPTY_BOX = auto()
     RANDOM_BOX = auto()
     PLAT_FORM = auto()

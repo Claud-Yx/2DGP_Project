@@ -1,5 +1,6 @@
 from pico2d import *
 
+import ob_foreground
 import ob_item
 from value import *
 from abc import *
@@ -86,27 +87,37 @@ class GameObject:
         self.time_per_action = tpa
         self.action_per_time = 1.0 / self.time_per_action
 
-    def image_draw(self, tn=None, tid=None, rad=0):
+    def image_draw(self, tn=None, tid=None, rad=None):
         if tn is None:
             tn = self.type_name
         if tid is None:
             tid = self.type_id
+        if rad is None:
+            rad = self.rad
 
         if self.type_id == TID.NONE:
-            GameObject.image[tid].draw(self.x, self.y)
+            GameObject.image[tid].draw(self.x, self.y, self.w * self.wp, self.h * self.hp)
         else:
-            GameObject.image[(tn, tid)].draw(self.x, self.y)
+            if rad == 0:
+                GameObject.image[(tn, tid)].draw(
+                    self.x, self.y , self.w * self.wp, self.h * self.hp)
+            else:
+                GameObject.image[(tn, tid)].composite_draw(
+                    rad, '', self.x, self.y, self.w * self.wp, self.h * self.hp)
 
         self.set_alpha()
 
-    def clip_draw(self, tn=None, tid=None, rad=0):
+    def clip_draw(self, tn=None, tid=None, rad=None):
         if tn is None:
             tn = self.type_name
         if tid is None:
             tid = self.type_id
+        if rad is None:
+            rad = self.rad
 
         if tid == TID.NONE:
-            GameObject.image[tid].draw(self.x, self.y)
+            GameObject.image[tid].draw(
+                self.x, self.y, self.w * self.wp, self.h * self.hp)
             return
 
         if self.frame_count == 1:
@@ -1166,6 +1177,28 @@ class GameObject:
                 self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
                 self.frame_count, self.frame_begin = 4, 0
                 self.loop_animation = True
+
+        # Foreground exclusive
+        elif self.type_name == TN.FOREGROUND:
+            self: ob_foreground.Foreground
+            if self.pm_type_id == TID.BRICK_PIECE:
+                if self.action == ACTION.PIECE_LT:
+                    self.l, self.b, self.w, self.h = 25, 25 * 1, 25, 25
+                    self.frame_count, self.frame_begin = 1, 0
+                    self.loop_animation = False
+                elif self.action == ACTION.PIECE_RT:
+                    self.l, self.b, self.w, self.h = 25, 25 * 1, 25, 25
+                    self.frame_count, self.frame_begin = 1, 1
+                    self.loop_animation = False
+                elif self.action == ACTION.PIECE_LB:
+                    self.l, self.b, self.w, self.h = 25, 25 * 0, 25, 25
+                    self.frame_count, self.frame_begin = 1, 0
+                    self.loop_animation = False
+                elif self.action == ACTION.PIECE_RB:
+                    self.l, self.b, self.w, self.h = 25, 25 * 0, 25, 25
+                    self.frame_count, self.frame_begin = 1, 1
+                    self.loop_animation = False
+
 
         self.frame = self.frame_begin
 
