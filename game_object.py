@@ -86,16 +86,20 @@ class GameObject:
         self.time_per_action = tpa
         self.action_per_time = 1.0 / self.time_per_action
 
-    def get_moving_distance(self):
-        return self.x - self.px, self.y - self.py
+    def image_draw(self, tn=None, tid=None, rad=0):
+        if tn is None:
+            tn = self.type_name
+        if tid is None:
+            tid = self.type_id
 
-    def image_draw(self):
         if self.type_id == TID.NONE:
-            GameObject.image[self.type_id].draw(self.x, self.y)
+            GameObject.image[tid].draw(self.x, self.y)
         else:
-            GameObject.image[(self.type_name, self.type_id)].draw(self.x, self.y)
+            GameObject.image[(tn, tid)].draw(self.x, self.y)
 
-    def clip_draw(self, tn=None, tid=None):
+        self.set_alpha()
+
+    def clip_draw(self, tn=None, tid=None, rad=0):
         if tn is None:
             tn = self.type_name
         if tid is None:
@@ -108,14 +112,25 @@ class GameObject:
         if self.frame_count == 1:
             self.frame = 0
 
-        GameObject.image[(tn, tid)].clip_draw(
-            int((self.frame + self.frame_begin)) * self.l, self.b,
-            self.w, self.h, self.x, self.y, self.w * self.wp, self.h * self.hp)
+        if rad == 0:
+            GameObject.image[(tn, tid)].clip_draw(
+                int((self.frame + self.frame_begin)) * self.l, self.b,
+                self.w, self.h, self.x, self.y, self.w * self.wp, self.h * self.hp)
+        else:
+            GameObject.image[(tn, tid)].clip_composite_draw(
+                int((self.frame + self.frame_begin)) * self.l, self.b,
+                self.w, self.h,
+                rad*(math.pi/180), '',
+                self.x, self.y, self.w * self.wp, self.h * self.hp)
 
-    def set_size(self, wp=1.0, hp=1.0):
+        self.set_alpha()
+
+    def set_size(self, wp=1.0, hp=1.0, set_now=True):
         self.wp = wp
         self.hp = hp
-        self.set_info()
+
+        if set_now:
+            self.set_info()
 
     def get_bb_range(self, bid):
         return self.bounding_box[bid].range
@@ -213,6 +228,7 @@ class GameObject:
                 self.bounding_box[HB.RIGHT] = BoundingBox(HB.RIGHT)
                 self.bounding_box[HB.TOP] = BoundingBox(HB.TOP)
             self.switch_bb_all()
+            self.set_size(1.2, 1.2, False)
 
             # Idle right
             if self.action == ACTION.IDLE and self.facing == DIR.RIGHT:
@@ -724,7 +740,7 @@ class GameObject:
         if a == self.action:
             return
 
-        if a != None:
+        if a is not None:
             self.action = a
 
         # print("facing in set_info(): " + str(self.facing))

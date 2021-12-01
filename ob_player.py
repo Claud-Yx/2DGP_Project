@@ -5,23 +5,23 @@ from value import *
 import gs_framework
 import gs_stage_enter
 
-MIN_VELOCITY = get_pps_from_kmph(7.0)
+MIN_VELOCITY = get_pps_from_kmph(10.5)
 
-MAX_WALK_VELOCITY = get_pps_from_kmph(19.0)
+MAX_WALK_VELOCITY = get_pps_from_kmph(23.0)
 ACCEL_WALK = get_accel_from_pps(MAX_WALK_VELOCITY, 0.8)
 
-MAX_RUN_VELOCITY = get_pps_from_kmph(51.0)
+MAX_RUN_VELOCITY = get_pps_from_kmph(55.0)
 
 MAX_JUMP_POWER = get_pps_from_mps(19)
 MIN_JUMP_POWER = get_pps_from_mps(8)
 
-JUMP_BOOST_ONE = get_pps_from_mps(2)
-JUMP_BOOST_TWO = get_pps_from_mps(4)
+JUMP_BOOST_ONE = get_pps_from_mps(3)
+JUMP_BOOST_TWO = get_pps_from_mps(6)
 
-STANDARD_INERTIA = ACCEL_WALK * 2.3
+STANDARD_INERTIA = ACCEL_WALK * 2.0
 
 # Player timer
-MAX_TIMER_SHRINK = 1.0
+MAX_TIMER_SHRINK = 0.9
 MAX_TIMER_GROW = 1.0
 MAX_TIMER_DIE = 3.5
 MAX_TIMER_INVINCIBLE = 2.0
@@ -181,21 +181,29 @@ class Player(GameObject):
 
         self.timer_shrink -= gs_framework.frame_time
 
-        motion = int(self.timer_shrink * 6) % 2
+        motion = int(self.timer_shrink * 9) % 3
 
-        if motion == 1:
+        self.set_alpha(100)
+
+        if motion == 2:
             if self.type_id == TID.MARIO_SMALL:
                 self.y += 25
+            self.set_size()
             self.type_id = self.prev_id
             self.set_clip()
+        elif motion == 1:
+            if self.wp == 1.0:
+                self.y -= 12.5
+            self.set_size(wp=0.75, hp=0.75)
         else:
             if not self.type_id == TID.MARIO_SMALL:
                 self.prev_id = self.type_id
-                self.y -= 25
+                self.y -= 12.5
             self.type_id = TID.MARIO_SMALL
             self.set_clip()
 
         self.set_info()
+        self.switch_bb_all()
 
         if self.timer_shrink <= 0.0:
             self.timer_shrink = 0
@@ -209,17 +217,22 @@ class Player(GameObject):
 
         self.timer_grow -= gs_framework.frame_time
 
-        motion = int(self.timer_grow * 6) % 2
+        motion = int(self.timer_grow * 9) % 3
 
         if motion == 0:
             if self.type_id == TID.MARIO_SMALL:
                 self.y += 25
+            self.set_size()
             self.type_id = self.prev_id
             self.set_clip()
+        elif motion == 1:
+            if self.wp == 1.0:
+                self.y -= 12.5
+            self.set_size(wp=0.75, hp=0.75)
         else:
             if not self.type_id == TID.MARIO_SMALL:
                 self.prev_id = self.type_id
-                self.y -= 25
+                self.y -= 12.5
             self.type_id = TID.MARIO_SMALL
             self.set_clip()
 
@@ -259,6 +272,9 @@ class Player(GameObject):
                     return -1
             else:
                 if self.shrink():
+                    self.set_size()
+                    self.set_alpha()
+                    self.switch_bb_all(True)
                     self.is_damaged = False
                     self.is_small = True
                     server.stop_time(False)
@@ -269,6 +285,12 @@ class Player(GameObject):
                 self.timer_invincible = MAX_TIMER_INVINCIBLE
 
             self.timer_invincible -= gs_framework.frame_time
+
+            motion = int(self.timer_invincible * 20) % 2
+            if motion == 1:
+                self.set_alpha(100)
+            else:
+                self.set_alpha(200)
 
             if self.timer_invincible <= 0.0:
                 self.timer_invincible = 0.0

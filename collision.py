@@ -197,7 +197,8 @@ def stomp_player_to_enemy(player: ob_player.Player, enemy: ob_enemy) -> bool:
         player.is_fall = False
         player.is_jump = True
         if player.pressed_key_jump:
-            player.jump_power = ob_player.MAX_JUMP_POWER + ob_player.JUMP_BOOST_ONE
+            player.jump_power = ob_player.MAX_JUMP_POWER + ob_player.JUMP_BOOST_TWO
+            player.additional_jump_power = ob_player.MAX_JUMP_POWER + ob_player.JUMP_BOOST_TWO
         else:
             player.jump_power = get_pps_from_mps(10)
         player.y = (player.get_bb_range(HB.BOTTOM)[POS.BOTTOM] + enemy.get_bb(HB.TOP)[POS.TOP]) + 1
