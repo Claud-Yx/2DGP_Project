@@ -45,6 +45,7 @@ def enter():
     server.enemies.append(ob_enemy.Goomba(900, 480))
     object_manager.add_objects(server.enemies, L.ENEMIES)
 
+    # player
     server.player = ob_player.Player(TID.MARIO_SUPER, 200, 500)
     object_manager.add_object(server.player, object_manager.OL_CHARACTER)
 
@@ -81,7 +82,7 @@ def enter():
     server.tiles.append(ob_tileset.Brick(125, 575))
     server.tiles.append(ob_tileset.Brick(175, 575))
     server.tiles.append(ob_tileset.Brick(225, 575))
-    server.tiles.append(ob_tileset.Brick(275, 575))
+    server.tiles.append(ob_tileset.RandomBox(275, 575, item=TID.SUPER_MUSHROOM, state=ob_tileset.RS.POLYMORPH))
     server.tiles.append(ob_tileset.Brick(325, 575))
     server.tiles.append(ob_tileset.Brick(375, 575))
     server.tiles.append(ob_tileset.Brick(425, 575))

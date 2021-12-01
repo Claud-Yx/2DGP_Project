@@ -33,6 +33,7 @@ class GameObject:
                 (TN.ITEMS, TID.STAR_COIN): load_image('resource\\items\\starcoin.png'),
                 (TN.ITEMS, TID.SUPER_MUSHROOM): load_image('resource\\items\\super_mushroom.png'),
                 (TN.ITEMS, TID.SUPER_STAR): load_image('resource\\items\\super_star.png'),
+                (TN.INTERACTIVES, TID.WIRE_MESH): load_image('resource\\interactives\\wire_mesh150x150.png'),
                 (TN.FOREGROUND, TID.BRICK_PIECE): load_image('resource\\foreground\\brick_piece25x25.png'),
                 TID.NONE: load_image('resource\\no_image.png')
             }
