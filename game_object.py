@@ -1187,7 +1187,48 @@ class GameObject:
                 self.frame_count, self.frame_begin = 4, 0
                 self.loop_animation = True
 
-        # Foreground exclusive
+        # Interactives
+        elif self.type_name == TN.INTERACTIVES:
+            if self.type_id == TID.WIRE_MESH:
+                if self.action == ACTION.PIECE_LT:
+                    self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
+                    self.frame_count, self.frame_begin = 1, 0
+                    self.loop_animation = False
+                elif self.action == ACTION.PIECE_T:
+                    self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
+                    self.frame_count, self.frame_begin = 1, 1
+                    self.loop_animation = False
+                elif self.action == ACTION.PIECE_RT:
+                    self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
+                    self.frame_count, self.frame_begin = 1, 2
+                    self.loop_animation = False
+                elif self.action == ACTION.PIECE_L:
+                    self.l, self.b, self.w, self.h = 50, 50 * 1, 50, 50
+                    self.frame_count, self.frame_begin = 1, 0
+                    self.loop_animation = False
+                elif self.action == ACTION.PIECE_M:
+                    self.l, self.b, self.w, self.h = 50, 50 * 1, 50, 50
+                    self.frame_count, self.frame_begin = 1, 1
+                    self.loop_animation = False
+                elif self.action == ACTION.PIECE_R:
+                    self.l, self.b, self.w, self.h = 50, 50 * 1, 50, 50
+                    self.frame_count, self.frame_begin = 1, 2
+                    self.loop_animation = False
+                elif self.action == ACTION.PIECE_LB:
+                    self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
+                    self.frame_count, self.frame_begin = 1, 0
+                    self.loop_animation = False
+                elif self.action == ACTION.PIECE_B:
+                    self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
+                    self.frame_count, self.frame_begin = 1, 1
+                    self.loop_animation = False
+                elif self.action == ACTION.PIECE_RB:
+                    self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
+                    self.frame_count, self.frame_begin = 1, 2
+                    self.loop_animation = False
+
+
+        # Foreground exclusives
         elif self.type_name == TN.FOREGROUND:
             self: ob_foreground.Foreground
             if self.pm_type_id == TID.BRICK_PIECE:

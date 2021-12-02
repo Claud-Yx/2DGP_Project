@@ -94,9 +94,14 @@ class ACTION(IntEnum):
     DIE_A = auto()
     DIE_B = auto()
     PIECE_LT = auto()
+    PIECE_T = auto()
     PIECE_RT = auto()
-    PIECE_LB = auto()
+    PIECE_R = auto()
     PIECE_RB = auto()
+    PIECE_B = auto()
+    PIECE_LB = auto()
+    PIECE_L = auto()
+    PIECE_M = auto()
 
 
 class TN(IntEnum):  # Object Type
