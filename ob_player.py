@@ -80,6 +80,7 @@ class Player(GameObject):
         self.nearby_tiles: Set = set()
         self.nearby_enemies: Set = set()
         self.nearby_items: Set = set()
+        self.nearby_interactives: Set = set()
 
         # Moving value
         self.jump_power = 0
@@ -104,6 +105,8 @@ class Player(GameObject):
 
         self.is_damaged = False
         self.is_invincible = False
+
+        self.on_wire_mesh = False
 
         self.taken_item = [TN.ITEMS, TID.NONE]
 
@@ -363,8 +366,8 @@ class Player(GameObject):
 
         debug_print_2 = load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 26)
         debug_print_2.draw(6, gs_framework.canvas_height - 16,
-                           "Coin: %d / Score: %d" %
-                           (self.coin, self.score),
+                           "Coin: %d / Score: %d / collision to itr: %s / nearby itr: %s" %
+                           (self.coin, self.score, self.on_wire_mesh, self.nearby_interactives),
                            (0, 255, 0))
 
         if self.show_bb:

@@ -1,3 +1,4 @@
+import ob_interactive
 import server
 
 from pico2d import *
@@ -57,15 +58,15 @@ def enter():
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 250, 150))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 150))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 250))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 650, 350))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 350))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 450))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 850, 350))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 950, 350))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 350))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1150, 350))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 350))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 450))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 650, 350))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 350))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 450))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 850, 350))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 950, 350))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 350))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1150, 350))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 350))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 450))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X50, 450, 325))
 
     server.tiles.append(ob_tileset.RandomBox(125, 375))
@@ -92,6 +93,10 @@ def enter():
     # server.tiles.append(ob_tileset.RandomBox(575, 325))
 
     object_manager.add_objects(server.tiles, object_manager.OL_TILESET)
+
+    # Interactives
+    server.interactives.append(ob_interactive.WireMesh(625, 425, 1275, 225))
+    object_manager.add_objects(server.interactives, L.INTERACTIVES)
 
     # Foreground
     server.foreground = []
@@ -156,6 +161,7 @@ def update():
     server.player.nearby_tiles.clear()
     server.player.nearby_enemies.clear()
     server.player.nearby_items.clear()
+    server.player.nearby_interactives.clear()
 
     player_index_x = int((server.player.x - server.stage.x) // ob_map.TILE_WIDTH)
     player_index_y = int(server.player.y // ob_map.TILE_HEIGHT)
@@ -176,6 +182,8 @@ def update():
                     server.player.nearby_enemies.add(obj)
                 elif obj.type_name == TN.ITEMS:
                     server.player.nearby_items.add(obj)
+                elif obj.type_name == TN.INTERACTIVES:
+                    server.player.nearby_interactives.add(obj)
 
     # player collision check
     # player to tile sets
@@ -208,6 +216,11 @@ def update():
     for item in server.player.nearby_items:
         item: ob_item.Item
         if collide_item_to_player(server.player, item):
+            break
+
+    # player to interactive
+    for itr in server.player.nearby_interactives:
+        if collide_player_to_interactive(server.player, itr):
             break
 
     # if len(server.player.nearby_items) != 0:

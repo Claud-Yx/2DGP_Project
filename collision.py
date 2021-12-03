@@ -1,3 +1,4 @@
+import ob_interactive
 import ob_item
 import ob_player
 import ob_tileset
@@ -286,3 +287,15 @@ def collide_item_to_player(player: ob_player.Player, item: ob_item.Item) -> bool
         item.is_dead = True
         return True
     return False
+
+
+def collide_player_to_interactive(player: ob_player.Player, itr: game_object.GameObject) -> bool:
+    if collide(player.get_bb(HB.BODY), itr.get_bb(HB.BODY)):
+        if isinstance(itr, ob_interactive.WireMesh):
+            itr.got_player = True
+            player.on_wire_mesh = True
+
+    else:
+        if isinstance(itr, ob_interactive.WireMesh):
+            itr.got_player = False
+            player.on_wire_mesh = False

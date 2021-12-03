@@ -1,6 +1,8 @@
 from pico2d import *
 
 import ob_foreground
+import ob_interactive
+import ob_map
 from value import *
 from abc import *
 from bounding_box import *
@@ -733,6 +735,7 @@ class GameObject:
                 self.set_bb(HB.RIGHT, [-45, 50, 50, 50])
                 self.set_bb(HB.TOP, [49, -45, 49, 50])
 
+        # Items
         elif self.type_name == TN.ITEMS:
             if len(self.bounding_box) == 0:
                 self.bounding_box[HB.BODY] = BoundingBox(HB.BODY)
@@ -751,6 +754,20 @@ class GameObject:
 
             elif self.type_id == TID.COIN:
                 self.set_bb(HB.BODY, [25, 25, 25, 25])
+
+        # Interactives
+        elif self.type_name == TN.INTERACTIVES:
+            if self.type_id == TID.WIRE_MESH:
+                if len(self.bounding_box) == 0:
+                    self.bounding_box[HB.BODY] = BoundingBox(HB.BODY)
+                self.switch_bb_all()
+
+                self: ob_interactive.WireMesh
+                self.set_bb(HB.BODY, [
+                    0, 0,
+                    (self.index_x - 1) * ob_map.TILE_WIDTH,
+                    (self.index_y - 1) * ob_map.TILE_HEIGHT
+                ])
 
         else:
             print("Invalid type: %s / %s" % (str(self.type_name), str(self.type_id)))

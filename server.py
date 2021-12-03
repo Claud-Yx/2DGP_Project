@@ -8,6 +8,7 @@ player: Player
 enemies = []
 items = []
 tiles = []
+interactives = []
 foreground = []
 background: Background
 
@@ -51,6 +52,7 @@ def destroy():
     items.clear()
     enemies.clear()
     tiles.clear()
+    interactives.clear()
     foreground.clear()
 
 
