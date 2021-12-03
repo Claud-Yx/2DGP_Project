@@ -971,12 +971,14 @@ class GameObject:
 
             # Hang
             elif self.action == ACTION.HANG:
+                self.set_tpa(0.5)
                 self.l, self.b, self.w, self.h = 50, 100 * 1, 50, 100
                 self.frame_count, self.frame_begin = 6, 0
                 self.loop_animation = True
 
             # Climb
             elif self.action == ACTION.CLIMB:
+                self.set_tpa(0.8)
                 self.l, self.b, self.w, self.h = 50, 100 * 0, 50, 100
                 self.frame_count, self.frame_begin = 14, 0
                 self.loop_animation = True

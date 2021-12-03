@@ -20,6 +20,8 @@ JUMP_BOOST_TWO = get_pps_from_mps(6)
 
 STANDARD_INERTIA = ACCEL_WALK * 2.0
 
+CLIMB_VELOCITY = get_pps_from_kmph(23.0)
+
 # Player timer
 MAX_TIMER_SHRINK = 0.9
 MAX_TIMER_GROW = 1.0
@@ -40,6 +42,7 @@ class EVENT(IntEnum):
     Z_UP = auto()
     X_DOWN = auto()
     X_UP = auto()
+    HANGING = auto()
 
 
 key_event_table = {
@@ -129,6 +132,11 @@ class Player(GameObject):
             self.is_sit = True
         elif event == EVENT.DOWN_UP:
             self.is_sit = False
+
+        if self.cur_state != SitState:
+            if self.on_wire_mesh and event == EVENT.UP_DOWN:
+                self.y_direction += DIR.UP
+                self.add_event(EVENT.HANGING)
 
     def inertia(self):
         self.velocity -= STANDARD_INERTIA * gs_framework.frame_time * self.forcing
@@ -320,6 +328,7 @@ class Player(GameObject):
     def update(self):
         if self.damaged() == -1:
             return -1
+
         Player.taken_item(self)
 
         if server.time_stop:
@@ -330,6 +339,7 @@ class Player(GameObject):
         if not self.on_floor and not self.is_jump:
             self.is_fall = True
 
+        # state update
         self.cur_state.do(self)
 
         # scroll and clamping
@@ -345,9 +355,12 @@ class Player(GameObject):
         self.x = clamp(x_min, self.x, x_max)
         self.y = clamp(-150, self.y, gs_framework.canvas_width + 150)
 
-        # check jump key(x)
+        # new state in
         if len(self.event_que) > 0:
             event = self.event_que.pop()
+            print("cur event: %s" % event)
+
+            # check jump key(x)
             if event == EVENT.X_DOWN:
                 self.pressed_key_jump = True
             elif event == EVENT.X_UP:
@@ -376,7 +389,8 @@ class Player(GameObject):
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
-            if (key_event == EVENT.DOWN_DOWN or key_event == EVENT.DOWN_UP) and self.is_small:
+            if ((key_event == EVENT.DOWN_DOWN or key_event == EVENT.DOWN_UP) and
+                    self.is_small and self.cur_state != ClimbState):
                 return
             self.add_event(key_event)
 
@@ -590,32 +604,86 @@ class WalkState:
         player.clip_draw()
 
 
-class HangState:
-    def enter(player: Player, event):
-        pass
-
-    def exit(player: Player, event):
-        pass
-
-    def do(player: Player):
-        pass
-
-    def draw(player: Player):
-        pass
+# class HangState:
+#     def enter(player: Player, event):
+#         if event == EVENT.RIGHT_DOWN:
+#             player.x_direction += DIR.RIGHT
+#         elif event == EVENT.RIGHT_UP:
+#             player.x_direction += DIR.LEFT
+#         elif event == EVENT.LEFT_DOWN:
+#             player.x_direction += DIR.LEFT
+#         elif event == EVENT.LEFT_UP:
+#             player.x_direction += DIR.RIGHT
+#         elif event == EVENT.UP_DOWN:
+#             player.y_direction += DIR.UP
+#         elif event == EVENT.UP_UP:
+#             player.y_direction += DIR.DOWN
+#         elif event == EVENT.DOWN_DOWN:
+#             player.y_direction += DIR.DOWN
+#         elif event == EVENT.DOWN_UP:
+#             player.y_direction += DIR.UP
+#
+#         player.set_info(ACTION.HANG)
+#
+#
+#     def exit(player: Player, event):
+#         pass
+#
+#     def do(player: Player):
+#         pass
+#
+#     def draw(player: Player):
+#         pass
 
 
 class ClimbState:
     def enter(player: Player, event):
-        pass
+        player.velocity = 0
+        player.jump_power = MAX_JUMP_POWER
+        player.is_jump = False
+        player.is_fall = False
+        player.on_floor = False
+
+        if event == EVENT.RIGHT_DOWN:
+            player.x_direction += DIR.RIGHT
+        elif event == EVENT.RIGHT_UP:
+            player.x_direction += DIR.LEFT
+        elif event == EVENT.LEFT_DOWN:
+            player.x_direction += DIR.LEFT
+        elif event == EVENT.LEFT_UP:
+            player.x_direction += DIR.RIGHT
+        elif event == EVENT.UP_DOWN:
+            player.y_direction += DIR.UP
+        elif event == EVENT.UP_UP:
+            player.y_direction += DIR.DOWN
+        elif event == EVENT.DOWN_DOWN:
+            player.y_direction += DIR.DOWN
+        elif event == EVENT.DOWN_UP:
+            player.y_direction += DIR.UP
+
+        if player.x_direction == DIR.NONE and player.y_direction == DIR.NONE:
+            player.set_info(ACTION.HANG)
+        else:
+            player.set_info(ACTION.CLIMB)
 
     def exit(player: Player, event):
         pass
 
     def do(player: Player):
-        pass
+        player.update_frame(gs_framework.frame_time)
+
+        if player.x_direction == DIR.NONE and player.y_direction == DIR.NONE:
+            player.set_info(ACTION.HANG)
+        else:
+            player.set_info(ACTION.CLIMB)
+
+        player.velocity = CLIMB_VELOCITY * player.x_direction
+        player.jump_power = CLIMB_VELOCITY * player.y_direction
+        player.x += player.velocity * gs_framework.frame_time
+        player.y += player.jump_power * gs_framework.frame_time
 
     def draw(player: Player):
-        pass
+        player.clip_draw()
 
 
 next_state_table = {
@@ -625,7 +693,8 @@ next_state_table = {
         EVENT.LEFT_DOWN: WalkState, EVENT.LEFT_UP: WalkState,
         EVENT.RIGHT_DOWN: WalkState, EVENT.RIGHT_UP: WalkState,
         EVENT.Z_DOWN: IdleState, EVENT.Z_UP: IdleState,
-        EVENT.X_DOWN: IdleState, EVENT.X_UP: IdleState
+        EVENT.X_DOWN: IdleState, EVENT.X_UP: IdleState,
+        EVENT.HANGING: ClimbState
     },
     SitState: {
         EVENT.UP_DOWN: SitState, EVENT.UP_UP: SitState,
@@ -641,7 +710,8 @@ next_state_table = {
         EVENT.LEFT_DOWN: IdleState, EVENT.LEFT_UP: IdleState,
         EVENT.RIGHT_DOWN: IdleState, EVENT.RIGHT_UP: IdleState,
         EVENT.Z_DOWN: WalkState, EVENT.Z_UP: WalkState,
-        EVENT.X_DOWN: WalkState, EVENT.X_UP: WalkState
+        EVENT.X_DOWN: WalkState, EVENT.X_UP: WalkState,
+        EVENT.HANGING: ClimbState
     },
     # JumpState: {
     #     KEY.UP_DOWN: JumpState, KEY.UP_UP: JumpState,
@@ -651,19 +721,19 @@ next_state_table = {
     #     KEY.Z_DOWN: JumpState, KEY.Z_UP: JumpState,
     #     KEY.X_DOWN: JumpState, KEY.X_UP: FallState
     # },
-    HangState: {
+    # HangState: {
+    #     EVENT.UP_DOWN: ClimbState, EVENT.UP_UP: ClimbState,
+    #     EVENT.DOWN_DOWN: ClimbState, EVENT.DOWN_UP: ClimbState,
+    #     EVENT.LEFT_DOWN: ClimbState, EVENT.LEFT_UP: ClimbState,
+    #     EVENT.RIGHT_DOWN: ClimbState, EVENT.RIGHT_UP: ClimbState,
+    #     EVENT.Z_DOWN: HangState, EVENT.Z_UP: HangState,
+    #     EVENT.X_DOWN: HangState, EVENT.X_UP: HangState
+    # },
+    ClimbState: {
         EVENT.UP_DOWN: ClimbState, EVENT.UP_UP: ClimbState,
         EVENT.DOWN_DOWN: ClimbState, EVENT.DOWN_UP: ClimbState,
         EVENT.LEFT_DOWN: ClimbState, EVENT.LEFT_UP: ClimbState,
         EVENT.RIGHT_DOWN: ClimbState, EVENT.RIGHT_UP: ClimbState,
-        EVENT.Z_DOWN: HangState, EVENT.Z_UP: HangState,
-        EVENT.X_DOWN: HangState, EVENT.X_UP: HangState
-    },
-    ClimbState: {
-        EVENT.UP_DOWN: HangState, EVENT.UP_UP: HangState,
-        EVENT.DOWN_DOWN: HangState, EVENT.DOWN_UP: HangState,
-        EVENT.LEFT_DOWN: HangState, EVENT.LEFT_UP: HangState,
-        EVENT.RIGHT_DOWN: HangState, EVENT.RIGHT_UP: HangState,
         EVENT.Z_DOWN: ClimbState, EVENT.Z_UP: ClimbState,
         EVENT.X_DOWN: ClimbState, EVENT.X_UP: ClimbState
     }
