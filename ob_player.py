@@ -1,3 +1,4 @@
+import ob_interactive
 import server
 from game_object import *
 from value import *
@@ -43,6 +44,8 @@ class EVENT(IntEnum):
     X_DOWN = auto()
     X_UP = auto()
     HANGING = auto()
+    STAYING = auto()
+    WALKING = auto()
 
 
 key_event_table = {
@@ -109,7 +112,7 @@ class Player(GameObject):
         self.is_damaged = False
         self.is_invincible = False
 
-        self.on_wire_mesh = False
+        self.on_wire_mesh = None
 
         self.taken_item = [TN.ITEMS, TID.NONE]
 
@@ -134,7 +137,7 @@ class Player(GameObject):
             self.is_sit = False
 
         if self.cur_state != SitState:
-            if self.on_wire_mesh and event == EVENT.UP_DOWN:
+            if self.on_wire_mesh is not None and event == EVENT.UP_DOWN:
                 self.y_direction += DIR.UP
                 self.add_event(EVENT.HANGING)
 
@@ -358,7 +361,7 @@ class Player(GameObject):
         # new state in
         if len(self.event_que) > 0:
             event = self.event_que.pop()
-            print("cur event: %s" % event)
+            # print("cur event: %s" % event)
 
             # check jump key(x)
             if event == EVENT.X_DOWN:
@@ -639,7 +642,7 @@ class WalkState:
 class ClimbState:
     def enter(player: Player, event):
         player.velocity = 0
-        player.jump_power = MAX_JUMP_POWER
+        player.jump_power = 0
         player.is_jump = False
         player.is_fall = False
         player.on_floor = False
@@ -681,6 +684,37 @@ class ClimbState:
         player.jump_power = CLIMB_VELOCITY * player.y_direction
         player.x += player.velocity * gs_framework.frame_time
         player.y += player.jump_power * gs_framework.frame_time
+
+        player.on_wire_mesh: ob_interactive.WireMesh
+
+        x_min = player.on_wire_mesh.get_bb(HB.BODY)[POS.LEFT] + player.get_bb_range(HB.BODY)[POS.LEFT]
+        x_max = player.on_wire_mesh.get_bb(HB.BODY)[POS.RIGHT] - player.get_bb_range(HB.BODY)[POS.RIGHT]
+
+        y_min = player.on_wire_mesh.get_bb(HB.BODY)[POS.BOTTOM]
+        y_max = player.on_wire_mesh.get_bb(HB.BODY)[POS.TOP] - player.get_bb_range(HB.BODY)[POS.TOP]
+
+        player.x = clamp(x_min, player.x, x_max)
+        if player.x <= x_min or player.x >= x_max:
+            player.velocity = 0
+
+        player.y = clamp(y_min, player.y, y_max)
+        if player.y >= y_max:
+            player.jump_power = 0
+        elif player.y <= y_min or player.pressed_key_jump:
+            player.y_direction = DIR.NONE
+
+            if player.x_direction == DIR.NONE:
+                player.add_event(EVENT.STAYING)
+            else:
+                player.add_event(EVENT.WALKING)
+
+            if player.pressed_key_jump:
+                player.jump_power = MAX_JUMP_POWER
+                player.is_fall = False
+                player.y += 1
+                player.is_jump = True
+                player.set_info(ACTION.JUMP)
+
 
     def draw(player: Player):
         player.clip_draw()
@@ -735,7 +769,8 @@ next_state_table = {
         EVENT.LEFT_DOWN: ClimbState, EVENT.LEFT_UP: ClimbState,
         EVENT.RIGHT_DOWN: ClimbState, EVENT.RIGHT_UP: ClimbState,
         EVENT.Z_DOWN: ClimbState, EVENT.Z_UP: ClimbState,
-        EVENT.X_DOWN: ClimbState, EVENT.X_UP: ClimbState
+        EVENT.X_DOWN: ClimbState, EVENT.X_UP: ClimbState,
+        EVENT.STAYING: IdleState ,EVENT.WALKING: WalkState
     }
 }
 

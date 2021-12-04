@@ -293,9 +293,9 @@ def collide_player_to_interactive(player: ob_player.Player, itr: game_object.Gam
     if collide(player.get_bb(HB.BODY), itr.get_bb(HB.BODY)):
         if isinstance(itr, ob_interactive.WireMesh):
             itr.got_player = True
-            player.on_wire_mesh = True
+            player.on_wire_mesh = itr
 
     else:
         if isinstance(itr, ob_interactive.WireMesh):
             itr.got_player = False
-            player.on_wire_mesh = False
+            player.on_wire_mesh = None
