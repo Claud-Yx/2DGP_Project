@@ -1,5 +1,3 @@
-import ob_foreground
-import ob_item
 import object_manager
 from value import *
 
@@ -52,9 +50,6 @@ class TileSet(game_object.GameObject):
         if self.is_time_stop:
             return
 
-        server.move_camera_x(self)
-        # self.y -= server.player.jump_power * gs_framework.frame_time
-
     def draw(self):
         self.image_draw()
 
@@ -100,14 +95,15 @@ class RandomBox(TileSet):
         self.set_info()
 
     def hit(self):
+        import ob_item
         if self.is_hit and not self.is_empty:
-            if server.player.x > self.x:
+            if server.player.ax > self.ax:
                 self.x_direction = DIR.LEFT
 
             if self.timer_hit == 0:
                 if self.item == TID.COIN:
                     server.player.coin += 1
-                    server.items.append(ob_item.Coin(self.x, self.y + self.h, True))
+                    server.items.append(ob_item.Coin(self.ax, self.ay + self.h, True))
                     object_manager.add_object(server.items[-1], L.FOREGROUND)
 
                 self.type_id = TID.EMPTY_BOX
@@ -117,30 +113,30 @@ class RandomBox(TileSet):
             self.timer_hit -= gs_framework.frame_time
 
             if self.timer_hit >= MAX_HIT_TIMER / 2:
-                self.y += VELOCITY_HIT * gs_framework.frame_time
+                self.ay += VELOCITY_HIT * gs_framework.frame_time
             else:
-                self.y -= VELOCITY_HIT * gs_framework.frame_time
-            self.y = pico2d.clamp(self.min_y, self.y, self.max_y)
+                self.ay -= VELOCITY_HIT * gs_framework.frame_time
+            self.ay = pico2d.clamp(self.min_y, self.ay, self.max_y)
 
             if self.timer_hit <= 0.0:
                 if self.item == TID.SUPER_MUSHROOM:
                     server.items.append(
-                        ob_item.PowerUp(TID.SUPER_MUSHROOM,self.x, self.y, self.x_direction, True)
+                        ob_item.PowerUp(TID.SUPER_MUSHROOM, self.ax, self.ay, self.x_direction, True)
                     )
                     object_manager.add_object(server.items[-1], L.ITEMS)
                 elif self.item == TID.LIFE_MUSHROOM:
                     server.items.append(
-                        ob_item.PowerUp(TID.LIFE_MUSHROOM, self.x, self.y, self.x_direction, True)
+                        ob_item.PowerUp(TID.LIFE_MUSHROOM, self.ax, self.ay, self.x_direction, True)
                     )
                     object_manager.add_object(server.items[-1], L.ITEMS)
                 elif self.item == TID.SUPER_STAR:
                     server.items.append(
-                        ob_item.PowerUp(TID.SUPER_STAR, self.x, self.y, self.x_direction, True)
+                        ob_item.PowerUp(TID.SUPER_STAR, self.ax, self.ay, self.x_direction, True)
                     )
                     object_manager.add_object(server.items[-1], L.ITEMS)
 
                 self.is_empty = True
-                server.tiles.append(TileSet(TID.EMPTY_BOX, self.x, self.y))
+                server.tiles.append(TileSet(TID.EMPTY_BOX, self.ax, self.ay))
                 object_manager.add_object(server.tiles[-1], L.TILESETS)
 
     def empty(self):
@@ -153,8 +149,6 @@ class RandomBox(TileSet):
     def update(self):
         if self.is_time_stop:
             return
-
-        server.move_camera_x(self)
 
         self.hit()
         self.empty()
@@ -170,9 +164,14 @@ class RandomBox(TileSet):
             self.clip_draw()
 
         if self.show_bb:
+            # debug_print_2 = pico2d.load_font(pico2d.os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 10)
+            # debug_print_2.draw(self.ax - self.w / 2, self.ay,
+            #                    "(%.2f)" %
+            #                    self.ax,
+            #                    (0, 255, 255))
             self.draw_bb()
 
-        # self.y -= server.player.jump_power * gs_framework.frame_time
+        # self.ay -= server.player.jump_power * gs_framework.frame_time
 
 
 class Brick(TileSet):
@@ -200,7 +199,7 @@ class Brick(TileSet):
         self.set_info()
 
     def hit(self):
-        if server.player.x > self.x:
+        if server.player.ax > self.ax:
             self.x_direction = DIR.LEFT
 
         if self.hit_by == TID.MARIO_SMALL:
@@ -210,27 +209,28 @@ class Brick(TileSet):
             self.timer_hit -= gs_framework.frame_time
 
             if self.timer_hit >= MAX_HIT_TIMER / 2:
-                self.y += VELOCITY_HIT * gs_framework.frame_time
+                self.ay += VELOCITY_HIT * gs_framework.frame_time
             else:
-                self.y -= VELOCITY_HIT * gs_framework.frame_time
-            self.y = pico2d.clamp(self.min_y, self.y, self.max_y)
+                self.ay -= VELOCITY_HIT * gs_framework.frame_time
+            self.ay = pico2d.clamp(self.min_y, self.ay, self.max_y)
 
             if self.timer_hit <= 0.0:
                 self.hit_by = None
                 self.timer_hit = 0
 
         elif self.hit_by is not None:
+            import ob_foreground
             server.foreground.append(ob_foreground.BrickPiece(
-                self.x - self.w * (1/4), self.y + self.h * (1/4), ACTION.PIECE_LT))
+                self.ax - self.w * (1 / 4), self.ay + self.h * (1 / 4), ACTION.PIECE_LT))
             object_manager.add_object(server.foreground[-1], L.FOREGROUND)
             server.foreground.append(ob_foreground.BrickPiece(
-                self.x - self.w * (1/4), self.y - self.h * (1/4), ACTION.PIECE_LB))
+                self.ax - self.w * (1 / 4), self.ay - self.h * (1 / 4), ACTION.PIECE_LB))
             object_manager.add_object(server.foreground[-1], L.FOREGROUND)
             server.foreground.append(ob_foreground.BrickPiece(
-                self.x + self.w * (1/4), self.y - self.h * (1/4), ACTION.PIECE_RT))
+                self.ax + self.w * (1 / 4), self.ay - self.h * (1 / 4), ACTION.PIECE_RT))
             object_manager.add_object(server.foreground[-1], L.FOREGROUND)
             server.foreground.append(ob_foreground.BrickPiece(
-                self.x + self.w * (1/4), self.y + self.h * (1/4), ACTION.PIECE_RB))
+                self.ax + self.w * (1 / 4), self.ay + self.h * (1 / 4), ACTION.PIECE_RB))
             object_manager.add_object(server.foreground[-1], L.FOREGROUND)
 
             object_manager.remove_object(self)
@@ -241,9 +241,7 @@ class Brick(TileSet):
         if self.is_time_stop:
             return
 
-        server.move_camera_x(self)
         self.update_frame(gs_framework.frame_time)
-
         self.hit()
 
     def draw(self):
@@ -277,6 +275,7 @@ class Spike(TileSet):
 
         if self.show_bb:
             self.draw_bb()
+
 
 def test_tileset():
     import pico2d

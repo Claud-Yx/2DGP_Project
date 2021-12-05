@@ -1,6 +1,8 @@
+from pico2d import *
+
+import game_object
 import ob_interactive
 import server
-from game_object import *
 from value import *
 
 import gs_framework
@@ -65,7 +67,7 @@ key_event_table = {
 }
 
 
-class Player(GameObject):
+class Player(game_object.GameObject):
     def __init__(self, tid=TID.MARIO_SMALL, x=0, y=0):
         super().__init__(TN.PLAYER, tid, x, y)
 
@@ -75,6 +77,8 @@ class Player(GameObject):
             self.is_small = True
         else:
             self.is_small = False
+
+        self.rx, self.ry = self.ax, self.ay
 
         # Player inventory
         self.coin = 0
@@ -161,7 +165,7 @@ class Player(GameObject):
         else:
             self.forcing = DIR.LEFT
 
-        self.x += speed
+        self.ax += speed
 
     def jump(self):
         self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
@@ -175,7 +179,7 @@ class Player(GameObject):
             self.is_fall = True
             self.is_jump = False
 
-        self.y += self.jump_power * gs_framework.frame_time
+        self.ay += self.jump_power * gs_framework.frame_time
 
     def fall(self):
         self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
@@ -186,7 +190,7 @@ class Player(GameObject):
                 MAX_JUMP_POWER * -1, self.jump_power, 0
             )
 
-        self.y += self.jump_power * gs_framework.frame_time
+        self.ay += self.jump_power * gs_framework.frame_time
 
     def shrink(self) -> bool:
         if self.timer_shrink == 0:
@@ -205,18 +209,18 @@ class Player(GameObject):
 
         if motion == 2:
             if self.type_id == TID.MARIO_SMALL:
-                self.y += 25
+                self.ay += 25
             self.set_size()
             self.type_id = self.prev_id
             self.set_clip()
         elif motion == 1:
             if self.wp == 1.0:
-                self.y -= 12.5
+                self.ay -= 12.5
             self.set_size(wp=0.75, hp=0.75)
         else:
             if not self.type_id == TID.MARIO_SMALL:
                 self.prev_id = self.type_id
-                self.y -= 12.5
+                self.ay -= 12.5
             self.type_id = TID.MARIO_SMALL
             self.set_clip()
 
@@ -239,18 +243,18 @@ class Player(GameObject):
 
         if motion == 0:
             if self.type_id == TID.MARIO_SMALL:
-                self.y += 25
+                self.ay += 25
             self.set_size()
             self.type_id = self.prev_id
             self.set_clip()
         elif motion == 1:
             if self.wp == 1.0:
-                self.y -= 12.5
+                self.ay -= 12.5
             self.set_size(wp=0.75, hp=0.75)
         else:
             if not self.type_id == TID.MARIO_SMALL:
                 self.prev_id = self.type_id
-                self.y -= 12.5
+                self.ay -= 12.5
             self.type_id = TID.MARIO_SMALL
             self.set_clip()
 
@@ -269,7 +273,7 @@ class Player(GameObject):
 
         self.timer_die -= gs_framework.frame_time
 
-        if self.timer_die < 3.0 and self.y > -50:
+        if self.timer_die < 3.0 and self.ay > -50:
             if not self.is_fall:
                 self.jump()
             else:
@@ -281,10 +285,10 @@ class Player(GameObject):
         return False
 
     def damaged(self):
-        if self.is_damaged or self.y <= -50:
-            if self.y <= -50:
+        if self.is_damaged or self.ay <= -50:
+            if self.ay <= -50:
                 self.type_id = TID.MARIO_SMALL
-            if self.is_small or self.y <= -50:
+            if self.is_small or self.ay <= -50:
                 if self.die():
                     gs_framework.change_state(gs_stage_enter)
                     return -1
@@ -381,17 +385,28 @@ class Player(GameObject):
         self.cur_state.do(self)
 
         # scroll and clamping
-        x_min, x_max = gs_framework.canvas_width // 2 - 50, gs_framework.canvas_width // 2 + 50
+        rx_min, rx_max = gs_framework.canvas_width / 2 - 50, gs_framework.canvas_width / 2 + 50
+        ax_max = server.stage.size_width - (
+                gs_framework.canvas_width - (gs_framework.canvas_width / 2 + 50)
+        )
+
         if server.stage.size_width > gs_framework.canvas_width:
             if server.stage.x == 0:
-                x_min = 25
+                rx_min = 25
             elif server.stage.x == gs_framework.canvas_width - server.stage.size_width:
-                x_max = gs_framework.canvas_width - 25
+                rx_max = gs_framework.canvas_width - 25
         else:
-            x_min, x_max = 25, gs_framework.canvas_width - 25
+            rx_min, rx_max = 25, gs_framework.canvas_width - 25
 
-        self.x = clamp(x_min, self.x, x_max)
-        self.y = clamp(-150, self.y, gs_framework.canvas_width + 150)
+        self.ax = clamp(25, self.ax, server.stage.size_width - 25)
+        self.ay = clamp(-150, self.ay, server.stage.size_height + 150)
+
+        x_ran = self.ax
+        if self.ax >= ax_max:
+            x_ran = self.ax - ax_max + (gs_framework.canvas_width / 2 + 50)
+
+        self.rx = clamp(rx_min, x_ran, rx_max)
+        self.ry = clamp(-150, self.ay, gs_framework.canvas_width + 150)
 
         # new state in
         if len(self.event_que) > 0:
@@ -417,8 +432,8 @@ class Player(GameObject):
 
         debug_print_2 = load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 26)
         debug_print_2.draw(6, gs_framework.canvas_height - 16,
-                           "Life: %d / Coin: %d / Score: %d" %
-                           (self.life, self.coin, self.score),
+                           "stage.w/h: (%d / %d) / stage.x: %.2f" %
+                           (server.stage.size_width, server.stage.size_height, server.stage.x),
                            (0, 255, 0))
 
         if self.show_bb:
@@ -452,7 +467,7 @@ class IdleState:
             player.on_floor = False
             player.is_jump = True
             player.jump_power = MAX_JUMP_POWER + player.additional_jump_power
-            player.y += 1
+            player.ay += 1
             player.set_info(ACTION.JUMP)
             # print("player JP: " + str(player.jump_power))
         elif event == EVENT.X_UP and player.is_jump:
@@ -544,7 +559,7 @@ class WalkState:
             player.on_floor = False
             player.is_jump = True
             player.jump_power = MAX_JUMP_POWER + player.additional_jump_power
-            player.y += 1
+            player.ay += 1
             player.set_info(ACTION.JUMP)
         elif event == EVENT.X_UP and player.is_jump:
             if player.jump_power >= MIN_JUMP_POWER:
@@ -562,9 +577,6 @@ class WalkState:
             player.max_velocity = MAX_WALK_VELOCITY
 
         player.set_info()
-
-        # print("facing: " + str(player.facing) + " direction: " + str(player.x_direction))
-        # print(str(player.x_accel), str(player.max_velocity))
 
     def exit(player: Player, event):
         player.check_state(event)
@@ -636,43 +648,10 @@ class WalkState:
         else:
             player.forcing = DIR.LEFT
 
-        player.x += speed
+        player.ax += speed
 
     def draw(player: Player):
         player.clip_draw()
-
-
-# class HangState:
-#     def enter(player: Player, event):
-#         if event == EVENT.RIGHT_DOWN:
-#             player.x_direction += DIR.RIGHT
-#         elif event == EVENT.RIGHT_UP:
-#             player.x_direction += DIR.LEFT
-#         elif event == EVENT.LEFT_DOWN:
-#             player.x_direction += DIR.LEFT
-#         elif event == EVENT.LEFT_UP:
-#             player.x_direction += DIR.RIGHT
-#         elif event == EVENT.UP_DOWN:
-#             player.y_direction += DIR.UP
-#         elif event == EVENT.UP_UP:
-#             player.y_direction += DIR.DOWN
-#         elif event == EVENT.DOWN_DOWN:
-#             player.y_direction += DIR.DOWN
-#         elif event == EVENT.DOWN_UP:
-#             player.y_direction += DIR.UP
-#
-#         player.set_info(ACTION.HANG)
-#
-#
-#     def exit(player: Player, event):
-#         pass
-#
-#     def do(player: Player):
-#         pass
-#
-#     def draw(player: Player):
-#         pass
-
 
 class ClimbState:
     def enter(player: Player, event):
@@ -718,8 +697,8 @@ class ClimbState:
 
         player.velocity = CLIMB_VELOCITY * player.x_direction
         player.jump_power = CLIMB_VELOCITY * player.y_direction
-        player.x += player.velocity * gs_framework.frame_time
-        player.y += player.jump_power * gs_framework.frame_time
+        player.ax += player.velocity * gs_framework.frame_time
+        player.ay += player.jump_power * gs_framework.frame_time
 
         if player.on_wire_mesh is None:
             return
@@ -732,15 +711,15 @@ class ClimbState:
         y_min = player.on_wire_mesh.get_bb(HB.BODY)[POS.BOTTOM]
         y_max = player.on_wire_mesh.get_bb(HB.BODY)[POS.TOP] - player.get_bb_range(HB.BODY)[POS.TOP]
 
-        player.x = clamp(x_min, player.x, x_max)
-        if player.x <= x_min or player.x >= x_max:
+        player.ax = clamp(x_min, player.ax, x_max)
+        if player.ax <= x_min or player.ax >= x_max:
             player.velocity = 0
 
-        player.y = clamp(y_min, player.y, y_max)
-        if player.y >= y_max:
+        player.ay = clamp(y_min, player.ay, y_max)
+        if player.ay >= y_max:
             player.jump_power = 0
 
-        if player.y <= y_min or player.pressed_key_jump:
+        if player.ay <= y_min or player.pressed_key_jump:
             player.y_direction = DIR.NONE
 
             if player.x_direction == DIR.NONE:
@@ -751,7 +730,7 @@ class ClimbState:
             if player.pressed_key_jump:
                 player.jump_power = MAX_JUMP_POWER
                 player.is_fall = False
-                player.y += 1
+                player.ay += 1
                 player.is_jump = True
                 player.set_info(ACTION.JUMP)
 
@@ -787,22 +766,6 @@ next_state_table = {
         EVENT.X_DOWN: WalkState, EVENT.X_UP: WalkState,
         EVENT.HANGING: ClimbState, EVENT.WALKING: WalkState
     },
-    # JumpState: {
-    #     KEY.UP_DOWN: JumpState, KEY.UP_UP: JumpState,
-    #     KEY.DOWN_DOWN: JumpState, KEY.DOWN_UP: JumpState,
-    #     KEY.LEFT_DOWN: JumpState, KEY.LEFT_UP: JumpState,
-    #     KEY.RIGHT_DOWN: JumpState, KEY.RIGHT_UP: JumpState,
-    #     KEY.Z_DOWN: JumpState, KEY.Z_UP: JumpState,
-    #     KEY.X_DOWN: JumpState, KEY.X_UP: FallState
-    # },
-    # HangState: {
-    #     EVENT.UP_DOWN: ClimbState, EVENT.UP_UP: ClimbState,
-    #     EVENT.DOWN_DOWN: ClimbState, EVENT.DOWN_UP: ClimbState,
-    #     EVENT.LEFT_DOWN: ClimbState, EVENT.LEFT_UP: ClimbState,
-    #     EVENT.RIGHT_DOWN: ClimbState, EVENT.RIGHT_UP: ClimbState,
-    #     EVENT.Z_DOWN: HangState, EVENT.Z_UP: HangState,
-    #     EVENT.X_DOWN: HangState, EVENT.X_UP: HangState
-    # },
     ClimbState: {
         EVENT.UP_DOWN: ClimbState, EVENT.UP_UP: ClimbState,
         EVENT.DOWN_DOWN: ClimbState, EVENT.DOWN_UP: ClimbState,
@@ -861,7 +824,7 @@ def test_player():
     show_bb = False
 
     print("== player info ==")
-    print("player.pos = (", player.x, ", ", player.y, ")")
+    print("player.pos = (", player.ax, ", ", player.ay, ")")
     print("player.cur_state = " + player.cur_state.__name__)
 
     current_time = get_time()

@@ -1,8 +1,10 @@
-from ob_tileset import *
-from ob_player import *
+from pico2d import *
 
+import gs_framework
 import ob_background
 import object_manager
+import server
+from value import *
 
 TILE_HEIGHT = 50
 TILE_WIDTH = 50
@@ -42,23 +44,10 @@ class Map:
         for i in range(len(self.object_index)):
             self.object_index[i] = [[] for j in range(height)]
 
-    def update(self):
-        if server.time_stop:
-            return
-        self.clear_index()
-        self.update_index()
-
-        if self.size_width > gs_framework.canvas_width:
-            if (server.player.x == gs_framework.canvas_width // 2 + 50 or
-                    server.player.x == gs_framework.canvas_width // 2 - 50
-            ):
-                self.x -= server.player.velocity * gs_framework.frame_time
-
-            self.x = clamp(gs_framework.canvas_width - self.size_width, self.x, 0)
-        else:
-            self.x = (gs_framework.canvas_width - self.size_width) / 2
-
     def update_index(self):
+        import game_object
+        import ob_foreground
+
         for obj in object_manager.all_objects():
             obj: game_object.GameObject
             if (obj.__class__ == ob_background.Background or
@@ -71,10 +60,10 @@ class Map:
 
             x1, y1, x2, y2 = obj.get_bb_size_pos()
 
-            x1 -= self.x
-            x2 -= self.x
-            y1 -= self.y
-            y2 -= self.y
+            # x1 -= self.x
+            # x2 -= self.x
+            # y1 -= self.y
+            # y2 -= self.y
 
             # if obj.type_name == TN.ENEMIES:
             #     print("%d, %d" % (obj.x - 21, x1))
@@ -100,7 +89,29 @@ class Map:
                                                                            len(self.object_index[0])))
                         exit(-1)
 
+    def move(self):
+        if self.size_width > gs_framework.canvas_width:
+            self.x = -(server.player.ax - server.player.rx)
+            self.x = clamp(gs_framework.canvas_width - self.size_width, self.x, 0)
+
+        else:
+            self.x = (gs_framework.canvas_width - self.size_width) / 2
+            self.y = (gs_framework.canvas_height - self.size_height) / 2
+
+    def print_index(self):
+        for y in range(len(self.object_index[0])):
+            for x in range(len(self.object_index)):
+                print("[%d][%d]: %s" % (x, y, self.object_index[x][y]))
+
     def clear_index(self):
         for x in range(len(self.object_index)):
             for y in range(len(self.object_index[x])):
                 self.object_index[x][y].clear()
+
+    def update(self):
+        if server.time_stop:
+            return
+        self.clear_index()
+        self.update_index()
+
+        self.move()

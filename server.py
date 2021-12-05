@@ -1,10 +1,12 @@
+import game_object
+import ob_player
 from ob_background import *
 from ob_map import *
 
 from value import *
 
 stage: Map
-player: Player
+player: ob_player.Player
 enemies = []
 items = []
 tiles = []
@@ -17,6 +19,8 @@ current_time = 0.0
 
 time_stopper = []
 time_stop = False
+
+show_bb = False
 
 
 def stop_time(stop, *exceptob: Tuple[int, int]):
@@ -56,10 +60,11 @@ def destroy():
     foreground.clear()
 
 
-def move_camera_x(self: game_object.GameObject):
-    global player, stage
+def move_camera(self: game_object.GameObject):
+    global stage
 
-    if (server.player.x == gs_framework.canvas_width // 2 + 50 or
-            server.player.x == gs_framework.canvas_width // 2 - 50
-    ):
-        self.x -= server.player.velocity * gs_framework.frame_time
+    if isinstance(self, ob_player.Player):
+        return
+
+    self.rx = self.ax + stage.x
+    self.ry = self.ay + stage.y

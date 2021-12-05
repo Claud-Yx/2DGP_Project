@@ -1,7 +1,7 @@
 from pico2d import *
 import gs_framework
 
-import gs_start_logo
+# import gs_start_logo
 import gs_stage_main
 
 open_canvas(gs_framework.canvas_width, gs_framework.canvas_height)

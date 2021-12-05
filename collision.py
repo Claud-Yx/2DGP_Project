@@ -37,7 +37,7 @@ def collide_player_to_floor(player: ob_player.Player, tile: ob_tileset.TileSet) 
         if (player.get_bb(HB.BOTTOM)[POS.BOTTOM] < tile.get_bb(HB.TOP)[POS.TOP] and
                 player.action != ACTION.JUMP
         ):
-            player.y = (player.get_bb_range(HB.BOTTOM)[POS.BOTTOM] +
+            player.ay = (player.get_bb_range(HB.BOTTOM)[POS.BOTTOM] +
                         tile.get_bb(HB.TOP)[POS.TOP])
 
         if isinstance(tile, ob_tileset.Spike) and not player.is_invincible and not player.is_star_power:
@@ -59,7 +59,7 @@ def collide_player_to_ceiling(player: ob_player.Player, tile: ob_tileset.TileSet
             if ptop < 0:
                 ptop = abs(ptop)
 
-            player.y = (tile.get_bb(HB.BOTTOM)[POS.BOTTOM] -
+            player.ay = (tile.get_bb(HB.BOTTOM)[POS.BOTTOM] -
                         ptop)
 
         tile: ob_tileset.RandomBox
@@ -90,7 +90,7 @@ def collide_player_to_right_wall(player: ob_player.Player, tile: ob_tileset.Tile
         player.is_stuck_left = True
 
         if player.get_bb(HB.LEFT)[POS.LEFT] < tile.get_bb(HB.RIGHT)[POS.RIGHT]:
-            player.x = (player.get_bb_range(HB.LEFT)[POS.LEFT] +
+            player.ax = (player.get_bb_range(HB.LEFT)[POS.LEFT] +
                         tile.get_bb(HB.RIGHT)[POS.RIGHT])
 
         if isinstance(tile, ob_tileset.Spike) and not player.is_invincible and not player.is_star_power:
@@ -115,7 +115,7 @@ def collide_player_to_left_wall(player: ob_player.Player, tile: ob_tileset.TileS
         player.is_stuck_right = True
 
         if player.get_bb(HB.RIGHT)[POS.RIGHT] > tile.get_bb(HB.LEFT)[POS.LEFT]:
-            player.x = (tile.get_bb(HB.LEFT)[POS.LEFT] -
+            player.ax = (tile.get_bb(HB.LEFT)[POS.LEFT] -
                         player.get_bb_range(HB.RIGHT)[POS.RIGHT])
 
         if isinstance(tile, ob_tileset.Spike) and not player.is_invincible and not player.is_star_power:
@@ -139,8 +139,8 @@ def collide_enemy_to_floor(enemy: ob_enemy, floor: ob_tileset.TileSet) -> bool:
         enemy.on_floor = True
 
         if enemy.get_bb(HB.BOTTOM)[POS.BOTTOM] < floor.get_bb(HB.TOP)[POS.TOP]:
-            enemy.y = (enemy.get_bb_range(HB.BOTTOM)[POS.BOTTOM] +
-                       floor.get_bb(HB.TOP)[POS.TOP])
+            enemy.ay = (enemy.get_bb_range(HB.BOTTOM)[POS.BOTTOM] +
+                        floor.get_bb(HB.TOP)[POS.TOP])
 
         return True
     else:
@@ -165,14 +165,14 @@ def collide_enemy_to_wall(enemy: ob_enemy, tile: ob_tileset.TileSet) -> bool:
                 enemy.get_bb(HB.RIGHT)[POS.RIGHT] >
                 tile.get_bb(HB.LEFT)[POS.LEFT]
         ):
-            enemy.x = (tile.get_bb(HB.LEFT)[POS.LEFT] -
-                       enemy.get_bb_range(HB.RIGHT)[POS.RIGHT])
+            enemy.ax = (tile.get_bb(HB.LEFT)[POS.LEFT] -
+                        enemy.get_bb_range(HB.RIGHT)[POS.RIGHT])
         elif (tile.get_bb(HB.LEFT)[POS.LEFT] <=
               enemy.get_bb(HB.LEFT)[POS.LEFT] <
               tile.get_bb(HB.RIGHT)[POS.RIGHT]
         ):
-            enemy.x = (tile.get_bb(HB.RIGHT)[POS.RIGHT] +
-                       enemy.get_bb_range(HB.LEFT)[POS.LEFT])
+            enemy.ax = (tile.get_bb(HB.RIGHT)[POS.RIGHT] +
+                        enemy.get_bb_range(HB.LEFT)[POS.LEFT])
 
         return True
     return False
@@ -191,7 +191,7 @@ def stomp_player_to_enemy(player: ob_player.Player, enemy: ob_enemy) -> bool:
             player.additional_jump_power = ob_player.MAX_JUMP_POWER + ob_player.JUMP_BOOST_TWO
         else:
             player.jump_power = get_pps_from_mps(10)
-        player.y = (player.get_bb_range(HB.BOTTOM)[POS.BOTTOM] + enemy.get_bb(HB.TOP)[POS.TOP]) + 1
+        player.ay = (player.get_bb_range(HB.BOTTOM)[POS.BOTTOM] + enemy.get_bb(HB.TOP)[POS.TOP]) + 1
         player.set_info(ACTION.JUMP)
         enemy.switch_bb_all()
 
@@ -222,8 +222,8 @@ def collide_item_to_floor(item: ob_item.Item, floor: ob_tileset.TileSet) -> bool
         item.on_floor = True
 
         if item.get_bb(HB.BOTTOM)[POS.BOTTOM] < floor.get_bb(HB.TOP)[POS.TOP]:
-            item.y = (item.get_bb_range(HB.BOTTOM)[POS.BOTTOM] +
-                      floor.get_bb(HB.TOP)[POS.TOP]) + 1
+            item.ay = (item.get_bb_range(HB.BOTTOM)[POS.BOTTOM] +
+                       floor.get_bb(HB.TOP)[POS.TOP]) + 1
 
         if item.type_id == TID.SUPER_STAR:
             item.is_jump = True
@@ -247,7 +247,7 @@ def collide_item_to_ceiling(item: ob_item.PowerUp, tile: ob_tileset.TileSet) -> 
             if ptop < 0:
                 ptop = abs(ptop) - 1
 
-            item.y = (tile.get_bb(HB.BOTTOM)[POS.BOTTOM] -
+            item.ay = (tile.get_bb(HB.BOTTOM)[POS.BOTTOM] -
                         ptop) - 1
 
         return True
@@ -272,14 +272,14 @@ def collide_item_to_wall(item: ob_item.Item, tile: ob_tileset.TileSet) -> bool:
                 item.get_bb(HB.RIGHT)[POS.RIGHT] >
                 tile.get_bb(HB.LEFT)[POS.LEFT]
         ):
-            item.x = (tile.get_bb(HB.LEFT)[POS.LEFT] -
-                      item.get_bb_range(HB.RIGHT)[POS.RIGHT])
+            item.ax = (tile.get_bb(HB.LEFT)[POS.LEFT] -
+                       item.get_bb_range(HB.RIGHT)[POS.RIGHT])
         elif (tile.get_bb(HB.LEFT)[POS.LEFT] <=
               item.get_bb(HB.LEFT)[POS.LEFT] <
               tile.get_bb(HB.RIGHT)[POS.RIGHT]
         ):
-            item.x = (tile.get_bb(HB.RIGHT)[POS.RIGHT] +
-                      item.get_bb_range(HB.LEFT)[POS.LEFT])
+            item.ax = (tile.get_bb(HB.RIGHT)[POS.RIGHT] +
+                       item.get_bb_range(HB.LEFT)[POS.LEFT])
 
         return True
     return False

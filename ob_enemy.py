@@ -1,6 +1,3 @@
-from abc import ABC
-
-import ob_map
 import object_manager
 from game_object import *
 from value import *
@@ -72,7 +69,7 @@ class Goomba(Enemy, ABC):
             self.is_fall = True
             self.is_jump = False
 
-        self.y += self.jump_power * gs_framework.frame_time
+        self.ay += self.jump_power * gs_framework.frame_time
 
     def fall(self):
         if self.dead_type is None:
@@ -86,7 +83,7 @@ class Goomba(Enemy, ABC):
             MAX_JUMP_POWER * -2, self.jump_power, 0
         )
 
-        self.y += self.jump_power * gs_framework.frame_time
+        self.ay += self.jump_power * gs_framework.frame_time
 
     def die(self) -> bool:
         if self.dead_type == ACTION.DIE_A:
@@ -107,10 +104,10 @@ class Goomba(Enemy, ABC):
                 self.is_fall = False
                 self.on_floor = False
                 self.jump_power = MAX_JUMP_POWER
-                self.y += 10
+                self.ay += 10
                 self.x_direction = server.player.facing * -1
 
-            self.x += MAX_FLYING_DEAD_VELOCITY * gs_framework.frame_time * self.x_direction
+            self.ax += MAX_FLYING_DEAD_VELOCITY * gs_framework.frame_time * self.x_direction
 
             if self.is_jump:
                 self.jump()
@@ -123,11 +120,10 @@ class Goomba(Enemy, ABC):
         if self.is_time_stop:
             return
 
-        server.move_camera_x(self)
 
-        print("enemy - is_jump: %s / is_fall: %s / on_floor %s" % (self.is_jump, self.is_fall, self.on_floor))
+        # print("enemy - is_jump: %s / is_fall: %s / on_floor %s" % (self.is_jump, self.is_fall, self.on_floor))
 
-        if self.y <= server.stage.y - ob_map.TILE_WIDTH:
+        if self.ay <= server.stage.y - ob_map.TILE_WIDTH:
             object_manager.remove_object(self)
             del self
             return
@@ -148,8 +144,7 @@ class Goomba(Enemy, ABC):
             self.fall()
 
         # print(str(self.facing), str(self.x_direction), str(self.action), str(self.velocity))
-        self.x += self.velocity * gs_framework.frame_time * self.x_direction
-
+        self.ax += self.velocity * gs_framework.frame_time * self.x_direction
 
 def test_enemy():
     from ob_tileset import TileSet

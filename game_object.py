@@ -1,9 +1,9 @@
 from pico2d import *
 
-import ob_foreground
-import ob_interactive
+# import ob_foreground
+# import ob_interactive
 import ob_map
-from value import *
+import server
 from abc import *
 from bounding_box import *
 
@@ -42,7 +42,8 @@ class GameObject:
             }
 
         # Object location point
-        self.x, self.y = x, y
+        self.ax, self.ay = x, y
+        self.rx, self.ry = 0, 0
 
         # Bounding Box
         self.bounding_box: Dict[int, BoundingBox] = {}
@@ -84,6 +85,8 @@ class GameObject:
         # Time stop
         self.is_time_stop = False
 
+        server.move_camera(self)
+
     def set_color(self, r=255, g=255, b=255):
         """Setting color value to image"""
         if self.type_name == TN.FOREGROUND:
@@ -103,6 +106,8 @@ class GameObject:
         self.action_per_time = 1.0 / self.time_per_action
 
     def image_draw(self, tn=None, tid=None, rad=None):
+        server.move_camera(self)
+
         if tn is None:
             tn = self.type_name
         if tid is None:
@@ -111,22 +116,25 @@ class GameObject:
             rad = self.rad
 
         if self.type_id == TID.NONE:
-            GameObject.image[tid].draw(self.x, self.y, self.w * self.wp, self.h * self.hp)
+            GameObject.image[tid].draw(self.rx, self.ry, self.w * self.wp, self.h * self.hp)
         else:
             if rad == 0:
                 GameObject.image[(tn, tid)].draw(
-                    self.x, self.y,
+                    self.rx, self.ry,
                     GameObject.image[(tn, tid)].w * self.wp,
                     GameObject.image[(tn, tid)].h * self.hp)
             else:
                 GameObject.image[(tn, tid)].composite_draw(
-                    rad, '', self.x, self.y,
+                    rad, '',
+                    self.rx, self.ry,
                     GameObject.image[(tn, tid)].w * self.wp,
                     GameObject.image[(tn, tid)].h * self.hp)
 
         self.set_alpha()
 
     def clip_draw(self, tn=None, tid=None, rad=None):
+        server.move_camera(self)
+
         if tn is None:
             tn = self.type_name
         if tid is None:
@@ -136,7 +144,8 @@ class GameObject:
 
         if tid == TID.NONE:
             GameObject.image[tid].draw(
-                self.x, self.y, self.w * self.wp, self.h * self.hp)
+                self.rx, self.ry,
+                self.w * self.wp, self.h * self.hp)
             return
 
         if self.frame_count == 1:
@@ -145,13 +154,16 @@ class GameObject:
         if rad == 0:
             GameObject.image[(tn, tid)].clip_draw(
                 int((self.frame + self.frame_begin)) * self.l, self.b,
-                self.w, self.h, self.x, self.y, self.w * self.wp, self.h * self.hp)
+                self.w, self.h,
+                self.rx, self.ry,
+                self.w * self.wp, self.h * self.hp)
         else:
             GameObject.image[(tn, tid)].clip_composite_draw(
                 int((self.frame + self.frame_begin)) * self.l, self.b,
                 self.w, self.h,
                 rad * (math.pi / 180), '',
-                self.x, self.y, self.w * self.wp, self.h * self.hp)
+                self.rx, self.ry,
+                self.w * self.wp, self.h * self.hp)
 
         self.set_alpha()
 
@@ -187,11 +199,11 @@ class GameObject:
         self.bounding_box[bid].set_bb(range)
 
     def get_bb(self, bid):
-        return self.bounding_box[bid].get_bb((self.x, self.y))
+        return self.bounding_box[bid].get_bb((self.ax, self.ay))
 
     def draw_bb(self):
         for key in self.bounding_box.keys():
-            self.bounding_box[key].draw_bb((self.x, self.y))
+            self.bounding_box[key].draw_bb((self.rx, self.ry))
 
     def set_bb_size(self):
         self.bb_size_range = [0, 0, 0, 0]
@@ -209,10 +221,10 @@ class GameObject:
 
     def get_bb_size_pos(self) -> Tuple[float, float, float, float]:
         return (
-            self.x - self.bb_size_range[POS.LEFT],
-            self.y - self.bb_size_range[POS.BOTTOM],
-            self.x + self.bb_size_range[POS.RIGHT],
-            self.y + self.bb_size_range[POS.TOP]
+            self.ax - self.bb_size_range[POS.LEFT],
+            self.ay - self.bb_size_range[POS.BOTTOM],
+            self.ax + self.bb_size_range[POS.RIGHT],
+            self.ay + self.bb_size_range[POS.TOP]
         )
 
     @abstractmethod
@@ -775,6 +787,7 @@ class GameObject:
                     self.bounding_box[HB.BODY] = BoundingBox(HB.BODY)
                 self.switch_bb_all()
 
+                import ob_interactive
                 self: ob_interactive.WireMesh
                 self.set_bb(HB.BODY, [
                     0, 0,
@@ -1267,6 +1280,7 @@ class GameObject:
 
         # Foreground exclusives
         elif self.type_name == TN.FOREGROUND:
+            import ob_foreground
             self: ob_foreground.Foreground
             if self.pm_type_id == TID.BRICK_PIECE:
                 if self.action == ACTION.PIECE_LT:
@@ -1296,8 +1310,6 @@ class GameObject:
 
 def test_object():
     open_canvas()
-
-    object = GameObject()
 
     close_canvas()
 

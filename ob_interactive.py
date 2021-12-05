@@ -1,8 +1,4 @@
-from abc import ABC
 
-import gs_framework
-import server
-import ob_map
 from game_object import *
 
 
@@ -49,20 +45,18 @@ class WireMesh(GameObject, ABC):
                     elif x == self.index_x - 1:
                         self.tile[x][y] = ACTION.PIECE_R
 
-
-
         self.got_player = False
 
     def update(self):
         if self.is_time_stop:
             return
 
-        server.move_camera_x(self)
-
         self.init_bb()
         self.set_bb_size()
 
     def draw(self):
+        server.move_camera(self)
+
         for x in range(self.index_x):
             for y in range(self.index_y):
 
@@ -72,7 +66,7 @@ class WireMesh(GameObject, ABC):
                 self.set_clip(self.tile[x][y])
                 GameObject.image[self.type_name, self.type_id].clip_draw(
                     int(self.frame_begin) * self.l, self.b, self.w, self.h,
-                    self.x + x * ob_map.TILE_WIDTH, self.y + y * ob_map.TILE_HEIGHT
+                    self.rx + x * ob_map.TILE_WIDTH, self.ry + y * ob_map.TILE_HEIGHT
                 )
                 # print("drew (%.2f, %.2f): %s" %
                 #       (self.x + x * ob_map.TILE_WIDTH, self.y + y * ob_map.TILE_HEIGHT, self.tile[x][y])

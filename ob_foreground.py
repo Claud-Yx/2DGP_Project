@@ -37,6 +37,8 @@ class Foreground(game_object.GameObject):
         pass
 
     def draw(self):
+        server.move_camera(self)
+
         if self.is_animated:
             self.update_frame(gs_framework.frame_time)
             self.clip_draw(self.pm_type_id, self.pm_type_id, self.rad)
@@ -68,7 +70,7 @@ class BrickPiece(Foreground):
         self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 6
                             ) * -1
 
-        self.y += self.jump_power * gs_framework.frame_time
+        self.ay += self.jump_power * gs_framework.frame_time
 
     def fall(self):
         self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 6
@@ -76,15 +78,13 @@ class BrickPiece(Foreground):
 
         self.jump_power = clamp(-MAX_JUMP_POWER * 2, self.jump_power, 0)
 
-        self.y += self.jump_power * gs_framework.frame_time
+        self.ay += self.jump_power * gs_framework.frame_time
 
     def update(self):
         if server.time_stop:
             return
 
-        server.move_camera_x(self)
-
-        if self.y <= -50:
+        if self.ay <= -50:
             object_manager.remove_object(self)
             del self
             return
@@ -95,8 +95,12 @@ class BrickPiece(Foreground):
             self.fall()
 
         self.rad += self.rps * gs_framework.frame_time * -self.x_direction
-        self.x += self.velocity * gs_framework.frame_time * self.x_direction
+        self.ax += self.velocity * gs_framework.frame_time * self.x_direction
+
 
     def draw(self):
+        server.move_camera(self)
+
         self.update_frame(gs_framework.frame_time)
         self.clip_draw(self.pm_type_name, self.pm_type_id, self.rad)
+

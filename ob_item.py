@@ -1,7 +1,4 @@
-from abc import ABC
-
 import object_manager
-import server
 from game_object import *
 from value import *
 
@@ -80,7 +77,7 @@ class PowerUp(Item, ABC):
             self.is_fall = True
             self.is_jump = False
 
-        self.y += self.jump_power * gs_framework.frame_time
+        self.ay += self.jump_power * gs_framework.frame_time
 
     def fall(self):
         self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
@@ -90,20 +87,18 @@ class PowerUp(Item, ABC):
             MAX_JUMP_POWER * -1, self.jump_power, 0
         )
 
-        self.y += self.jump_power * gs_framework.frame_time
+        self.ay += self.jump_power * gs_framework.frame_time
 
     def update(self):
         if self.is_time_stop:
             return
 
-        server.move_camera_x(self)
-
         if self.in_box:
             if self.pop_y_max == 0:
-                self.pop_y_max = self.y + ITEM_POPUP_DISTANCE
-            self.y += ITEM_POPUP_VELOCITY * gs_framework.frame_time
-            if self.y >= self.pop_y_max:
-                self.y = self.pop_y_max + 1
+                self.pop_y_max = self.ay + ITEM_POPUP_DISTANCE
+            self.ay += ITEM_POPUP_VELOCITY * gs_framework.frame_time
+            if self.ay >= self.pop_y_max:
+                self.ay = self.pop_y_max + 1
                 self.in_box = False
                 self.switch_bb_all(True)
             return
@@ -120,7 +115,7 @@ class PowerUp(Item, ABC):
             self.is_fall = False
             if self.jump_power == 0:
                 self.jump_power = MAX_JUMP_POWER
-                self.y += 1
+                self.ay += 1
             self.jump()
         elif self.is_fall and not self.in_box:
             # print("item fall!")
@@ -128,8 +123,7 @@ class PowerUp(Item, ABC):
             self.fall()
 
         if self.type_id != TID.FIRE_FLOWER:
-            self.x += self.velocity * gs_framework.frame_time * self.x_direction
-        pass
+            self.ax += self.velocity * gs_framework.frame_time * self.x_direction
 
 
 class Coin(Item, ABC):
@@ -150,17 +144,15 @@ class Coin(Item, ABC):
         if self.is_time_stop:
             return
 
-        server.move_camera_x(self)
-
         if self.in_box:
             if self.pop_y_max == 0:  # init
                 self.switch_bb_all()
                 self.set_size(0.6, 0.8)
-                self.pop_y_max = self.y + COIN_POPUP_DISTANCE
+                self.pop_y_max = self.ay + COIN_POPUP_DISTANCE
                 self.pop_y_min = self.pop_y_max - COIN_POPUP_DISTANCE // 2
                 self.set_tpa(0.2)
 
-            self.y += (COIN_POPUP_VELOCITY - self.y_acceleration) * gs_framework.frame_time
+            self.ay += (COIN_POPUP_VELOCITY - self.y_acceleration) * gs_framework.frame_time
             self.y_acceleration += COIN_POPUP_ACCEL * gs_framework.frame_time
 
             if self.y_acceleration > COIN_POPUP_ACCEL * (3 / 5):

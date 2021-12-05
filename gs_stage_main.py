@@ -1,6 +1,6 @@
+import object_manager
+
 import ob_background
-import ob_interactive
-import ob_tileset
 import server
 
 from pico2d import *
@@ -11,7 +11,6 @@ import gs_title
 import ob_map
 
 import gs_framework
-import object_manager
 
 name = "StageMainState"
 
@@ -36,15 +35,15 @@ def enter():
     # item
     server.items.append(ob_item.Coin(525, 125))
     server.items.append(ob_item.Coin(525, 175))
-    server.items.append(ob_item.Coin(575, 125))
+    server.items.append(ob_item.PowerUp(TID.SUPER_STAR, 575, 125))
     server.items.append(ob_item.Coin(575, 175))
     # server.items.append(ob_item.SuperMushroom(800, 480))
     object_manager.add_objects(server.items, L.ITEMS)
 
     # enemy
-    # server.enemies.append(ob_enemy.Goomba(930, 460))
-    # server.enemies.append(ob_enemy.Goomba(930, 460, DIR.LEFT))
-    server.enemies.append(ob_enemy.Goomba(970, 500, DIR.LEFT))
+    server.enemies.append(ob_enemy.Goomba(930, 460))
+    server.enemies.append(ob_enemy.Goomba(930, 460, DIR.LEFT))
+    # server.enemies.append(ob_enemy.Goomba(970, 500, DIR.LEFT))
     # server.enemies.append(ob_enemy.Goomba(900, 480))
     object_manager.add_objects(server.enemies, L.ENEMIES)
 
@@ -68,18 +67,18 @@ def enter():
     # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 350))
     # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1150, 350))
     # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 350))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 150))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 150))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X50, 450, 325))
 
     # server.tiles.append(ob_tileset.RandomBox(125, 375))
     server.tiles.append(ob_tileset.RandomBox(175, 275, item=TID.SUPER_STAR, state=ob_tileset.RS.POLYMORPH))
     # server.tiles.append(ob_tileset.RandomBox(225, 375, state=ob_tileset.RS.INVISIBLE))
-    server.tiles.append(ob_tileset.RandomBox(475, 125, state=ob_tileset.RS.POLYMORPH))
+    # server.tiles.append(ob_tileset.RandomBox(475, 125, state=ob_tileset.RS.POLYMORPH))
     server.tiles.append(ob_tileset.RandomBox(1325, 325, state=ob_tileset.RS.INVISIBLE))
     server.tiles.append(ob_tileset.RandomBox(1375, 325, state=ob_tileset.RS.INVISIBLE))
     server.tiles.append(ob_tileset.RandomBox(1425, 325, state=ob_tileset.RS.INVISIBLE))
     server.tiles.append(ob_tileset.RandomBox(1475, 325, state=ob_tileset.RS.INVISIBLE))
-    server.tiles.append(ob_tileset.RandomBox(1525, 275, state=ob_tileset.RS.INVISIBLE))
+    server.tiles.append(ob_tileset.RandomBox(1525, 275))
     server.tiles.append(ob_tileset.RandomBox(1575, 275, state=ob_tileset.RS.INVISIBLE))
 
     server.tiles.append(ob_tileset.Brick(125, 575))
@@ -126,7 +125,6 @@ def exit():
 
 
 def handle_events():
-    global show_bb
 
     for event in gs_framework.Events:
         if event.type == SDL_QUIT:
@@ -134,14 +132,17 @@ def handle_events():
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
             gs_framework.change_state(gs_title)
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_F2):
-            if not show_bb:
-                show_bb = True
+            if not server.show_bb:
+                server.show_bb = True
                 for obj in object_manager.all_objects():
                     obj.show_bb = True
             else:
-                show_bb = False
+                server.show_bb = False
                 for obj in object_manager.all_objects():
                     obj.show_bb = False
+        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_F3):
+            server.stage.print_index()
+
         else:
             server.player.handle_event(event)
             test_keyboard.keyboard_handle(gs_framework.Events)
@@ -150,6 +151,13 @@ def handle_events():
 def update():
     # s_time = get_time()
     server.current_time = get_time() - server.start_time
+
+    # if server.show_bb:
+    #     for obj in object_manager.all_objects():
+    #         obj.show_bb = True
+    # else:
+    #     for obj in object_manager.all_objects():
+    #         obj.show_bb = False
 
     if server.time_stop:
         for obj in object_manager.all_objects():
@@ -163,7 +171,6 @@ def update():
             return
 
     # indexing
-    stage_prev_x = server.stage.x
     server.stage.update()
 
     # if stage_prev_x != server.stage.x:
@@ -176,8 +183,8 @@ def update():
     server.player.nearby_items.clear()
     server.player.nearby_interactives.clear()
 
-    player_index_x = int((server.player.x - server.stage.x) // ob_map.TILE_WIDTH)
-    player_index_y = int(server.player.y // ob_map.TILE_HEIGHT)
+    player_index_x = int(server.player.ax // ob_map.TILE_WIDTH)
+    player_index_y = int(server.player.ay // ob_map.TILE_HEIGHT)
     for x in range(player_index_x - 2, player_index_x + 2):
         if x < 0 or len(server.stage.object_index) <= x:
             continue
@@ -236,15 +243,15 @@ def update():
         if collide_player_to_interactive(server.player, itr):
             break
 
-    # if len(server.player.nearby_items) != 0:
-    #     print(server.player.nearby_items)
+    # if len(server.player.nearby_tiles) != 0:
+    #     print(server.player.nearby_tiles)
 
     # enemy collision checking and indexing
     for enemy in server.enemies:
         enemy.nearby_tiles.clear()
 
-        enemy_index_x = int((enemy.x - server.stage.x) // ob_map.TILE_WIDTH)
-        enemy_index_y = int(enemy.y // ob_map.TILE_HEIGHT)
+        enemy_index_x = int(enemy.ax // ob_map.TILE_WIDTH)
+        enemy_index_y = int(enemy.ay // ob_map.TILE_HEIGHT)
 
         for x in range(enemy_index_x - 2, enemy_index_x + 2):
             if x < 0 or len(server.stage.object_index) <= x:
@@ -277,8 +284,8 @@ def update():
 
         item.nearby_tiles.clear()
 
-        item_index_x = int((item.x - server.stage.x) // ob_map.TILE_WIDTH)
-        item_index_y = int(item.y // ob_map.TILE_HEIGHT)
+        item_index_x = int(item.ax // ob_map.TILE_WIDTH)
+        item_index_y = int(item.ay // ob_map.TILE_HEIGHT)
 
         for x in range(item_index_x - 2, item_index_x + 2):
             if x < 0 or len(server.stage.object_index) <= x:
