@@ -54,6 +54,9 @@ def collide_player_to_floor(player: ob_player.Player, tile: ob_tileset.TileSet) 
             player.y = (player.get_bb_range(HB.BOTTOM)[POS.BOTTOM] +
                         tile.get_bb(HB.TOP)[POS.TOP])
 
+        if isinstance(tile, ob_tileset.Spike) and not player.is_invincible:
+            player.is_damaged = True
+
         return True
 
     else:
@@ -84,6 +87,9 @@ def collide_player_to_ceiling(player: ob_player.Player, tile: ob_tileset.TileSet
         # if tile.type_id == TID.RANDOM_BOX or tile.type_id == TID.BREAKABLE_BRICK:
         #     return False
 
+        if isinstance(tile, ob_tileset.Spike) and not player.is_invincible:
+            player.is_damaged = True
+
         return False
 
     return False
@@ -103,6 +109,9 @@ def collide_player_to_right_wall(player: ob_player.Player, tile: ob_tileset.Tile
         if player.get_bb(HB.LEFT)[POS.LEFT] < tile.get_bb(HB.RIGHT)[POS.RIGHT]:
             player.x = (player.get_bb_range(HB.LEFT)[POS.LEFT] +
                         tile.get_bb(HB.RIGHT)[POS.RIGHT])
+
+        if isinstance(tile, ob_tileset.Spike) and not player.is_invincible:
+            player.is_damaged = True
 
         return True
 
@@ -125,6 +134,9 @@ def collide_player_to_left_wall(player: ob_player.Player, tile: ob_tileset.TileS
         if player.get_bb(HB.RIGHT)[POS.RIGHT] > tile.get_bb(HB.LEFT)[POS.LEFT]:
             player.x = (tile.get_bb(HB.LEFT)[POS.LEFT] -
                         player.get_bb_range(HB.RIGHT)[POS.RIGHT])
+
+        if isinstance(tile, ob_tileset.Spike) and not player.is_invincible:
+            player.is_damaged = True
 
         return True
 

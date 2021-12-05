@@ -124,7 +124,14 @@ class RandomBox(TileSet):
 
             if self.timer_hit <= 0.0:
                 if self.item == TID.SUPER_MUSHROOM:
-                    server.items.append(ob_item.SuperMushroom(self.x, self.y, self.x_direction, True))
+                    server.items.append(
+                        ob_item.PowerUp(TID.SUPER_MUSHROOM,self.x, self.y, self.x_direction, True)
+                    )
+                    object_manager.add_object(server.items[-1], L.ITEMS)
+                elif self.item == TID.LIFE_MUSHROOM:
+                    server.items.append((
+                        ob_item.PowerUp(TID.LIFE_MUSHROOM, self.x, self.y, self.x_direction, True)
+                    ))
                     object_manager.add_object(server.items[-1], L.ITEMS)
 
                 self.is_empty = True
@@ -236,6 +243,31 @@ class Brick(TileSet):
 
     def draw(self):
 
+        self.clip_draw()
+
+        if self.show_bb:
+            self.draw_bb()
+
+
+class Spike(TileSet):
+    def __init__(self, x, y, pos=POS.TOP):
+        super().__init__(TID.SPIKE, x, y)
+
+        self.action = ACTION.IDLE
+
+        # Animation frame value
+        self.frame = 0
+        self.frame_begin = pos
+        self.frame_count = 0
+
+        # Animation control value
+        self.loop_animation = False
+        self.set_info()
+
+    # def update(self):
+    #     pass
+
+    def draw(self):
         self.clip_draw()
 
         if self.show_bb:

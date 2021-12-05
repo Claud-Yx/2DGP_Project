@@ -24,6 +24,7 @@ class GameObject:
                 (TN.TILESETS, TID.EMPTY_BOX): load_image('resource\\tileset\\empty_box50x50.png'),
                 (TN.TILESETS, TID.BREAKABLE_BRICK): load_image('resource\\tileset\\breakable_brick50x50.png'),
                 (TN.TILESETS, TID.RANDOM_BOX): load_image('resource\\tileset\\random_box50x50.png'),
+                (TN.TILESETS, TID.SPIKE): load_image('resource\\tileset\\spike50x50.png'),
                 (TN.ENEMIES, TID.GOOMBA): load_image('resource\\characters\\goomba.png'),
                 (TN.ENEMIES, TID.DRY_BONES): load_image('resource\\characters\\dry_bones.png'),
                 (TN.ENEMIES, TID.BOO): load_image('resource\\characters\\boo.png'),
@@ -82,6 +83,13 @@ class GameObject:
 
         # Time stop
         self.is_time_stop = False
+
+    def set_color(self, r=255, g=255, b=255):
+        """Setting color value to image"""
+        if self.type_name == TN.FOREGROUND:
+            SDL_SetTextureColorMod(GameObject.image[self.pm_type_name, self.pm_type_id].texture, r, g, b)
+        else:
+            SDL_SetTextureColorMod(GameObject.image[self.type_name, self.type_id].texture, r, g, b)
 
     def set_alpha(self, a=255):
         """Setting alpha value to image"""
@@ -142,7 +150,7 @@ class GameObject:
             GameObject.image[(tn, tid)].clip_composite_draw(
                 int((self.frame + self.frame_begin)) * self.l, self.b,
                 self.w, self.h,
-                rad*(math.pi/180), '',
+                rad * (math.pi / 180), '',
                 self.x, self.y, self.w * self.wp, self.h * self.hp)
 
         self.set_alpha()
@@ -707,9 +715,10 @@ class GameObject:
                 self.bounding_box[HB.TOP] = BoundingBox(HB.TOP)
 
             if (self.type_id == TID.CASTLE_BLOCK_50X50 or
-                self.type_id == TID.BREAKABLE_BRICK or
-                self.type_id == TID.EMPTY_BOX or
-                self.type_id == TID.RANDOM_BOX
+                    self.type_id == TID.BREAKABLE_BRICK or
+                    self.type_id == TID.EMPTY_BOX or
+                    self.type_id == TID.RANDOM_BOX or
+                    self.type_id == TID.SPIKE
             ):
                 self.set_bb(HB.BODY, [25, 25, 25, 25])
                 self.set_bb(HB.LEFT, [25, 25, -20, 25])
@@ -745,7 +754,9 @@ class GameObject:
                 self.bounding_box[HB.TOP] = BoundingBox(HB.TOP)
             self.switch_bb_all()
 
-            if self.type_id == TID.SUPER_MUSHROOM:
+            if (self.type_id == TID.SUPER_MUSHROOM or
+                self.type_id == TID.LIFE_MUSHROOM
+            ):
                 self.set_bb(HB.BODY, [24, 24, 24, 24])
                 self.set_bb(HB.LEFT, [25, 25, -20, 25])
                 self.set_bb(HB.BOTTOM, [24, 25, 24, -20])
@@ -1170,7 +1181,7 @@ class GameObject:
                 self.loop_animation = False
 
             else:
-                self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
+                self.l, self.b, self.w, self.h = 25, 25 * 3, 25, 25
                 self.frame_count, self.frame_begin = 1, 7
                 self.loop_animation = False
                 print("Invalid action: %s" % (str(self.action)))
@@ -1205,6 +1216,11 @@ class GameObject:
                 self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
                 self.frame_count, self.frame_begin = 4, 0
                 self.loop_animation = True
+
+            elif self.type_id == TID.SPIKE:
+                self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
+                self.frame_count = 1
+                self.loop_animation = False
 
         # Interactives
         elif self.type_name == TN.INTERACTIVES:
@@ -1268,13 +1284,13 @@ class GameObject:
                     self.frame_count, self.frame_begin = 1, 1
                     self.loop_animation = False
 
-
         self.frame = self.frame_begin
 
     def set_info(self, a=None):
         self.set_clip(a)
         self.init_bb()
         self.set_bb_size()
+
 
 def test_object():
     open_canvas()

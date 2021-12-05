@@ -1,4 +1,5 @@
 import ob_interactive
+import ob_tileset
 import server
 
 from pico2d import *
@@ -70,7 +71,7 @@ def enter():
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X50, 450, 325))
 
     server.tiles.append(ob_tileset.RandomBox(125, 375))
-    server.tiles.append(ob_tileset.RandomBox(175, 375, item=TID.SUPER_MUSHROOM, state=ob_tileset.RS.POLYMORPH))
+    server.tiles.append(ob_tileset.RandomBox(175, 375, item=TID.LIFE_MUSHROOM, state=ob_tileset.RS.POLYMORPH))
     server.tiles.append(ob_tileset.RandomBox(225, 375, state=ob_tileset.RS.INVISIBLE))
     server.tiles.append(ob_tileset.RandomBox(525, 225, state=ob_tileset.RS.POLYMORPH))
     server.tiles.append(ob_tileset.RandomBox(1325, 325, state=ob_tileset.RS.INVISIBLE))
@@ -90,7 +91,18 @@ def enter():
     server.tiles.append(ob_tileset.Brick(475, 575))
     server.tiles.append(ob_tileset.Brick(525, 575))
     server.tiles.append(ob_tileset.Brick(575, 575))
+
+    server.tiles.append(ob_tileset.Spike(625, 125))
+    server.tiles.append(ob_tileset.Spike(675, 125))
+    server.tiles.append(ob_tileset.Spike(725, 125))
+    server.tiles.append(ob_tileset.Spike(775, 125))
     # server.tiles.append(ob_tileset.RandomBox(575, 325))
+
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_50X50, 1025, 325))
+    server.tiles.append(ob_tileset.Spike(975, 325, POS.LEFT))
+    server.tiles.append(ob_tileset.Spike(1025, 275, POS.BOTTOM))
+    server.tiles.append(ob_tileset.Spike(1075, 325, POS.RIGHT))
+    server.tiles.append(ob_tileset.Spike(1025, 375))
 
     object_manager.add_objects(server.tiles, object_manager.OL_TILESET)
 

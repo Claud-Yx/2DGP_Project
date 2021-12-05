@@ -28,6 +28,7 @@ MAX_TIMER_SHRINK = 0.9
 MAX_TIMER_GROW = 1.0
 MAX_TIMER_DIE = 3.5
 MAX_TIMER_INVINCIBLE = 2.0
+MAX_TIMER_SUPER_STAR = 8.0
 
 
 class EVENT(IntEnum):
@@ -116,15 +117,16 @@ class Player(GameObject):
 
         self.taken_item = [TN.ITEMS, TID.NONE]
 
-        # Setting
-        self.set_info()
-        self.cur_state.enter(self, None)
-
         # Timer
         self.timer_shrink = 0
         self.timer_die = 0
         self.timer_invincible = 0
         self.timer_grow = 0
+        self.timer_super_star = 0
+
+        # Setting
+        self.set_info()
+        self.cur_state.enter(self, None)
 
     def check_state(self, event):
         if event == EVENT.Z_DOWN:
@@ -139,6 +141,7 @@ class Player(GameObject):
         if self.cur_state != SitState:
             if self.on_wire_mesh is not None and event == EVENT.UP_DOWN:
                 self.y_direction += DIR.UP
+                self.pressed_key_jump = False
                 self.add_event(EVENT.HANGING)
 
     def inertia(self):
@@ -316,11 +319,15 @@ class Player(GameObject):
                     self.set_info()
                     self.is_small = False
                     server.stop_time(False)
+                    self.score += 1000
             else:
                 self.score += 1000
 
         elif self.taken_item == (TN.ITEMS, TID.COIN):
             self.coin += 1
+
+        elif self.taken_item == (TN.ITEMS, TID.LIFE_MUSHROOM):
+            self.life += 1
 
         if not server.time_stop:
             self.taken_item = (TN.ITEMS, TID.NONE)
@@ -382,8 +389,8 @@ class Player(GameObject):
 
         debug_print_2 = load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 26)
         debug_print_2.draw(6, gs_framework.canvas_height - 16,
-                           "Coin: %d / Score: %d / collision to itr: %s / nearby itr: %s" %
-                           (self.coin, self.score, self.on_wire_mesh, self.nearby_interactives),
+                           "Life: %d / Coin: %d / Score: %d" %
+                           (self.life, self.coin, self.score),
                            (0, 255, 0))
 
         if self.show_bb:
@@ -656,6 +663,7 @@ class ClimbState:
         elif event == EVENT.LEFT_UP:
             player.x_direction += DIR.RIGHT
         elif event == EVENT.UP_DOWN:
+            player.pressed_key_jump = False
             player.y_direction += DIR.UP
         elif event == EVENT.UP_UP:
             player.y_direction += DIR.DOWN
@@ -685,6 +693,9 @@ class ClimbState:
         player.x += player.velocity * gs_framework.frame_time
         player.y += player.jump_power * gs_framework.frame_time
 
+        if player.on_wire_mesh is None:
+            return
+
         player.on_wire_mesh: ob_interactive.WireMesh
 
         x_min = player.on_wire_mesh.get_bb(HB.BODY)[POS.LEFT] + player.get_bb_range(HB.BODY)[POS.LEFT]
@@ -700,7 +711,8 @@ class ClimbState:
         player.y = clamp(y_min, player.y, y_max)
         if player.y >= y_max:
             player.jump_power = 0
-        elif player.y <= y_min or player.pressed_key_jump:
+
+        if player.y <= y_min or player.pressed_key_jump:
             player.y_direction = DIR.NONE
 
             if player.x_direction == DIR.NONE:
@@ -728,7 +740,7 @@ next_state_table = {
         EVENT.RIGHT_DOWN: WalkState, EVENT.RIGHT_UP: WalkState,
         EVENT.Z_DOWN: IdleState, EVENT.Z_UP: IdleState,
         EVENT.X_DOWN: IdleState, EVENT.X_UP: IdleState,
-        EVENT.HANGING: ClimbState
+        EVENT.HANGING: ClimbState, EVENT.STAYING: IdleState
     },
     SitState: {
         EVENT.UP_DOWN: SitState, EVENT.UP_UP: SitState,
@@ -745,7 +757,7 @@ next_state_table = {
         EVENT.RIGHT_DOWN: IdleState, EVENT.RIGHT_UP: IdleState,
         EVENT.Z_DOWN: WalkState, EVENT.Z_UP: WalkState,
         EVENT.X_DOWN: WalkState, EVENT.X_UP: WalkState,
-        EVENT.HANGING: ClimbState
+        EVENT.HANGING: ClimbState, EVENT.WALKING: WalkState
     },
     # JumpState: {
     #     KEY.UP_DOWN: JumpState, KEY.UP_UP: JumpState,
@@ -770,7 +782,7 @@ next_state_table = {
         EVENT.RIGHT_DOWN: ClimbState, EVENT.RIGHT_UP: ClimbState,
         EVENT.Z_DOWN: ClimbState, EVENT.Z_UP: ClimbState,
         EVENT.X_DOWN: ClimbState, EVENT.X_UP: ClimbState,
-        EVENT.STAYING: IdleState ,EVENT.WALKING: WalkState
+        EVENT.STAYING: IdleState, EVENT.WALKING: WalkState
     }
 }
 

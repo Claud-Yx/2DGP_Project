@@ -154,10 +154,7 @@ class TID(IntEnum):  # Type ID
     EMPTY_BOX = auto()
     RANDOM_BOX = auto()
     PLAT_FORM = auto()
-    SPIKE_UP = 20
-    SPIKE_DOWN = auto()
-    SPIKE_LEFT = auto()
-    SPIKE_RIGHT = auto()
+    SPIKE = 20
 
     COIN = 0
     SUPER_MUSHROOM = auto()

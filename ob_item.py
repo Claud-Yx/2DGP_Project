@@ -46,9 +46,15 @@ class Item(GameObject, ABC):
         pass
 
 
-class SuperMushroom(Item, ABC):
-    def __init__(self, x=0, y=0, x_dir=DIR.RIGHT, in_box=False):
-        super(). __init__(TID.SUPER_MUSHROOM, x, y, x_dir)
+class PowerUp(Item, ABC):
+    def __init__(self, tid, x, y, x_dir=DIR.RIGHT, in_box=False):
+        if (tid != TID.SUPER_MUSHROOM or
+            tid != TID.LIFE_MUSHROOM or
+            tid != TID.SUPER_STAR or
+            tid != TID.FIRE_FLOWER
+        ):
+            print("PowerUp TID is wrong!!!: %s" % tid)
+        super(). __init__(tid, x, y, x_dir)
 
         self.velocity = MAX_VELOCITY
 
