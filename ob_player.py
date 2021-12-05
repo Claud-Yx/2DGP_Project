@@ -363,6 +363,50 @@ class Player(game_object.GameObject):
         if not server.time_stop:
             self.taken_item = (TN.ITEMS, TID.NONE)
 
+    def scroll_and_clamp(self):
+        """scroll and clamping"""
+        # rx range init
+        rx_min, rx_max = gs_framework.canvas_width / 2 - 50, gs_framework.canvas_width / 2 + 50
+        ax_max = server.stage.size_width - (
+                gs_framework.canvas_width - (gs_framework.canvas_width / 2 + 50)
+        )
+
+        # ry range init
+        ry_min, ry_max = gs_framework.canvas_height / 2 - 50, gs_framework.canvas_height / 2 + 50
+        ay_max = server.stage.size_height - (
+                gs_framework.canvas_height - (gs_framework.canvas_height / 2 + 50)
+        )
+
+        if server.stage.size_width > gs_framework.canvas_width:
+            if server.stage.x == 0:
+                rx_min = 25
+            elif server.stage.x == gs_framework.canvas_width - server.stage.size_width:
+                rx_max = gs_framework.canvas_width - 25
+        else:
+            rx_min, rx_max = 25, gs_framework.canvas_width - 25
+
+        if server.stage.size_height > gs_framework.canvas_height:
+            if server.stage.y == 0:
+                ry_min = -150
+            elif server.stage.y == gs_framework.canvas_height - server.stage.size_height:
+                ry_max = gs_framework.canvas_height + 150
+        else:
+            ry_min, ry_max = -150, gs_framework.canvas_height + 150
+
+        self.ax = clamp(25, self.ax, server.stage.size_width - 25)
+        self.ay = clamp(-150, self.ay, server.stage.size_height + 150)
+
+        rx_ran = self.ax
+        if self.ax >= ax_max:
+            rx_ran = self.ax - ax_max + (gs_framework.canvas_width / 2 + 50)
+
+        ry_ran = self.ay
+        if self.ay >= ay_max:
+            ry_ran = self.ay - ay_max + (gs_framework.canvas_height / 2 + 50)
+
+        self.rx = clamp(rx_min, rx_ran, rx_max)
+        self.ry = clamp(ry_min, ry_ran, ry_max)
+
     def add_event(self, event):
         self.event_que.insert(0, event)
 
@@ -384,29 +428,7 @@ class Player(game_object.GameObject):
         # state update
         self.cur_state.do(self)
 
-        # scroll and clamping
-        rx_min, rx_max = gs_framework.canvas_width / 2 - 50, gs_framework.canvas_width / 2 + 50
-        ax_max = server.stage.size_width - (
-                gs_framework.canvas_width - (gs_framework.canvas_width / 2 + 50)
-        )
-
-        if server.stage.size_width > gs_framework.canvas_width:
-            if server.stage.x == 0:
-                rx_min = 25
-            elif server.stage.x == gs_framework.canvas_width - server.stage.size_width:
-                rx_max = gs_framework.canvas_width - 25
-        else:
-            rx_min, rx_max = 25, gs_framework.canvas_width - 25
-
-        self.ax = clamp(25, self.ax, server.stage.size_width - 25)
-        self.ay = clamp(-150, self.ay, server.stage.size_height + 150)
-
-        x_ran = self.ax
-        if self.ax >= ax_max:
-            x_ran = self.ax - ax_max + (gs_framework.canvas_width / 2 + 50)
-
-        self.rx = clamp(rx_min, x_ran, rx_max)
-        self.ry = clamp(-150, self.ay, gs_framework.canvas_width + 150)
+        self.scroll_and_clamp()
 
         # new state in
         if len(self.event_que) > 0:
@@ -432,8 +454,9 @@ class Player(game_object.GameObject):
 
         debug_print_2 = load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 26)
         debug_print_2.draw(6, gs_framework.canvas_height - 16,
-                           "stage.w/h: (%d / %d) / stage.x: %.2f" %
-                           (server.stage.size_width, server.stage.size_height, server.stage.x),
+                           "stage.w/h: (%d / %d) / stage.y: %.2f / player.apos: (%.2f, %.2f)" %
+                           (server.stage.size_width, server.stage.size_height, server.stage.y,
+                            self.ax, self.ay),
                            (0, 255, 0))
 
         if self.show_bb:
@@ -468,6 +491,7 @@ class IdleState:
             player.is_jump = True
             player.jump_power = MAX_JUMP_POWER + player.additional_jump_power
             player.ay += 1
+            player.ry += 1
             player.set_info(ACTION.JUMP)
             # print("player JP: " + str(player.jump_power))
         elif event == EVENT.X_UP and player.is_jump:
@@ -560,6 +584,7 @@ class WalkState:
             player.is_jump = True
             player.jump_power = MAX_JUMP_POWER + player.additional_jump_power
             player.ay += 1
+            player.ry += 1
             player.set_info(ACTION.JUMP)
         elif event == EVENT.X_UP and player.is_jump:
             if player.jump_power >= MIN_JUMP_POWER:

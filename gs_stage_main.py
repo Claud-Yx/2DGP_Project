@@ -107,7 +107,7 @@ def enter():
     object_manager.add_objects(server.tiles, object_manager.OL_TILESET)
 
     # Interactives
-    server.interactives.append(ob_interactive.WireMesh(625, 425, 1275, 225))
+    server.interactives.append(ob_interactive.WireMesh(625, 1325, 1275, 225))
     object_manager.add_objects(server.interactives, L.INTERACTIVES)
 
     # Foreground

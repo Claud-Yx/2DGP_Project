@@ -96,6 +96,12 @@ class Map:
 
         else:
             self.x = (gs_framework.canvas_width - self.size_width) / 2
+
+        if self.size_height > gs_framework.canvas_height:
+            self.y = -(server.player.ay - server.player.ry)
+            self.y = clamp(gs_framework.canvas_height - self.size_height, self.y, 0)
+
+        else:
             self.y = (gs_framework.canvas_height - self.size_height) / 2
 
     def print_index(self):
