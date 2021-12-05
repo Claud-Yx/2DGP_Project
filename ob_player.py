@@ -127,6 +127,7 @@ class Player(GameObject):
 
         # Setting
         self.set_info()
+        self.set_color()
         self.cur_state.enter(self, None)
 
     def check_state(self, event):
@@ -320,17 +321,14 @@ class Player(GameObject):
 
             self.timer_star_power -= gs_framework.frame_time
 
-            motion = int(self.timer_star_power * int(MAX_TIMER_STAR_POWER) * 4q) % 4
-            print("motion %d" % motion)
+            motion = int(self.timer_star_power * int(MAX_TIMER_STAR_POWER) * 1.5) % 4
             if motion == 1:
-                print("1")
-                self.set_color(100, 255, 100)
+                self.set_color(150, 255, 150)
             elif motion == 2:
-                self.set_color(255, 255, 100)
+                self.set_color(255, 255, 150)
             elif motion == 3:
-                self.set_color(100, 255, 255)
+                self.set_color(150, 150, 255)
             else:
-                print("0")
                 self.set_color(255, 150, 150)
 
             if self.timer_star_power <= 0.0:

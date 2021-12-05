@@ -120,7 +120,7 @@ class PowerUp(Item, ABC):
             self.is_fall = False
             if self.jump_power == 0:
                 self.jump_power = MAX_JUMP_POWER
-            self.y += 1
+                self.y += 1
             self.jump()
         elif self.is_fall and not self.in_box:
             # print("item fall!")

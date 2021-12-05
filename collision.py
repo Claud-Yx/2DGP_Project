@@ -3,9 +3,6 @@ import ob_item
 import ob_player
 import ob_tileset
 import ob_enemy
-import ob_background
-
-import object_manager
 
 from value import *
 
@@ -26,17 +23,6 @@ def collide(a: (0, 0, 0, 0), b: (0, 0, 0, 0)):
     return True
 
 
-# def collide_objects(obj: object, obj_m: object_manager):
-#     if (obj.__class__ == ob_background.Background or
-#         not obj_m.__name__ == object_manager.
-#
-#     ):
-#         return
-#
-#     if obj.__class__ == ob_player.Player:
-#         collide_player_to_tiles(obj1, obj2)
-
-
 def collide_player_to_floor(player: ob_player.Player, tile: ob_tileset.TileSet) -> bool:
     if collide(player.get_bb(HB.BOTTOM), tile.get_bb(HB.TOP)):
 
@@ -54,7 +40,7 @@ def collide_player_to_floor(player: ob_player.Player, tile: ob_tileset.TileSet) 
             player.y = (player.get_bb_range(HB.BOTTOM)[POS.BOTTOM] +
                         tile.get_bb(HB.TOP)[POS.TOP])
 
-        if isinstance(tile, ob_tileset.Spike) and not player.is_invincible:
+        if isinstance(tile, ob_tileset.Spike) and not player.is_invincible and not player.is_star_power:
             player.is_damaged = True
 
         return True
@@ -84,10 +70,7 @@ def collide_player_to_ceiling(player: ob_player.Player, tile: ob_tileset.TileSet
         if tile.type_id == TID.BREAKABLE_BRICK:
             tile.hit_by = player.type_id
 
-        # if tile.type_id == TID.RANDOM_BOX or tile.type_id == TID.BREAKABLE_BRICK:
-        #     return False
-
-        if isinstance(tile, ob_tileset.Spike) and not player.is_invincible:
+        if isinstance(tile, ob_tileset.Spike) and not player.is_invincible and not player.is_star_power:
             player.is_damaged = True
 
         return False
@@ -110,7 +93,7 @@ def collide_player_to_right_wall(player: ob_player.Player, tile: ob_tileset.Tile
             player.x = (player.get_bb_range(HB.LEFT)[POS.LEFT] +
                         tile.get_bb(HB.RIGHT)[POS.RIGHT])
 
-        if isinstance(tile, ob_tileset.Spike) and not player.is_invincible:
+        if isinstance(tile, ob_tileset.Spike) and not player.is_invincible and not player.is_star_power:
             player.is_damaged = True
 
         return True
@@ -135,7 +118,7 @@ def collide_player_to_left_wall(player: ob_player.Player, tile: ob_tileset.TileS
             player.x = (tile.get_bb(HB.LEFT)[POS.LEFT] -
                         player.get_bb_range(HB.RIGHT)[POS.RIGHT])
 
-        if isinstance(tile, ob_tileset.Spike) and not player.is_invincible:
+        if isinstance(tile, ob_tileset.Spike) and not player.is_invincible and not player.is_star_power:
             player.is_damaged = True
 
         return True
@@ -155,17 +138,9 @@ def collide_enemy_to_floor(enemy: ob_enemy, floor: ob_tileset.TileSet) -> bool:
         enemy.is_fall = False
         enemy.on_floor = True
 
-        # print("enemy.action: " + str(enemy.action) +
-        #       "enemy.pos: " + str(enemy.x) + ", " + str(enemy.y))
-        # print("enemy.bottom: " + str(enemy.get_bb(HB.BOTTOM)[POS.BOTTOM]) + " / floor.top: " +
-        #       str(floor.get_bb(HB.TOP)[POS.TOP]))
         if enemy.get_bb(HB.BOTTOM)[POS.BOTTOM] < floor.get_bb(HB.TOP)[POS.TOP]:
-            # print("enemy.bb_range.bottom: " + str(enemy.get_bb_range(HB.BOTTOM)))
-            # print("enemy.get_bb_range.bottom: " + str(enemy.get_bb_range(HB.BOTTOM)[HB.BOTTOM]) +
-            #       " / floor.get_bb.top: " + str(floor.get_bb(HB.TOP)[HB.TOP]) +
-            #       " / sum: " + str(enemy.get_bb_range(HB.BOTTOM)[HB.BOTTOM] + floor.get_bb(HB.TOP)[HB.TOP]))
             enemy.y = (enemy.get_bb_range(HB.BOTTOM)[POS.BOTTOM] +
-                       floor.get_bb(HB.TOP)[POS.TOP]) + 1
+                       floor.get_bb(HB.TOP)[POS.TOP])
 
         return True
     else:
@@ -204,11 +179,9 @@ def collide_enemy_to_wall(enemy: ob_enemy, tile: ob_tileset.TileSet) -> bool:
 
 
 def stomp_player_to_enemy(player: ob_player.Player, enemy: ob_enemy) -> bool:
-    # print("player.bb_bottom pos: %d / enemy.bb_top pos: %d" %
-    #       (player.get_bb(HB.BOTTOM)[POS.BOTTOM], enemy.get_bb(HB.TOP)[POS.TOP]))
-    # Player stomps enemy
-    if collide(player.get_bb(HB.BOTTOM), enemy.get_bb(HB.TOP)) and not player.is_jump:
-        enemy.is_dead = True
+    if (collide(player.get_bb(HB.BOTTOM), enemy.get_bb(HB.TOP)) and
+            not player.is_jump and not player.is_star_power):
+        enemy.dead_type = ACTION.DIE_A
 
         # player
         player.is_fall = False
@@ -228,8 +201,12 @@ def stomp_player_to_enemy(player: ob_player.Player, enemy: ob_enemy) -> bool:
 
 def hit_enemy_to_player(player: ob_player.Player, enemy: ob_enemy) -> bool:
     # Enemy collides to player
-    if collide(player.get_bb(HB.BODY), enemy.get_bb(HB.BODY)) and not player.is_invincible:
-        player.is_damaged = True
+    if collide(player.get_bb(HB.BODY), enemy.get_bb(HB.BODY)):
+        if player.is_star_power:
+            enemy.dead_type = ACTION.DIE_B
+        elif not player.is_invincible:
+            player.is_damaged = True
+
         return True
     return False
 

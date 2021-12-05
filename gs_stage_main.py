@@ -1,3 +1,4 @@
+import ob_background
 import ob_interactive
 import ob_tileset
 import server
@@ -44,21 +45,21 @@ def enter():
     # server.enemies.append(ob_enemy.Goomba(930, 460))
     # server.enemies.append(ob_enemy.Goomba(930, 460, DIR.LEFT))
     server.enemies.append(ob_enemy.Goomba(970, 500, DIR.LEFT))
-    server.enemies.append(ob_enemy.Goomba(900, 480))
+    # server.enemies.append(ob_enemy.Goomba(900, 480))
     object_manager.add_objects(server.enemies, L.ENEMIES)
 
     # player
-    server.player = ob_player.Player(TID.MARIO_SUPER, 200, 500)
+    server.player = ob_player.Player(TID.MARIO_SUPER, 200, 200)
     object_manager.add_object(server.player, object_manager.OL_CHARACTER)
 
     for x in range(150, gs_framework.canvas_width * 2, 100):
         server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, x, 50))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 150))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 250))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 350))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 250, 150))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 150))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 250))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 150))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 250))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 350))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 250, 150))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 150))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 250))
     # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 650, 350))
     # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 350))
     # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 450))
@@ -67,13 +68,13 @@ def enter():
     # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 350))
     # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1150, 350))
     # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 350))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 450))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 150))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X50, 450, 325))
 
-    server.tiles.append(ob_tileset.RandomBox(125, 375))
-    server.tiles.append(ob_tileset.RandomBox(175, 375, item=TID.SUPER_STAR, state=ob_tileset.RS.POLYMORPH))
-    server.tiles.append(ob_tileset.RandomBox(225, 375, state=ob_tileset.RS.INVISIBLE))
-    server.tiles.append(ob_tileset.RandomBox(525, 225, state=ob_tileset.RS.POLYMORPH))
+    # server.tiles.append(ob_tileset.RandomBox(125, 375))
+    server.tiles.append(ob_tileset.RandomBox(175, 275, item=TID.SUPER_STAR, state=ob_tileset.RS.POLYMORPH))
+    # server.tiles.append(ob_tileset.RandomBox(225, 375, state=ob_tileset.RS.INVISIBLE))
+    server.tiles.append(ob_tileset.RandomBox(475, 125, state=ob_tileset.RS.POLYMORPH))
     server.tiles.append(ob_tileset.RandomBox(1325, 325, state=ob_tileset.RS.INVISIBLE))
     server.tiles.append(ob_tileset.RandomBox(1375, 325, state=ob_tileset.RS.INVISIBLE))
     server.tiles.append(ob_tileset.RandomBox(1425, 325, state=ob_tileset.RS.INVISIBLE))
@@ -92,10 +93,10 @@ def enter():
     server.tiles.append(ob_tileset.Brick(525, 575))
     server.tiles.append(ob_tileset.Brick(575, 575))
 
-    server.tiles.append(ob_tileset.Spike(625, 125))
-    server.tiles.append(ob_tileset.Spike(675, 125))
-    server.tiles.append(ob_tileset.Spike(725, 125))
-    server.tiles.append(ob_tileset.Spike(775, 125))
+    # server.tiles.append(ob_tileset.Spike(625, 125))
+    # server.tiles.append(ob_tileset.Spike(675, 125))
+    # server.tiles.append(ob_tileset.Spike(725, 125))
+    # server.tiles.append(ob_tileset.Spike(775, 125))
     # server.tiles.append(ob_tileset.RandomBox(575, 325))
 
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_50X50, 1025, 325))
