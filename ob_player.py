@@ -772,7 +772,8 @@ next_state_table = {
         EVENT.RIGHT_DOWN: WalkState, EVENT.RIGHT_UP: WalkState,
         EVENT.Z_DOWN: IdleState, EVENT.Z_UP: IdleState,
         EVENT.X_DOWN: IdleState, EVENT.X_UP: IdleState,
-        EVENT.HANGING: ClimbState, EVENT.STAYING: IdleState
+        EVENT.HANGING: ClimbState, EVENT.STAYING: IdleState,
+        EVENT.WALKING: IdleState
     },
     SitState: {
         EVENT.UP_DOWN: SitState, EVENT.UP_UP: SitState,
@@ -789,7 +790,8 @@ next_state_table = {
         EVENT.RIGHT_DOWN: IdleState, EVENT.RIGHT_UP: IdleState,
         EVENT.Z_DOWN: WalkState, EVENT.Z_UP: WalkState,
         EVENT.X_DOWN: WalkState, EVENT.X_UP: WalkState,
-        EVENT.HANGING: ClimbState, EVENT.WALKING: WalkState
+        EVENT.HANGING: ClimbState, EVENT.WALKING: WalkState,
+        EVENT.STAYING: WalkState
     },
     ClimbState: {
         EVENT.UP_DOWN: ClimbState, EVENT.UP_UP: ClimbState,
@@ -798,7 +800,8 @@ next_state_table = {
         EVENT.RIGHT_DOWN: ClimbState, EVENT.RIGHT_UP: ClimbState,
         EVENT.Z_DOWN: ClimbState, EVENT.Z_UP: ClimbState,
         EVENT.X_DOWN: ClimbState, EVENT.X_UP: ClimbState,
-        EVENT.STAYING: IdleState, EVENT.WALKING: WalkState
+        EVENT.STAYING: IdleState, EVENT.WALKING: WalkState,
+        EVENT.HANGING: ClimbState
     }
 }
 
