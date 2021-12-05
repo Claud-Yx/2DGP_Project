@@ -71,7 +71,7 @@ def enter():
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X50, 450, 325))
 
     # server.tiles.append(ob_tileset.RandomBox(125, 375))
-    server.tiles.append(ob_tileset.RandomBox(175, 275, item=TID.SUPER_STAR, state=ob_tileset.RS.POLYMORPH))
+    server.tiles.append(ob_tileset.RandomBox(175, 275, item=TID.SUPER_STAR, state=ob_tileset.RS.INVISIBLE))
     # server.tiles.append(ob_tileset.RandomBox(225, 375, state=ob_tileset.RS.INVISIBLE))
     # server.tiles.append(ob_tileset.RandomBox(475, 125, state=ob_tileset.RS.POLYMORPH))
     server.tiles.append(ob_tileset.RandomBox(1325, 325, state=ob_tileset.RS.INVISIBLE))

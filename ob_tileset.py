@@ -157,6 +157,7 @@ class RandomBox(TileSet):
         if self.type_id == TID.EMPTY_BOX:
             self.image_draw()
         elif self.state == RS.INVISIBLE:
+            server.move_camera(self)
             pass
         elif self.state == RS.POLYMORPH:
             self.clip_draw(TN.TILESETS, TID.BREAKABLE_BRICK)
