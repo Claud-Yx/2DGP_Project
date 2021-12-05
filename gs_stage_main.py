@@ -71,7 +71,7 @@ def enter():
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X50, 450, 325))
 
     server.tiles.append(ob_tileset.RandomBox(125, 375))
-    server.tiles.append(ob_tileset.RandomBox(175, 375, item=TID.LIFE_MUSHROOM, state=ob_tileset.RS.POLYMORPH))
+    server.tiles.append(ob_tileset.RandomBox(175, 375, item=TID.SUPER_STAR, state=ob_tileset.RS.POLYMORPH))
     server.tiles.append(ob_tileset.RandomBox(225, 375, state=ob_tileset.RS.INVISIBLE))
     server.tiles.append(ob_tileset.RandomBox(525, 225, state=ob_tileset.RS.POLYMORPH))
     server.tiles.append(ob_tileset.RandomBox(1325, 325, state=ob_tileset.RS.INVISIBLE))
@@ -296,6 +296,11 @@ def update():
         # item to floor tile
         for floor in item.nearby_tiles:
             if collide_item_to_floor(item, floor):
+                break
+
+        # item to ceiling tile
+        for ceiling in item.nearby_tiles:
+            if collide_item_to_ceiling(item, ceiling):
                 break
 
         # item to wall tile

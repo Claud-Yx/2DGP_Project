@@ -48,24 +48,39 @@ class Item(GameObject, ABC):
 
 class PowerUp(Item, ABC):
     def __init__(self, tid, x, y, x_dir=DIR.RIGHT, in_box=False):
-        if (tid != TID.SUPER_MUSHROOM or
-            tid != TID.LIFE_MUSHROOM or
-            tid != TID.SUPER_STAR or
-            tid != TID.FIRE_FLOWER
+        if (tid != TID.SUPER_MUSHROOM and
+                tid != TID.LIFE_MUSHROOM and
+                tid != TID.SUPER_STAR and
+                tid != TID.FIRE_FLOWER
         ):
             print("PowerUp TID is wrong!!!: %s" % tid)
-        super(). __init__(tid, x, y, x_dir)
+        super().__init__(tid, x, y, x_dir)
 
         self.velocity = MAX_VELOCITY
 
         self.on_floor = False
         self.is_fall = False
+        self.is_jump = False
         self.in_box = in_box
 
         self.set_info(ACTION.WALK)
 
         if self.in_box:
             self.switch_bb_all()
+
+    def jump(self):
+        self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
+                            ) * -1
+
+        self.jump_power = clamp(
+            0, self.jump_power, MAX_JUMP_POWER
+        )
+
+        if self.jump_power == 0:
+            self.is_fall = True
+            self.is_jump = False
+
+        self.y += self.jump_power * gs_framework.frame_time
 
     def fall(self):
         self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 3
@@ -98,14 +113,22 @@ class PowerUp(Item, ABC):
             del self
             return
 
-        if not self.on_floor and not self.is_fall and not self.in_box:
+        if not self.on_floor and not self.is_jump:
             self.is_fall = True
 
-        if self.is_fall and not self.in_box:
+        if self.on_floor and not self.in_box and self.is_jump:
+            self.is_fall = False
+            if self.jump_power == 0:
+                self.jump_power = MAX_JUMP_POWER
+            self.y += 1
+            self.jump()
+        elif self.is_fall and not self.in_box:
+            # print("item fall!")
             self.on_floor = False
             self.fall()
 
-        self.x += self.velocity * gs_framework.frame_time * self.x_direction
+        if self.type_id != TID.FIRE_FLOWER:
+            self.x += self.velocity * gs_framework.frame_time * self.x_direction
         pass
 
 
@@ -120,7 +143,6 @@ class Coin(Item, ABC):
         self.y_acceleration = 0
 
         self.set_size(0.8, 0.8)
-
 
         # print("in box coin, pos: (%.2f, %.2f) / in_box: %s" % (self.x, self.y, self.in_box))
 
@@ -141,7 +163,7 @@ class Coin(Item, ABC):
             self.y += (COIN_POPUP_VELOCITY - self.y_acceleration) * gs_framework.frame_time
             self.y_acceleration += COIN_POPUP_ACCEL * gs_framework.frame_time
 
-            if self.y_acceleration > COIN_POPUP_ACCEL * (3/5):
+            if self.y_acceleration > COIN_POPUP_ACCEL * (3 / 5):
                 self.is_dead = True
 
         self.update_frame(gs_framework.frame_time)
@@ -156,18 +178,3 @@ class Coin(Item, ABC):
 
         if self.show_bb:
             self.draw_bb()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -129,9 +129,14 @@ class RandomBox(TileSet):
                     )
                     object_manager.add_object(server.items[-1], L.ITEMS)
                 elif self.item == TID.LIFE_MUSHROOM:
-                    server.items.append((
+                    server.items.append(
                         ob_item.PowerUp(TID.LIFE_MUSHROOM, self.x, self.y, self.x_direction, True)
-                    ))
+                    )
+                    object_manager.add_object(server.items[-1], L.ITEMS)
+                elif self.item == TID.SUPER_STAR:
+                    server.items.append(
+                        ob_item.PowerUp(TID.SUPER_STAR, self.x, self.y, self.x_direction, True)
+                    )
                     object_manager.add_object(server.items[-1], L.ITEMS)
 
                 self.is_empty = True

@@ -755,7 +755,9 @@ class GameObject:
             self.switch_bb_all()
 
             if (self.type_id == TID.SUPER_MUSHROOM or
-                self.type_id == TID.LIFE_MUSHROOM
+                self.type_id == TID.LIFE_MUSHROOM or
+                self.type_id == TID.SUPER_STAR or
+                self.type_id == TID.FIRE_FLOWER
             ):
                 self.set_bb(HB.BODY, [24, 24, 24, 24])
                 self.set_bb(HB.LEFT, [25, 25, -20, 25])

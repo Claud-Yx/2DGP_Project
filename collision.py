@@ -146,7 +146,7 @@ def collide_player_to_left_wall(player: ob_player.Player, tile: ob_tileset.TileS
 
 
 def collide_enemy_to_floor(enemy: ob_enemy, floor: ob_tileset.TileSet) -> bool:
-    if collide(enemy.get_bb(HB.BOTTOM), floor.get_bb(HB.TOP)):
+    if collide(enemy.get_bb(HB.BODY), floor.get_bb(HB.TOP)):
 
         if floor.__class__ == ob_tileset.RandomBox and floor.state == ob_tileset.RS.INVISIBLE:
             return False
@@ -244,22 +244,38 @@ def collide_item_to_floor(item: ob_item.Item, floor: ob_tileset.TileSet) -> bool
         item.is_fall = False
         item.on_floor = True
 
-        # print("enemy.action: " + str(enemy.action) +
-        #       "enemy.pos: " + str(enemy.x) + ", " + str(enemy.y))
-        # print("enemy.bottom: " + str(enemy.get_bb(HB.BOTTOM)[POS.BOTTOM]) + " / floor.top: " +
-        #       str(floor.get_bb(HB.TOP)[POS.TOP]))
         if item.get_bb(HB.BOTTOM)[POS.BOTTOM] < floor.get_bb(HB.TOP)[POS.TOP]:
-            # print("enemy.bb_range.bottom: " + str(enemy.get_bb_range(HB.BOTTOM)))
-            # print("enemy.get_bb_range.bottom: " + str(enemy.get_bb_range(HB.BOTTOM)[HB.BOTTOM]) +
-            #       " / floor.get_bb.top: " + str(floor.get_bb(HB.TOP)[HB.TOP]) +
-            #       " / sum: " + str(enemy.get_bb_range(HB.BOTTOM)[HB.BOTTOM] + floor.get_bb(HB.TOP)[HB.TOP]))
             item.y = (item.get_bb_range(HB.BOTTOM)[POS.BOTTOM] +
                       floor.get_bb(HB.TOP)[POS.TOP]) + 1
+
+        if item.type_id == TID.SUPER_STAR:
+            item.is_jump = True
 
         return True
     else:
         item.is_fall = True
         return False
+
+
+def collide_item_to_ceiling(item: ob_item.PowerUp, tile: ob_tileset.TileSet) -> bool:
+    if collide(item.get_bb(HB.TOP), tile.get_bb(HB.BOTTOM)):
+        if tile.__class__ == ob_tileset.RandomBox and tile.state == ob_tileset.RS.INVISIBLE:
+            return False
+
+        item.jump_power = 0
+        item.is_jump = False
+
+        if item.get_bb(HB.TOP)[POS.TOP] > tile.get_bb(HB.BOTTOM)[POS.BOTTOM]:
+            ptop = item.get_bb_range(HB.TOP)[POS.TOP]
+            if ptop < 0:
+                ptop = abs(ptop) - 1
+
+            item.y = (tile.get_bb(HB.BOTTOM)[POS.BOTTOM] -
+                        ptop) - 1
+
+        return True
+
+    return False
 
 
 def collide_item_to_wall(item: ob_item.Item, tile: ob_tileset.TileSet) -> bool:

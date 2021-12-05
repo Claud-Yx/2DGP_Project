@@ -28,7 +28,7 @@ MAX_TIMER_SHRINK = 0.9
 MAX_TIMER_GROW = 1.0
 MAX_TIMER_DIE = 3.5
 MAX_TIMER_INVINCIBLE = 2.0
-MAX_TIMER_SUPER_STAR = 8.0
+MAX_TIMER_STAR_POWER = 8.0
 
 
 class EVENT(IntEnum):
@@ -112,6 +112,7 @@ class Player(GameObject):
 
         self.is_damaged = False
         self.is_invincible = False
+        self.is_star_power = False
 
         self.on_wire_mesh = None
 
@@ -122,7 +123,7 @@ class Player(GameObject):
         self.timer_die = 0
         self.timer_invincible = 0
         self.timer_grow = 0
-        self.timer_super_star = 0
+        self.timer_star_power = 0
 
         # Setting
         self.set_info()
@@ -312,6 +313,31 @@ class Player(GameObject):
                 self.timer_invincible = 0.0
                 self.is_invincible = False
 
+    def star_power(self):
+        if self.is_star_power and not self.is_damaged:
+            if self.timer_star_power == 0:
+                self.timer_star_power = MAX_TIMER_STAR_POWER
+
+            self.timer_star_power -= gs_framework.frame_time
+
+            motion = int(self.timer_star_power * int(MAX_TIMER_STAR_POWER) * 4q) % 4
+            print("motion %d" % motion)
+            if motion == 1:
+                print("1")
+                self.set_color(100, 255, 100)
+            elif motion == 2:
+                self.set_color(255, 255, 100)
+            elif motion == 3:
+                self.set_color(100, 255, 255)
+            else:
+                print("0")
+                self.set_color(255, 150, 150)
+
+            if self.timer_star_power <= 0.0:
+                self.timer_star_power = 0.0
+                self.is_star_power = False
+                self.set_color(255, 255, 255)
+
     def taken_item(self):
         if self.taken_item == (TN.ITEMS, TID.SUPER_MUSHROOM):
             if self.is_small:
@@ -329,6 +355,9 @@ class Player(GameObject):
         elif self.taken_item == (TN.ITEMS, TID.LIFE_MUSHROOM):
             self.life += 1
 
+        elif self.taken_item == (TN.ITEMS, TID.SUPER_STAR):
+            self.is_star_power = True
+
         if not server.time_stop:
             self.taken_item = (TN.ITEMS, TID.NONE)
 
@@ -345,6 +374,7 @@ class Player(GameObject):
             return
 
         self.invincible()
+        self.star_power()
 
         if not self.on_floor and not self.is_jump:
             self.is_fall = True
