@@ -69,6 +69,7 @@ key_event_table = {
 
 class Player(game_object.GameObject):
     def __init__(self, tid=TID.MARIO_SMALL, x=0, y=0):
+
         super().__init__(TN.PLAYER, tid, x, y)
 
         self.prev_id = tid
@@ -79,6 +80,11 @@ class Player(game_object.GameObject):
             self.is_small = False
 
         self.rx, self.ry = self.ax, self.ay
+
+        if server.stage.x <= gs_framework.canvas_width:
+            self.rx += server.stage.x
+        if server.stage.y <= gs_framework.canvas_height:
+            self.ry += server.stage.y
 
         # Player inventory
         self.coin = 0
@@ -210,17 +216,20 @@ class Player(game_object.GameObject):
         if motion == 2:
             if self.type_id == TID.MARIO_SMALL:
                 self.ay += 25
+                self.ry += 25
             self.set_size()
             self.type_id = self.prev_id
             self.set_clip()
         elif motion == 1:
             if self.wp == 1.0:
                 self.ay -= 12.5
+                self.ry -= 12.5
             self.set_size(wp=0.75, hp=0.75)
         else:
             if not self.type_id == TID.MARIO_SMALL:
                 self.prev_id = self.type_id
                 self.ay -= 12.5
+                self.ry -= 12.5
             self.type_id = TID.MARIO_SMALL
             self.set_clip()
 
@@ -265,6 +274,7 @@ class Player(game_object.GameObject):
 
     def die(self) -> bool:
         if self.timer_die == 0:
+            self.ax, self.ay = self.rx, self.ry
             server.stop_time(True, (TN.NONE, TID.NONE))
             self.is_fall = False
             self.jump_power = MAX_JUMP_POWER
@@ -279,16 +289,18 @@ class Player(game_object.GameObject):
             else:
                 self.fall()
 
+            self.rx, self.ry = self.ax, self.ay
+
         if self.timer_die <= 0.0:
             self.timer_die = 0
             return True
         return False
 
     def damaged(self):
-        if self.is_damaged or self.ay <= -50:
-            if self.ay <= -50:
+        if self.is_damaged or self.ry <= -50:
+            if self.ry <= -50:
                 self.type_id = TID.MARIO_SMALL
-            if self.is_small or self.ay <= -50:
+            if self.is_small or self.ry <= -50:
                 if self.die():
                     gs_framework.change_state(gs_stage_enter)
                     return -1
@@ -377,6 +389,7 @@ class Player(game_object.GameObject):
                 gs_framework.canvas_height - (gs_framework.canvas_height / 2 + 50)
         )
 
+        # range change
         if server.stage.size_width > gs_framework.canvas_width:
             if server.stage.x == 0:
                 rx_min = 25
@@ -393,16 +406,21 @@ class Player(game_object.GameObject):
         else:
             ry_min, ry_max = -150, gs_framework.canvas_height + 150
 
+        # clamping
         self.ax = clamp(25, self.ax, server.stage.size_width - 25)
         self.ay = clamp(-150, self.ay, server.stage.size_height + 150)
 
         rx_ran = self.ax
-        if self.ax >= ax_max:
+        if self.ax >= ax_max and server.stage.size_width > gs_framework.canvas_width:
             rx_ran = self.ax - ax_max + (gs_framework.canvas_width / 2 + 50)
+        elif server.stage.size_width <= gs_framework.canvas_width:
+            rx_ran = self.ax + server.stage.x
 
         ry_ran = self.ay
-        if self.ay >= ay_max:
+        if self.ay >= ay_max and server.stage.size_height > gs_framework.canvas_height:
             ry_ran = self.ay - ay_max + (gs_framework.canvas_height / 2 + 50)
+        elif server.stage.size_height <= gs_framework.canvas_height:
+            ry_ran = self.ay + server.stage.y
 
         self.rx = clamp(rx_min, rx_ran, rx_max)
         self.ry = clamp(ry_min, ry_ran, ry_max)
@@ -454,9 +472,9 @@ class Player(game_object.GameObject):
 
         debug_print_2 = load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 26)
         debug_print_2.draw(6, gs_framework.canvas_height - 16,
-                           "stage.w/h: (%d / %d) / stage.y: %.2f / player.apos: (%.2f, %.2f)" %
-                           (server.stage.size_width, server.stage.size_height, server.stage.y,
-                            self.ax, self.ay),
+                           "stage.x/y: (%.2f / %.2f) / player.ap: (%.2f, %.2f) rp: (%.2f, %.2f)" %
+                           (server.stage.x, server.stage.y,
+                            self.ax, self.ay, self.rx, self.ry),
                            (0, 255, 0))
 
         if self.show_bb:

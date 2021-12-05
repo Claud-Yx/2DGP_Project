@@ -35,44 +35,44 @@ def enter():
     # item
     server.items.append(ob_item.Coin(525, 125))
     server.items.append(ob_item.Coin(525, 175))
-    server.items.append(ob_item.PowerUp(TID.SUPER_STAR, 575, 125))
+    server.items.append(ob_item.Coin(575, 125))
     server.items.append(ob_item.Coin(575, 175))
     # server.items.append(ob_item.SuperMushroom(800, 480))
     object_manager.add_objects(server.items, L.ITEMS)
 
     # enemy
-    server.enemies.append(ob_enemy.Goomba(930, 460))
-    server.enemies.append(ob_enemy.Goomba(930, 460, DIR.LEFT))
-    # server.enemies.append(ob_enemy.Goomba(970, 500, DIR.LEFT))
-    # server.enemies.append(ob_enemy.Goomba(900, 480))
+    server.enemies.append(ob_enemy.Goomba(930, 660))
+    server.enemies.append(ob_enemy.Goomba(930, 660, DIR.LEFT))
+    server.enemies.append(ob_enemy.Goomba(970, 200, DIR.LEFT))
+    server.enemies.append(ob_enemy.Goomba(900, 280))
     object_manager.add_objects(server.enemies, L.ENEMIES)
 
     # player
-    server.player = ob_player.Player(TID.MARIO_SUPER, 200, 200)
+    server.player = ob_player.Player(TID.MARIO_SUPER, 100, 300)
     object_manager.add_object(server.player, object_manager.OL_CHARACTER)
 
     for x in range(150, gs_framework.canvas_width * 2, 100):
         server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, x, 50))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 150))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 250))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 350))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 250, 150))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 150))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 250))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 650, 350))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 350))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 450))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 850, 350))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 950, 350))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 350))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1150, 350))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 350))
-    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 150))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 150))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 250))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 350, 350))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 250, 150))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 150))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 250))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 650, 550))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 550))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 650))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 850, 550))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 950, 550))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 550))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1150, 550))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 550))
+    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1250, 650))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X50, 450, 325))
 
-    # server.tiles.append(ob_tileset.RandomBox(125, 375))
-    server.tiles.append(ob_tileset.RandomBox(175, 275, item=TID.SUPER_STAR, state=ob_tileset.RS.INVISIBLE))
-    # server.tiles.append(ob_tileset.RandomBox(225, 375, state=ob_tileset.RS.INVISIBLE))
+    server.tiles.append(ob_tileset.RandomBox(125, 375))
+    server.tiles.append(ob_tileset.RandomBox(175, 375, item=TID.SUPER_MUSHROOM))
+    server.tiles.append(ob_tileset.RandomBox(225, 375, state=ob_tileset.RS.INVISIBLE))
     # server.tiles.append(ob_tileset.RandomBox(475, 125, state=ob_tileset.RS.POLYMORPH))
     server.tiles.append(ob_tileset.RandomBox(1325, 325, state=ob_tileset.RS.INVISIBLE))
     server.tiles.append(ob_tileset.RandomBox(1375, 325, state=ob_tileset.RS.INVISIBLE))
@@ -84,7 +84,7 @@ def enter():
     server.tiles.append(ob_tileset.Brick(125, 575))
     server.tiles.append(ob_tileset.Brick(175, 575))
     server.tiles.append(ob_tileset.Brick(225, 575))
-    server.tiles.append(ob_tileset.RandomBox(275, 575, item=TID.SUPER_MUSHROOM, state=ob_tileset.RS.POLYMORPH))
+    server.tiles.append(ob_tileset.RandomBox(275, 575, item=TID.SUPER_STAR, state=ob_tileset.RS.POLYMORPH))
     server.tiles.append(ob_tileset.Brick(325, 575))
     server.tiles.append(ob_tileset.Brick(375, 575))
     server.tiles.append(ob_tileset.Brick(425, 575))
@@ -92,11 +92,11 @@ def enter():
     server.tiles.append(ob_tileset.Brick(525, 575))
     server.tiles.append(ob_tileset.Brick(575, 575))
 
-    # server.tiles.append(ob_tileset.Spike(625, 125))
-    # server.tiles.append(ob_tileset.Spike(675, 125))
-    # server.tiles.append(ob_tileset.Spike(725, 125))
-    # server.tiles.append(ob_tileset.Spike(775, 125))
-    # server.tiles.append(ob_tileset.RandomBox(575, 325))
+    server.tiles.append(ob_tileset.Spike(625, 125))
+    server.tiles.append(ob_tileset.Spike(675, 125))
+    server.tiles.append(ob_tileset.Spike(725, 125))
+    server.tiles.append(ob_tileset.Spike(775, 125))
+    server.tiles.append(ob_tileset.RandomBox(575, 325))
 
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_50X50, 1025, 325))
     server.tiles.append(ob_tileset.Spike(975, 325, POS.LEFT))
@@ -211,7 +211,7 @@ def update():
         if collide_player_to_floor(server.player, floor):
             break
     for ceiling in server.player.nearby_tiles:
-        if server.player.is_jump:
+        if server.player.is_jump or server.player.cur_state == ob_player.ClimbState:
             if collide_player_to_ceiling(server.player, ceiling):
                 break
     for tile in server.player.nearby_tiles:

@@ -52,7 +52,8 @@ def collide_player_to_floor(player: ob_player.Player, tile: ob_tileset.TileSet) 
 
 def collide_player_to_ceiling(player: ob_player.Player, tile: ob_tileset.TileSet) -> bool:
     if collide(player.get_bb(HB.TOP), tile.get_bb(HB.BOTTOM)):
-        player.jump_power = 0
+        if not player.cur_state == ob_player.ClimbState:
+            player.jump_power = 0
 
         if player.get_bb(HB.TOP)[POS.TOP] > tile.get_bb(HB.BOTTOM)[POS.BOTTOM]:
             ptop = player.get_bb_range(HB.TOP)[POS.TOP]

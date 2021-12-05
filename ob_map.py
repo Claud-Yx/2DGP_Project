@@ -44,6 +44,11 @@ class Map:
         for i in range(len(self.object_index)):
             self.object_index[i] = [[] for j in range(height)]
 
+        if self.size_width <= gs_framework.canvas_width:
+            self.x = (gs_framework.canvas_width - self.size_width) / 2
+        if self.size_height <= gs_framework.canvas_height:
+            self.y = (gs_framework.canvas_height - self.size_height) / 2
+
     def update_index(self):
         import game_object
         import ob_foreground
@@ -94,15 +99,9 @@ class Map:
             self.x = -(server.player.ax - server.player.rx)
             self.x = clamp(gs_framework.canvas_width - self.size_width, self.x, 0)
 
-        else:
-            self.x = (gs_framework.canvas_width - self.size_width) / 2
-
         if self.size_height > gs_framework.canvas_height:
             self.y = -(server.player.ay - server.player.ry)
             self.y = clamp(gs_framework.canvas_height - self.size_height, self.y, 0)
-
-        else:
-            self.y = (gs_framework.canvas_height - self.size_height) / 2
 
     def print_index(self):
         for y in range(len(self.object_index[0])):
