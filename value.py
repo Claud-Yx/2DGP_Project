@@ -176,6 +176,7 @@ class HB(IntEnum):  # Hit box
     RIGHT = auto()
     ATTACK = auto()
     BREAK = auto()
+    CLIFF_CHECK = auto()
     SIZE = auto()
 
 

@@ -80,6 +80,8 @@ class Player(game_object.GameObject):
             self.is_small = False
 
         self.rx, self.ry = self.ax, self.ay
+        self.arx_dist = 0
+        self.ary_dist = 0
 
         if server.stage.x <= gs_framework.canvas_width:
             self.rx += server.stage.x
@@ -253,17 +255,20 @@ class Player(game_object.GameObject):
         if motion == 0:
             if self.type_id == TID.MARIO_SMALL:
                 self.ay += 25
+                self.ry += 25
             self.set_size()
             self.type_id = self.prev_id
             self.set_clip()
         elif motion == 1:
             if self.wp == 1.0:
                 self.ay -= 12.5
+                self.ry -= 12.5
             self.set_size(wp=0.75, hp=0.75)
         else:
             if not self.type_id == TID.MARIO_SMALL:
                 self.prev_id = self.type_id
                 self.ay -= 12.5
+                self.ry -= 12.5
             self.type_id = TID.MARIO_SMALL
             self.set_clip()
 
@@ -382,7 +387,6 @@ class Player(game_object.GameObject):
         ax_max = server.stage.size_width - (
                 gs_framework.canvas_width - (gs_framework.canvas_width / 2 + 50)
         )
-
         # ry range init
         ry_min, ry_max = gs_framework.canvas_height / 2 - 50, gs_framework.canvas_height / 2 + 50
         ay_max = server.stage.size_height - (
@@ -397,7 +401,6 @@ class Player(game_object.GameObject):
                 rx_max = gs_framework.canvas_width - 25
         else:
             rx_min, rx_max = 25, gs_framework.canvas_width - 25
-
         if server.stage.size_height > gs_framework.canvas_height:
             if server.stage.y == 0:
                 ry_min = -150
@@ -411,19 +414,22 @@ class Player(game_object.GameObject):
         self.ay = clamp(-150, self.ay, server.stage.size_height + 150)
 
         rx_ran = self.ax
-        if self.ax >= ax_max and server.stage.size_width > gs_framework.canvas_width:
-            rx_ran = self.ax - ax_max + (gs_framework.canvas_width / 2 + 50)
-        elif server.stage.size_width <= gs_framework.canvas_width:
-            rx_ran = self.ax + server.stage.x
+        if self.ax >= ax_max:
+            if self.ax >= ax_max and server.stage.size_width > gs_framework.canvas_width:
+                rx_ran = self.ax - ax_max + (gs_framework.canvas_width / 2 + 50)
+            elif server.stage.size_width <= gs_framework.canvas_width:
+                rx_ran = self.ax + server.stage.x
 
         ry_ran = self.ay
-        if self.ay >= ay_max and server.stage.size_height > gs_framework.canvas_height:
-            ry_ran = self.ay - ay_max + (gs_framework.canvas_height / 2 + 50)
-        elif server.stage.size_height <= gs_framework.canvas_height:
-            ry_ran = self.ay + server.stage.y
+        if self.ay >= ay_max:
+            if self.ay >= ay_max and server.stage.size_height > gs_framework.canvas_height:
+                ry_ran = self.ay - ay_max + (gs_framework.canvas_height / 2 + 50)
+            elif server.stage.size_height <= gs_framework.canvas_height:
+                ry_ran = self.ay + server.stage.y
 
         self.rx = clamp(rx_min, rx_ran, rx_max)
         self.ry = clamp(ry_min, ry_ran, ry_max)
+        # delay(0.2)
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -472,9 +478,12 @@ class Player(game_object.GameObject):
 
         debug_print_2 = load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 26)
         debug_print_2.draw(6, gs_framework.canvas_height - 16,
-                           "stage.x/y: (%.2f / %.2f) / player.ap: (%.2f, %.2f) rp: (%.2f, %.2f)" %
-                           (server.stage.x, server.stage.y,
-                            self.ax, self.ay, self.rx, self.ry),
+                           # "stage.x/y: (%.2f / %.2f) / player.ap: (%.2f, %.2f) rp: (%.2f, %.2f)" %
+                           # (server.stage.x, server.stage.y,
+                           #  self.ax, self.ay, self.rx, self.ry),
+                           "dry bones action: %s / facing: %s / l,b,h,w : %d / %d / %d / %d" %
+                           (server.enemies[0].action, server.enemies[0].facing,
+                            server.enemies[0].l, server.enemies[0].b, server.enemies[0].h, server.enemies[0].w),
                            (0, 255, 0))
 
         if self.show_bb:

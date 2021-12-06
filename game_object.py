@@ -577,58 +577,35 @@ class GameObject:
                 self.bounding_box[HB.BOTTOM] = BoundingBox(HB.BOTTOM)
                 self.bounding_box[HB.RIGHT] = BoundingBox(HB.RIGHT)
                 self.bounding_box[HB.TOP] = BoundingBox(HB.TOP)
+                self.bounding_box[HB.CLIFF_CHECK] = BoundingBox(HB.CLIFF_CHECK)
             self.switch_bb_all()
 
-            # Idle right
-            if self.action == ACTION.IDLE and self.facing == DIR.RIGHT:
-                self.l, self.b, self.w, self.h = 50, 100 * 7, 50, 100
-                self.frame_count, self.frame_begin = 1, 0
-                self.loop_animation = False
+            # Idle and walk
+            if self.action == ACTION.IDLE or self.action == ACTION.WALK:
+                self.set_bb(HB.BODY, [19, 40, 19, 25])
+                self.set_bb(HB.LEFT, [19, 35, -14, 20])
+                self.set_bb(HB.BOTTOM, [19, 40, 19, -35])
+                self.set_bb(HB.RIGHT, [-14, 35, 19, 20])
+                self.set_bb(HB.TOP, [19, -20, 19, 25])
+                if self.facing == DIR.RIGHT:
+                    self.set_bb(HB.CLIFF_CHECK, [-18, 45, 20, -40])
+                elif self.facing == DIR.LEFT:
+                    self.set_bb(HB.CLIFF_CHECK, [20, 45, -18, -40])
 
-            # Idle left
-            elif self.action == ACTION.IDLE and self.facing == DIR.LEFT:
-                self.l, self.b, self.w, self.h = 50, 100 * 6, 50, 100
-                self.frame_count, self.frame_begin = 1, 0
-                self.loop_animation = False
+            # Die A
+            elif self.action == ACTION.DIE_A:
+                self.set_bb(HB.BOTTOM, [19, 40, 19, -35])
 
-            # Walk right
-            elif self.action == ACTION.WALK and self.facing == DIR.RIGHT:
-                self.l, self.b, self.w, self.h = 50, 100 * 5, 50, 100
-                self.frame_count, self.frame_begin = 16, 0
-                self.loop_animation = True
+            # Die B
+            elif self.action == ACTION.DIE_B:
+                pass
 
-            # Walk left
-            elif self.action == ACTION.WALK and self.facing == DIR.LEFT:
-                self.l, self.b, self.w, self.h = 50, 100 * 4, 50, 100
-                self.frame_count, self.frame_begin = 16, 0
-                self.loop_animation = True
-
-            # Break right
-            elif self.action == ACTION.BREAK and self.facing == DIR.RIGHT:
-                self.l, self.b, self.w, self.h = 50, 100 * 3, 50, 100
-                self.frame_count, self.frame_begin = 12, 0
-                self.loop_animation = False
-
-            # Break left
-            elif self.action == ACTION.BREAK and self.facing == DIR.LEFT:
-                self.l, self.b, self.w, self.h = 50, 100 * 2, 50, 100
-                self.frame_count, self.frame_begin = 12, 0
-                self.loop_animation = False
-
-            # Restore right
-            elif self.action == ACTION.RESTORE and self.facing == DIR.RIGHT:
-                self.l, self.b, self.w, self.h = 50, 100 * 1, 50, 100
-                self.frame_count, self.frame_begin = 15, 0
-                self.loop_animation = False
-
-            # Restore left
-            elif self.action == ACTION.RESTORE and self.facing == DIR.LEFT:
-                self.l, self.b, self.w, self.h = 50, 100 * 0, 50, 100
-                self.frame_count, self.frame_begin = 15, 0
-                self.loop_animation = False
+            # Restore
+            elif self.action == ACTION.RESTORE:
+                self.set_bb(HB.BOTTOM, [19, 40, 19, -35])
 
             else:
-                print("Invalid action: %s" % (str(self.action)))
+                print("[DryBones] Invalid action: %s" % (str(self.action)))
                 exit(-1)
 
         # Goomba
@@ -662,7 +639,7 @@ class GameObject:
                 pass
 
             else:
-                print("Invalid action: %s" % (str(self.action)))
+                print("[Goomba] Invalid action: %s" % (str(self.action)))
                 exit(-1)
 
         # Boo
@@ -1068,45 +1045,63 @@ class GameObject:
 
             # Walk right
             elif self.action == ACTION.WALK and self.facing == DIR.RIGHT:
+                self.set_tpa(1.0)
                 self.l, self.b, self.w, self.h = 50, 100 * 5, 50, 100
                 self.frame_count, self.frame_begin = 16, 0
                 self.loop_animation = True
 
             # Walk left
             elif self.action == ACTION.WALK and self.facing == DIR.LEFT:
+                self.set_tpa(1.0)
                 self.l, self.b, self.w, self.h = 50, 100 * 4, 50, 100
                 self.frame_count, self.frame_begin = 16, 0
                 self.loop_animation = True
 
-            # Break right
-            elif self.action == ACTION.BREAK and self.facing == DIR.RIGHT:
+            # Break(DIE_A) right
+            elif self.action == ACTION.DIE_A and self.facing == DIR.RIGHT:
+                self.set_tpa(0.8)
                 self.l, self.b, self.w, self.h = 50, 100 * 3, 50, 100
                 self.frame_count, self.frame_begin = 12, 0
                 self.loop_animation = False
 
-            # Break left
-            elif self.action == ACTION.BREAK and self.facing == DIR.LEFT:
+            # Break(DIE_A) left
+            elif self.action == ACTION.DIE_A and self.facing == DIR.LEFT:
+                self.set_tpa(0.8)
                 self.l, self.b, self.w, self.h = 50, 100 * 2, 50, 100
                 self.frame_count, self.frame_begin = 12, 0
                 self.loop_animation = False
 
             # Restore right
             elif self.action == ACTION.RESTORE and self.facing == DIR.RIGHT:
+                self.set_tpa(1.0)
                 self.l, self.b, self.w, self.h = 50, 100 * 1, 50, 100
                 self.frame_count, self.frame_begin = 15, 0
                 self.loop_animation = False
 
             # Restore left
             elif self.action == ACTION.RESTORE and self.facing == DIR.LEFT:
+                self.set_tpa(1.0)
                 self.l, self.b, self.w, self.h = 50, 100 * 0, 50, 100
                 self.frame_count, self.frame_begin = 15, 0
+                self.loop_animation = False
+
+            # DIE_B right
+            elif self.action == ACTION.DIE_B and self.facing == DIR.RIGHT:
+                self.l, self.b, self.w, self.h = 50, 100 * 7, 50, 100
+                self.frame_count, self.frame_begin = 1, 1
+                self.loop_animation = False
+
+            # DIE_B left
+            elif self.action == ACTION.DIE_B and self.facing == DIR.LEFT:
+                self.l, self.b, self.w, self.h = 50, 100 * 6, 50, 100
+                self.frame_count, self.frame_begin = 1, 1
                 self.loop_animation = False
 
             else:
                 self.l, self.b, self.w, self.h = 50, 100 * 7, 50, 100
                 self.frame_count, self.frame_begin = 1, 15
                 self.loop_animation = False
-                print("Invalid action: %s" % (str(self.action)))
+                print("[DryBones] Invalid action: %s" % (str(self.action)))
 
         # Goomba
         elif (self.type_name, self.type_id) == (TN.ENEMIES, TID.GOOMBA):

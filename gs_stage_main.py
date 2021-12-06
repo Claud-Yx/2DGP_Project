@@ -41,14 +41,15 @@ def enter():
     object_manager.add_objects(server.items, L.ITEMS)
 
     # enemy
-    server.enemies.append(ob_enemy.Goomba(930, 660))
-    server.enemies.append(ob_enemy.Goomba(930, 660, DIR.LEFT))
+    server.enemies.append(ob_enemy.DryBones(930, 660))
+    server.enemies.append(ob_enemy.DryBones(430, 660))
+    # server.enemies.append(ob_enemy.Goomba(930, 660, DIR.LEFT))
     server.enemies.append(ob_enemy.Goomba(970, 200, DIR.LEFT))
     server.enemies.append(ob_enemy.Goomba(900, 280))
     object_manager.add_objects(server.enemies, L.ENEMIES)
 
     # player
-    server.player = ob_player.Player(TID.MARIO_SUPER, 100, 300)
+    server.player = ob_player.Player(TID.MARIO_SUPER, 100, 700)
     object_manager.add_object(server.player, object_manager.OL_CHARACTER)
 
     for x in range(150, gs_framework.canvas_width * 2, 100):
@@ -61,7 +62,7 @@ def enter():
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 450, 250))
     # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 650, 550))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 550))
-    server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 650))
+    # server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 750, 650))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 850, 550))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 950, 550))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 1050, 550))
@@ -276,6 +277,17 @@ def update():
         for tile in enemy.nearby_tiles:
             if collide_enemy_to_wall(enemy, tile):
                 break
+
+        if isinstance(enemy, ob_enemy.DryBones) and enemy.dead_type is None:
+            is_cliff = None
+            for tile in enemy.nearby_tiles:
+                is_cliff = check_enemy_to_cliff(enemy, tile)
+                if not is_cliff:
+                    break
+            if is_cliff:
+                enemy.x_direction *= -1
+                enemy.facing = enemy.x_direction
+                enemy.set_info()
 
     # item collision checking and indexing
     for item in server.items:
