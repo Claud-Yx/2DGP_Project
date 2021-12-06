@@ -354,11 +354,11 @@ class GameObject:
 
             # Hang
             elif self.action == ACTION.HANG:
-                self.set_bb(HB.BODY, [13, 15, 13, 22])
-                self.set_bb(HB.LEFT, [13, 15, -12, 22])
-                self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
-                self.set_bb(HB.RIGHT, [-12, 15, 13, 22])
-                self.set_bb(HB.TOP, [13, -21, 13, 22])
+                self.set_bb(HB.BODY, [13, 10, 13, 18])
+                self.set_bb(HB.LEFT, [13, 10, -12, 18])
+                self.set_bb(HB.BOTTOM, [13, 15, 13, -9])
+                self.set_bb(HB.RIGHT, [-12, 10, 13, 18])
+                self.set_bb(HB.TOP, [13, -17, 13, 23])
 
             # Climb
             elif self.action == ACTION.CLIMB:
@@ -503,11 +503,11 @@ class GameObject:
 
             # Hang
             elif self.action == ACTION.HANG:
-                self.set_bb(HB.BODY, [15, 40, 15, 30])
-                self.set_bb(HB.LEFT, [15, 40, -14, 30])
-                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
-                self.set_bb(HB.RIGHT, [-14, 40, 15, 30])
-                self.set_bb(HB.TOP, [15, -29, 15, 30])
+                self.set_bb(HB.BODY, [15, 35, 15, 25])
+                self.set_bb(HB.LEFT, [15, 35, -14, 25])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -34])
+                self.set_bb(HB.RIGHT, [-14, 35, 15, 25])
+                self.set_bb(HB.TOP, [15, -24, 15, 30])
 
             # Climb
             elif self.action == ACTION.CLIMB:
