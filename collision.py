@@ -74,6 +74,10 @@ def collide_player_to_ceiling(player: ob_player.Player, tile: ob_tileset.TileSet
         if isinstance(tile, ob_tileset.Spike) and not player.is_invincible and not player.is_star_power:
             player.is_damaged = True
 
+        elif isinstance(tile, ob_tileset.RandomBox) or isinstance(tile, ob_tileset.Brick):
+            if tile.on_enemy is not None:
+                tile.on_enemy.dead_type = ACTION.DIE_B
+
         return False
 
     return False
@@ -143,9 +147,20 @@ def collide_enemy_to_floor(enemy: ob_enemy, floor: ob_tileset.TileSet) -> bool:
             enemy.ay = (enemy.get_bb_range(HB.BOTTOM)[POS.BOTTOM] +
                         floor.get_bb(HB.TOP)[POS.TOP])
 
+        if (isinstance(floor, ob_tileset.RandomBox) or
+            isinstance(floor, ob_tileset.Brick)
+        ):
+            floor.on_enemy = enemy
+            return False
+
         return True
 
     else:
+        if (isinstance(floor, ob_tileset.RandomBox) or
+            isinstance(floor, ob_tileset.Brick)
+        ):
+            floor.on_enemy = None
+
         enemy.is_fall = True
         return False
 
@@ -189,6 +204,8 @@ def collide_enemy_to_wall(enemy: ob_enemy, tile: ob_tileset.TileSet) -> bool:
 
 
 def stomp_player_to_enemy(player: ob_player.Player, enemy: ob_enemy) -> bool:
+    if isinstance(enemy, ob_enemy.Boo):
+        return False
     if (collide(player.get_bb(HB.BOTTOM), enemy.get_bb(HB.TOP)) and
             not player.is_jump and not player.is_star_power):
         enemy.dead_type = ACTION.DIE_A

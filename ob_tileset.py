@@ -79,6 +79,8 @@ class RandomBox(TileSet):
 
         self.timer_hit = 0.0
 
+        self.on_enemy = None
+
         if self.item == TID.NONE:
             self.is_empty = True
             self.is_hit = True
@@ -198,6 +200,8 @@ class Brick(TileSet):
         # Animation control value
         self.loop_animation = False
         self.set_info()
+
+        self.on_enemy = None
 
     def hit(self):
         if server.player.ax > self.ax:

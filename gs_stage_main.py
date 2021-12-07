@@ -41,7 +41,7 @@ def enter():
     object_manager.add_objects(server.items, L.ITEMS)
 
     # enemy
-    server.enemies.append(ob_enemy.DryBones(930, 660))
+    server.enemies.append(ob_enemy.Boo(930, 760))
     server.enemies.append(ob_enemy.DryBones(430, 660))
     # server.enemies.append(ob_enemy.Goomba(930, 660, DIR.LEFT))
     server.enemies.append(ob_enemy.Goomba(970, 200, DIR.LEFT))
@@ -249,6 +249,9 @@ def update():
 
     # enemy collision checking and indexing
     for enemy in server.enemies:
+        if isinstance(enemy, ob_enemy.Boo):
+            continue
+
         enemy.nearby_tiles.clear()
 
         enemy_index_x = int(enemy.ax // ob_map.TILE_WIDTH)

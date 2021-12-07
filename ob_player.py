@@ -481,9 +481,9 @@ class Player(game_object.GameObject):
                            # "stage.x/y: (%.2f / %.2f) / player.ap: (%.2f, %.2f) rp: (%.2f, %.2f)" %
                            # (server.stage.x, server.stage.y,
                            #  self.ax, self.ay, self.rx, self.ry),
-                           "dry bones action: %s / facing: %s / l,b,h,w : %d / %d / %d / %d" %
+                           "boo action: %s / facing: %s / frame: %d | %d" %
                            (server.enemies[0].action, server.enemies[0].facing,
-                            server.enemies[0].l, server.enemies[0].b, server.enemies[0].h, server.enemies[0].w),
+                            server.enemies[0].frame, server.enemies[0].frame_count - 1),
                            (0, 255, 0))
 
         if self.show_bb:

@@ -644,42 +644,18 @@ class GameObject:
 
         # Boo
         elif (self.type_name, self.type_id) == (TN.ENEMIES, TID.BOO):
+            if len(self.bounding_box) == 0:
+                self.bounding_box[HB.BODY] = BoundingBox(HB.BODY)
+            self.switch_bb_all()
 
             # Idle right
-            if self.action == "stay" and self.facing == DIR.RIGHT:
-                self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
-                self.frame_count, self.frame_begin = 1, 0
-                self.loop_animation = False
-
-            # Idle left
-            elif self.action == "stay" and self.facing == DIR.LEFT:
-                self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
-                self.frame_count, self.frame_begin = 1, 0
-                self.loop_animation = False
-
-            # Fly right
-            elif self.action == "fly" and self.facing == DIR.RIGHT:
-                self.l, self.b, self.w, self.h = 50, 50 * 1, 50, 50
-                self.frame_count, self.frame_begin = 8, 0
-                self.loop_animation = True
-
-            # Fly left
-            elif self.action == "fly" and self.facing == DIR.LEFT:
-                self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
-                self.frame_count, self.frame_begin = 8, 0
-                self.loop_animation = True
+            if self.action == ACTION.IDLE or self.action == ACTION.FLY:
+                self.set_bb(HB.BODY, [19, 16, 19, 16])
 
             # Die right
-            elif self.action == "die" and self.facing == DIR.RIGHT:
-                self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
-                self.frame_count, self.frame_begin = 1, 1
-                self.loop_animation = False
+            elif self.action == ACTION.DIE_B:
+                pass
 
-            # Die left
-            elif self.action == "die" and self.facing == DIR.LEFT:
-                self.l, self.b, self.w, self.h = 50, 50 * 2, 50, 50
-                self.frame_count, self.frame_begin = 1, 1
-                self.loop_animation = False
             else:
                 self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
                 self.frame_count, self.frame_begin = 1, 7
@@ -744,9 +720,9 @@ class GameObject:
             self.switch_bb_all()
 
             if (self.type_id == TID.SUPER_MUSHROOM or
-                self.type_id == TID.LIFE_MUSHROOM or
-                self.type_id == TID.SUPER_STAR or
-                self.type_id == TID.FIRE_FLOWER
+                    self.type_id == TID.LIFE_MUSHROOM or
+                    self.type_id == TID.SUPER_STAR or
+                    self.type_id == TID.FIRE_FLOWER
             ):
                 self.set_bb(HB.BODY, [24, 24, 24, 24])
                 self.set_bb(HB.LEFT, [25, 25, -20, 25])
@@ -1168,18 +1144,20 @@ class GameObject:
 
             # Fly right
             elif self.action == ACTION.FLY and self.facing == DIR.RIGHT:
+                self.set_tpa(0.5)
                 self.l, self.b, self.w, self.h = 50, 50 * 1, 50, 50
                 self.frame_count, self.frame_begin = 8, 0
                 self.loop_animation = True
 
             # Fly left
             elif self.action == ACTION.FLY and self.facing == DIR.LEFT:
+                self.set_tpa(0.5)
                 self.l, self.b, self.w, self.h = 50, 50 * 0, 50, 50
                 self.frame_count, self.frame_begin = 8, 0
                 self.loop_animation = True
 
             # Die right
-            elif self.action == ACTION.DIE_A and self.facing == DIR.RIGHT:
+            elif self.action == ACTION.DIE_B and self.facing == DIR.RIGHT:
                 self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
                 self.frame_count, self.frame_begin = 1, 1
                 self.loop_animation = False
@@ -1191,10 +1169,10 @@ class GameObject:
                 self.loop_animation = False
 
             else:
-                self.l, self.b, self.w, self.h = 25, 25 * 3, 25, 25
+                self.l, self.b, self.w, self.h = 50, 50 * 3, 50, 50
                 self.frame_count, self.frame_begin = 1, 7
                 self.loop_animation = False
-                print("Invalid action: %s" % (str(self.action)))
+                print("[Boo] Invalid action: %s" % (str(self.action)))
 
         # Piranha plant
         elif (self.type_name, self.type_id) == (TN.ENEMIES, TID.PIRANHA_PLANT):

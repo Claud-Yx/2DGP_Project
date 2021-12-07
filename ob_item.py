@@ -93,19 +93,19 @@ class PowerUp(Item, ABC):
         motion = int(server.current_time * 15) % 7
 
         if motion == 0:
-            self.set_color(255,0,0)
+            self.set_color(255, 0, 0)
         elif motion == 1:
-            self.set_color(255,50,0)
+            self.set_color(255, 50, 0)
         elif motion == 2:
-            self.set_color(255,255,0)
+            self.set_color(255, 255, 0)
         elif motion == 3:
-            self.set_color(0,255,0)
+            self.set_color(0, 255, 0)
         elif motion == 4:
-            self.set_color(0,0,255)
+            self.set_color(0, 0, 255)
         elif motion == 5:
-            self.set_color(0,5,255)
+            self.set_color(0, 5, 255)
         elif motion == 6:
-            self.set_color(10,0,255)
+            self.set_color(10, 0, 255)
 
     def update(self):
         if self.is_time_stop:
