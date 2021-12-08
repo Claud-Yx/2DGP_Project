@@ -287,8 +287,8 @@ def collide_item_to_ceiling(item: ob_item.PowerUp, tile: ob_tileset.TileSet) -> 
 
 
 def collide_item_to_wall(item: ob_item.Item, tile: ob_tileset.TileSet) -> bool:
-    if ((collide(item.get_bb(HB.RIGHT), tile.get_bb(HB.BODY)) or
-         collide(item.get_bb(HB.LEFT), tile.get_bb(HB.BODY))) and
+    if ((collide(item.get_bb(HB.RIGHT), tile.get_bb(HB.LEFT)) or
+         collide(item.get_bb(HB.LEFT), tile.get_bb(HB.RIGHT))) and
             item.get_bb(HB.BOTTOM)[POS.BOTTOM] < tile.get_bb(HB.TOP)[POS.TOP]
     ):
 

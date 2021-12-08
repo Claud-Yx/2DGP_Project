@@ -689,7 +689,7 @@ class GameObject:
             ):
                 self.set_bb(HB.BODY, [25, 25, 25, 25])
                 self.set_bb(HB.LEFT, [25, 25, -20, 25])
-                self.set_bb(HB.BOTTOM, [24, 25, 24, -20])
+                self.set_bb(HB.BOTTOM, [24, 25, 24, -17])
                 self.set_bb(HB.RIGHT, [-20, 25, 25, 25])
                 self.set_bb(HB.TOP, [24, -20, 24, 25])
             elif self.type_id == TID.CASTLE_BLOCK_50X100:
@@ -727,10 +727,10 @@ class GameObject:
                     self.type_id == TID.FIRE_FLOWER
             ):
                 self.set_bb(HB.BODY, [24, 24, 24, 24])
-                self.set_bb(HB.LEFT, [25, 25, -20, 25])
-                self.set_bb(HB.BOTTOM, [24, 25, 24, -20])
-                self.set_bb(HB.RIGHT, [-20, 25, 25, 25])
-                self.set_bb(HB.TOP, [24, -20, 24, 25])
+                self.set_bb(HB.LEFT, [24, 24, -20, 24])
+                self.set_bb(HB.BOTTOM, [24, 24, 24, -20])
+                self.set_bb(HB.RIGHT, [-20, 24, 24, 24])
+                self.set_bb(HB.TOP, [24, -20, 24, 24])
 
             elif self.type_id == TID.COIN:
                 self.set_bb(HB.BODY, [25, 25, 25, 25])

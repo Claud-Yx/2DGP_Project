@@ -21,18 +21,26 @@ def create_map():
     # stage map
     server.stage = ob_map.Map(0, 0,
                               1200,
-                              4000
+                              4400
                               )
 
     # background
     server.background = ob_background.Background()
     object_manager.add_object(server.background, L.BACKGROUND)
 
-    # player
-    server.player = ob_player.Player(TID.MARIO_SUPER, 11, 71)
+    # player ===========================================================================================================
+    server.player = ob_player.Player(x=7, y=2)
     object_manager.add_object(server.player, object_manager.OL_CHARACTER)
 
-    # item
+    # Interactives =====================================================================================================
+    server.interactives.append(ob_interactive.WireMesh(14, 70, 21, 59, dst_x=-12))
+    server.interactives.append(ob_interactive.WireMesh(2, 57, 9, 46, dst_x=12))
+    server.interactives.append(ob_interactive.WireMesh(2, 39, 13, 35, dst_x=8))
+    server.interactives.append(ob_interactive.WireMesh(2, 27, 5, 25, dst_x=16))
+    server.interactives.append(ob_interactive.WireMesh(2, 16, 7, 13, dst_x=14))
+    object_manager.add_objects(server.interactives, L.INTERACTIVES)
+
+    # item =============================================================================================================
     for y in range(64, 70):
         server.items.append(ob_item.Coin(11, y))
         server.items.append(ob_item.Coin(12, y))
@@ -59,18 +67,16 @@ def create_map():
     server.items.append(ob_item.Coin(11, 14))
     server.items.append(ob_item.Coin(12, 14))
 
-
-
     object_manager.add_objects(server.items, L.ITEMS)
 
-    # enemy
-    # server.enemies.append(ob_enemy.Boo(0, 77))
-    # server.enemies.append(ob_enemy.Boo(24, 65))
-    # server.enemies.append(ob_enemy.Boo(0, 59))
-    # server.enemies.append(ob_enemy.Boo(24, 53))
+    # enemy ============================================================================================================
+    server.enemies.append(ob_enemy.Boo(0, 67))
+    server.enemies.append(ob_enemy.Boo(24, 67))
+    server.enemies.append(ob_enemy.Boo(0, 59))
+    server.enemies.append(ob_enemy.Boo(24, 59))
 
-    server.enemies.append(ob_enemy.Goomba(2, 46))
-    server.enemies.append(ob_enemy.Goomba(21, 46, DIR.LEFT))
+    server.enemies.append(ob_enemy.Goomba(2, 46, sense_y=8))
+    server.enemies.append(ob_enemy.Goomba(21, 46, DIR.LEFT, sense_y=8))
 
     server.enemies.append(ob_enemy.DryBones(11, 44))
     server.enemies.append(ob_enemy.DryBones(14, 28))
@@ -82,7 +88,7 @@ def create_map():
 
     object_manager.add_objects(server.enemies, L.ENEMIES)
 
-    # tile sets
+    # tile sets ========================================================================================================
     for x in range(4, 20, 2):
         server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, x, 0))
 
@@ -256,15 +262,6 @@ def create_map():
     server.tiles.append(ob_tileset.Spike(21, 7, POS.BOTTOM))
 
     object_manager.add_objects(server.tiles, object_manager.OL_TILESET)
-
-    # Interactives
-
-    server.interactives.append(ob_interactive.WireMesh(14, 70, 21, 59, dst_x=-12))
-    server.interactives.append(ob_interactive.WireMesh(2, 57, 9, 46, dst_x=12))
-    server.interactives.append(ob_interactive.WireMesh(2, 39, 13, 35))
-    server.interactives.append(ob_interactive.WireMesh(2, 27, 5, 25))
-    server.interactives.append(ob_interactive.WireMesh(2, 16, 7, 13))
-    object_manager.add_objects(server.interactives, L.INTERACTIVES)
 
     # Foreground
     server.foreground = []

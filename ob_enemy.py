@@ -172,19 +172,33 @@ class DryBones(Enemy, ABC):
 
 
 class Goomba(Enemy, ABC):
-    def __init__(self, x=0, y=0, x_dir=DIR.RIGHT):
+    def __init__(self, x=0, y=0, x_dir=DIR.RIGHT, sense_x=None, sense_y=None):
         super().__init__(TID.GOOMBA, x, y, x_dir)
 
         self.velocity = GOOMBA_MAX_VELOCITY
+
+        self.sensor_x, self.sensor_y = 0, 0
+
+        if sense_x is not None:
+            self.sensor_x = sense_x * 50
+        if sense_y is not None:
+            self.sensor_y = sense_y * 50
 
         self.on_floor = False
         self.is_fall = False
         self.is_jump = False
 
-        self.set_info(ACTION.WALK)
+        self.is_working = False
+
+        if self.sensor_x == 0 and self.sensor_y == 0:
+            self.is_working = True
+            self.set_info(ACTION.WALK)
+        else:
+            self.set_info()
 
         self.ax = x * ob_map.TILE_WIDTH + self.w // 2
         self.ay = y * ob_map.TILE_HEIGHT + self.get_bb_range(HB.BOTTOM)[POS.BOTTOM]
+
 
     def jump(self):
 
@@ -213,8 +227,13 @@ class Goomba(Enemy, ABC):
             self.jump_power += (GRAVITY_ACCEL_PPS * gs_framework.frame_time * 6
                                 ) * -1
 
-        self.jump_power = clamp(
-            MAX_JUMP_POWER * -2, self.jump_power, 0
+        if self.dead_type is None:
+            self.jump_power = clamp(
+                MAX_JUMP_POWER * -1, self.jump_power, 0
+        )
+        else:
+            self.jump_power = clamp(
+                MAX_JUMP_POWER * -3, self.jump_power, 0
         )
 
         self.ay += self.jump_power * gs_framework.frame_time
@@ -276,6 +295,17 @@ class Goomba(Enemy, ABC):
         if self.is_fall:
             self.on_floor = False
             self.fall()
+
+        if not self.is_working:
+            if self.ax - self.sensor_x <= server.player.ax <= self.ax + self.sensor_x and self.sensor_x != 0:
+                self.is_working = True
+                self.set_info(ACTION.WALK)
+            elif self.ay - self.sensor_y <= server.player.ay <= self.ay + self.sensor_y and self.sensor_y != 0:
+                self.is_working = True
+                self.set_info(ACTION.WALK)
+
+        if not self.is_working:
+            return
 
         # print(str(self.facing), str(self.x_direction), str(self.action), str(self.velocity))
         self.ax += self.velocity * gs_framework.frame_time * self.x_direction

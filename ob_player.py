@@ -168,7 +168,7 @@ class Player(game_object.GameObject):
     def inertia(self):
         self.velocity -= STANDARD_INERTIA * gs_framework.frame_time * self.forcing
 
-        if -1 < self.velocity < 1:
+        if -5 < self.velocity < 5:
             self.velocity = 0
 
         speed = self.velocity * gs_framework.frame_time
@@ -254,6 +254,7 @@ class Player(game_object.GameObject):
         if self.timer_grow == 0:
             server.stop_time(True, (TN.NONE, TID.NONE))
             self.timer_grow = MAX_TIMER_GROW
+            self.prev_id = TID.MARIO_SUPER
 
         self.timer_grow -= gs_framework.frame_time
 
@@ -371,18 +372,19 @@ class Player(game_object.GameObject):
                     self.set_info()
                     self.is_small = False
                     server.stop_time(False)
-                    self.score += 1000
-            else:
-                self.score += 1000
+            self.score += 1000
 
         elif self.taken_item == (TN.ITEMS, TID.COIN):
             self.coin += 1
+            self.score += 200
 
         elif self.taken_item == (TN.ITEMS, TID.LIFE_MUSHROOM):
             self.life += 1
+            self.score += 1000
 
         elif self.taken_item == (TN.ITEMS, TID.SUPER_STAR):
             self.is_star_power = True
+            self.score += 1000
 
         if not server.time_stop:
             self.taken_item = (TN.ITEMS, TID.NONE)
@@ -486,8 +488,8 @@ class Player(game_object.GameObject):
                            # "stage.x/y: (%.2f / %.2f) / player.ap: (%.2f, %.2f) rp: (%.2f, %.2f)" %
                            # (server.stage.x, server.stage.y,
                            #  self.ax, self.ay, self.rx, self.ry),
-                           "ACTION: %s / on_wire: %s / cur_state: %s" %
-                           (self.action, self.on_wire_mesh, self.cur_state.__name__),
+                           "ax/ay: (%.2f / %.2f) / rx/ry: (%.2f / %.2f) / velocity: %.2f / acc: %.2f" %
+                           (self.ax, self.ay, self.rx, self.ry, self.velocity, self.x_accel),
                            (0, 255, 0))
 
         if self.show_bb:
