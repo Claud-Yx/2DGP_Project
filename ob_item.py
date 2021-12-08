@@ -1,3 +1,4 @@
+import ob_tileset
 import object_manager
 from game_object import *
 from value import *
@@ -158,6 +159,9 @@ class Coin(Item, ABC):
         self.y_acceleration = 0
 
         self.set_size(0.8, 0.8)
+
+        self.ax = x * ob_map.TILE_WIDTH + ob_map.TILE_WIDTH // 2
+        self.ay = y * ob_map.TILE_HEIGHT + ob_map.TILE_HEIGHT // 2
 
         # print("in box coin, pos: (%.2f, %.2f) / in_box: %s" % (self.x, self.y, self.in_box))
 

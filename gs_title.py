@@ -101,10 +101,10 @@ def draw():
 
     menu[1].draw(gs_framework.canvas_width // 2 - 150,
                  gs_framework.canvas_height // 2 - 130,
-                 "EDIT STAGE", (255, 255, 255))
+                 "SELECT STAGE", (255, 255, 255))
     menu_outline[1].draw(gs_framework.canvas_width // 2 - 150,
                          gs_framework.canvas_height // 2 - 130,
-                         "EDIT STAGE", (0, 0, 0))
+                         "SELECT STAGE", (0, 0, 0))
 
     menu[2].draw(gs_framework.canvas_width // 2 - 150,
                  gs_framework.canvas_height // 2 - 210,

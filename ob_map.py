@@ -11,7 +11,7 @@ TILE_WIDTH = 50
 
 
 class Map:
-    def __init__(self, stage, map):
+    def __init__(self, stage, map, w, h):
         self.stage = stage
         self.map = map
 
@@ -23,6 +23,8 @@ class Map:
 
         # Game object index, 3D list
         self.object_index = [[]]
+
+        self.set_size(w, h)
 
     def set_range(self):
         self.range[POS.LEFT] = self.x

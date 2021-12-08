@@ -2,6 +2,7 @@ from pico2d import *
 
 import game_object
 import ob_interactive
+import ob_map
 import server
 from value import *
 
@@ -70,7 +71,7 @@ key_event_table = {
 class Player(game_object.GameObject):
     def __init__(self, tid=TID.MARIO_SMALL, x=0, y=0):
 
-        super().__init__(TN.PLAYER, tid, x, y)
+        super().__init__(TN.PLAYER, tid)
 
         self.prev_id = tid
         self.is_small = None
@@ -139,6 +140,10 @@ class Player(game_object.GameObject):
 
         # Setting
         self.set_info()
+
+        self.ax = x * ob_map.TILE_WIDTH + self.w // 2
+        self.ay = y * ob_map.TILE_HEIGHT + self.get_bb_range(HB.BOTTOM)[POS.BOTTOM]
+
         self.set_color()
         self.cur_state.enter(self, None)
 
@@ -414,18 +419,16 @@ class Player(game_object.GameObject):
         self.ay = clamp(-150, self.ay, server.stage.size_height + 150)
 
         rx_ran = self.ax
-        if self.ax >= ax_max:
-            if self.ax >= ax_max and server.stage.size_width > gs_framework.canvas_width:
-                rx_ran = self.ax - ax_max + (gs_framework.canvas_width / 2 + 50)
-            elif server.stage.size_width <= gs_framework.canvas_width:
-                rx_ran = self.ax + server.stage.x
+        if self.ax >= ax_max and server.stage.size_width > gs_framework.canvas_width:
+            rx_ran = self.ax - ax_max + (gs_framework.canvas_width / 2 + 50)
+        elif server.stage.size_width <= gs_framework.canvas_width:
+            rx_ran = self.ax + server.stage.x
 
         ry_ran = self.ay
-        if self.ay >= ay_max:
-            if self.ay >= ay_max and server.stage.size_height > gs_framework.canvas_height:
-                ry_ran = self.ay - ay_max + (gs_framework.canvas_height / 2 + 50)
-            elif server.stage.size_height <= gs_framework.canvas_height:
-                ry_ran = self.ay + server.stage.y
+        if self.ay >= ay_max and server.stage.size_height > gs_framework.canvas_height:
+            ry_ran = self.ay - ay_max + (gs_framework.canvas_height / 2 + 50)
+        elif server.stage.size_height <= gs_framework.canvas_height:
+            ry_ran = self.ay + server.stage.y
 
         self.rx = clamp(rx_min, rx_ran, rx_max)
         self.ry = clamp(ry_min, ry_ran, ry_max)
@@ -477,14 +480,14 @@ class Player(game_object.GameObject):
         self.cur_state.draw(self)
 
         debug_print_2 = load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 26)
-        debug_print_2.draw(6, gs_framework.canvas_height - 16,
-                           # "stage.x/y: (%.2f / %.2f) / player.ap: (%.2f, %.2f) rp: (%.2f, %.2f)" %
-                           # (server.stage.x, server.stage.y,
-                           #  self.ax, self.ay, self.rx, self.ry),
-                           "boo action: %s / facing: %s / frame: %d | %d" %
-                           (server.enemies[0].action, server.enemies[0].facing,
-                            server.enemies[0].frame, server.enemies[0].frame_count - 1),
-                           (0, 255, 0))
+        # debug_print_2.draw(6, gs_framework.canvas_height - 16,
+        #                    # "stage.x/y: (%.2f / %.2f) / player.ap: (%.2f, %.2f) rp: (%.2f, %.2f)" %
+        #                    # (server.stage.x, server.stage.y,
+        #                    #  self.ax, self.ay, self.rx, self.ry),
+        #                    "boo action: %s / facing: %s / frame: %d | %d" %
+        #                    (server.enemies[0].action, server.enemies[0].facing,
+        #                     server.enemies[0].frame, server.enemies[0].frame_count - 1),
+        #                    (0, 255, 0))
 
         if self.show_bb:
             self.draw_bb()
@@ -705,6 +708,7 @@ class WalkState:
     def draw(player: Player):
         player.clip_draw()
 
+
 class ClimbState:
     def enter(player: Player, event):
         player.velocity = 0
@@ -749,6 +753,12 @@ class ClimbState:
 
         player.velocity = CLIMB_VELOCITY * player.x_direction
         player.jump_power = CLIMB_VELOCITY * player.y_direction
+
+        if ((player.is_stuck_right and player.x_direction == DIR.RIGHT) or
+                (player.is_stuck_left and player.x_direction == DIR.LEFT)
+        ):
+            player.velocity = 0
+
         player.ax += player.velocity * gs_framework.frame_time
         player.ay += player.jump_power * gs_framework.frame_time
 
@@ -785,7 +795,6 @@ class ClimbState:
                 player.ay += 1
                 player.is_jump = True
                 player.set_info(ACTION.JUMP)
-
 
     def draw(player: Player):
         player.clip_draw()

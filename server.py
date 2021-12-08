@@ -51,8 +51,12 @@ def destroy():
     global stage, player, background, items
 
     del stage
+    stage = None
     del player
+    player = None
     del background
+    background = None
+
     items.clear()
     enemies.clear()
     tiles.clear()

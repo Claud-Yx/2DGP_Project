@@ -66,6 +66,9 @@ class DryBones(Enemy, ABC):
 
         self.set_info(ACTION.WALK)
 
+        self.ax = x * ob_map.TILE_WIDTH + self.w // 2
+        self.ay = y * ob_map.TILE_HEIGHT + self.get_bb_range(HB.BOTTOM)[POS.BOTTOM]
+
     def jump(self):
 
         if self.dead_type is None:
@@ -180,6 +183,9 @@ class Goomba(Enemy, ABC):
 
         self.set_info(ACTION.WALK)
 
+        self.ax = x * ob_map.TILE_WIDTH + self.w // 2
+        self.ay = y * ob_map.TILE_HEIGHT + self.get_bb_range(HB.BOTTOM)[POS.BOTTOM]
+
     def jump(self):
 
         if self.dead_type is None:
@@ -277,7 +283,7 @@ class Goomba(Enemy, ABC):
 
 class Boo(Enemy, ABC):
     def __init__(self, x=0, y=0, x_dir=DIR.RIGHT):
-        super().__init__(TID.BOO, x, y, x_dir)
+        super().__init__(TID.BOO, x_dir)
 
         self.hp, self.wp = 1.2, 1.2
 
@@ -288,6 +294,9 @@ class Boo(Enemy, ABC):
         self.is_jump = False
 
         self.set_info()
+
+        self.ax = x * ob_map.TILE_WIDTH + self.w // 2
+        self.ay = y * ob_map.TILE_HEIGHT + self.get_bb_range(HB.BODY)[POS.BOTTOM]
 
     def jump(self):
 

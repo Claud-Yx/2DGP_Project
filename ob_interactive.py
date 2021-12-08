@@ -3,7 +3,12 @@ from game_object import *
 
 
 class WireMesh(GameObject, ABC):
-    def __init__(self, lt_x, lt_y, rb_x, rb_y):
+    def __init__(self, lt_x, lt_y, rb_x, rb_y, dst_x=0, dst_y=0):
+
+        lt_x = lt_x * 50 + 25
+        lt_y = lt_y * 50 + 25
+        rb_x = rb_x * 50 + 25
+        rb_y = rb_y * 50 + 25
 
         self.index_x = (rb_x - lt_x) // ob_map.TILE_WIDTH + 1
         self.index_y = (lt_y - rb_y) // ob_map.TILE_HEIGHT + 1
@@ -20,6 +25,32 @@ class WireMesh(GameObject, ABC):
         y = rb_y
 
         super().__init__(TN.INTERACTIVES, TID.WIRE_MESH, x, y)
+
+        self.dst_x = dst_x
+        self.dst_y = dst_y
+        self.stp_x = self.ax
+        self.stp_y = self.ay
+
+        if self.dst_x == 0:
+            self.is_move_x = False
+            self.x_direction = DIR.NONE
+        else:
+            self.is_move_x = True
+            if self.dst_x > 0:
+                self.x_direction = DIR.RIGHT
+            else:
+                self.x_direction = DIR.LEFT
+
+        if self.dst_y == 0:
+            self.is_move_y = False
+            self.y_direction = DIR.NONE
+        else:
+            self.is_move_y = True
+            if self.dst_y > 0:
+                self.y_direction = DIR.UP
+            else:
+                self.y_direction = DIR.DOWN
+
 
         self.tile = [[ACTION.PIECE_M for y in range(self.index_y)] for x in range(self.index_x)]
 

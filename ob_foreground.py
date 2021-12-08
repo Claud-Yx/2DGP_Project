@@ -3,6 +3,7 @@ import random
 from pico2d import *
 import game_object
 import gs_framework
+import ob_map
 import object_manager
 import server
 
@@ -32,6 +33,12 @@ class Foreground(game_object.GameObject):
         self.pm_type_id = ptid
 
         self.is_animated = False
+
+        self.set_clip()
+
+        if not isinstance(self, BrickPiece):
+            self.ax = x * ob_map.TILE_WIDTH + game_object.GameObject.image[self.pm_type_name, self.pm_type_id].w // 2
+            self.ay = y * ob_map.TILE_HEIGHT + game_object.GameObject.image[self.pm_type_name, self.pm_type_id].h // 2
 
     def update(self):
         pass

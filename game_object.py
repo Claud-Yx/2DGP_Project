@@ -1,7 +1,5 @@
 from pico2d import *
 
-# import ob_foreground
-# import ob_interactive
 import ob_map
 import server
 from abc import *
@@ -11,7 +9,7 @@ from bounding_box import *
 class GameObject:
     image = None
 
-    def __init__(self, type_name, type_id, x=0, y=0):
+    def __init__(self, type_name, type_id, x=0, y=0):  # x, y are index size / ax, ay are
         # Image initialization
         if None == GameObject.image:
             GameObject.image = {
@@ -55,7 +53,11 @@ class GameObject:
         self.velocity = 0
 
         # Animation sprite value
-        self.l, self.b, self.w, self.h = 0, 0, 0, 0
+        self.l, self.b = 0, 0
+        if type_name != TN.FOREGROUND:
+            self.w, self.h = GameObject.image[type_name, type_id].w, GameObject.image[type_name, type_id].h
+        else:
+            self.w, self.h = 0, 0
         self.wp, self.hp = 1.0, 1.0
         self.rad = 0
 
@@ -115,7 +117,7 @@ class GameObject:
         if rad is None:
             rad = self.rad
 
-        if self.type_id == TID.NONE:
+        if self.type_id == TID.NONE and not self.type_name == TN.FOREGROUND:
             GameObject.image[tid].draw(self.rx, self.ry, self.w * self.wp, self.h * self.hp)
         else:
             if rad == 0:
@@ -374,7 +376,7 @@ class GameObject:
                 self.set_bb(HB.LEFT, [13, 15, -12, 18])
                 self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
                 self.set_bb(HB.RIGHT, [-12, 15, 13, 18])
-                self.set_bb(HB.TOP, [12, -21, 12, 22])
+                self.set_bb(HB.TOP, [12, -17, 12, 22])
 
             # Jump left
             elif self.action == ACTION.JUMP and self.facing == DIR.LEFT:
@@ -382,13 +384,13 @@ class GameObject:
                 self.set_bb(HB.LEFT, [13, 15, -12, 18])
                 self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
                 self.set_bb(HB.RIGHT, [-12, 15, 13, 18])
-                self.set_bb(HB.TOP, [12, -21, 12, 22])
+                self.set_bb(HB.TOP, [12, -17, 12, 22])
 
             # Fall right
             elif self.action == ACTION.FALL and self.facing == DIR.RIGHT:
                 self.set_bb(HB.BODY, [13, 10, 13, 22])
                 self.set_bb(HB.LEFT, [13, 10, -12, 22])
-                self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
+                self.set_bb(HB.BOTTOM, [13, 15, 13, -10])
                 self.set_bb(HB.RIGHT, [-12, 10, 13, 22])
                 self.set_bb(HB.TOP, [13, -21, 13, 22])
 
@@ -396,7 +398,7 @@ class GameObject:
             elif self.action == ACTION.FALL and self.facing == DIR.LEFT:
                 self.set_bb(HB.BODY, [13, 10, 13, 22])
                 self.set_bb(HB.LEFT, [13, 10, -12, 22])
-                self.set_bb(HB.BOTTOM, [13, 15, 13, -14])
+                self.set_bb(HB.BOTTOM, [13, 15, 13, -10])
                 self.set_bb(HB.RIGHT, [-12, 10, 13, 22])
                 self.set_bb(HB.TOP, [13, -21, 13, 22])
 
@@ -626,7 +628,7 @@ class GameObject:
             ):
                 self.set_bb(HB.BODY, [21, 25, 21, 21])
                 self.set_bb(HB.LEFT, [21, 23, -20, 21])
-                self.set_bb(HB.BOTTOM, [21, 25, 21, -23])
+                self.set_bb(HB.BOTTOM, [21, 25, 21, -20])
                 self.set_bb(HB.RIGHT, [-20, 23, 21, 21])
                 self.set_bb(HB.TOP, [20, 0, 20, 24])
 

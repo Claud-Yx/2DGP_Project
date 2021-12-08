@@ -1,3 +1,4 @@
+import ob_map
 import object_manager
 from value import *
 
@@ -20,9 +21,12 @@ class RS(IntEnum):  # Random box state
 class TileSet(game_object.GameObject):
 
     def __init__(self, tid=TID.NONE, x=0, y=0):
-        super().__init__(TN.TILESETS, tid, x, y)
+        super().__init__(TN.TILESETS, tid)
 
         self.set_info()
+
+        self.ax = x * ob_map.TILE_WIDTH + self.w // 2
+        self.ay = y * ob_map.TILE_HEIGHT + self.get_bb_range(HB.BOTTOM)[POS.BOTTOM]
 
         # Object moving value
         del self.max_velocity
@@ -65,7 +69,7 @@ class RandomBox(TileSet):
 
         super().__init__(TID.RANDOM_BOX, x, y)
 
-        self.min_y, self.max_y = y, y+20
+        self.min_y, self.max_y = self.ay, self.ay+20
 
         self.x_direction = DIR.RIGHT
         self.state = state
@@ -138,7 +142,8 @@ class RandomBox(TileSet):
                     object_manager.add_object(server.items[-1], L.ITEMS)
 
                 self.is_empty = True
-                server.tiles.append(TileSet(TID.EMPTY_BOX, self.ax, self.ay))
+                ax, ay = self.ax // 50, self.ay // 50
+                server.tiles.append(TileSet(TID.EMPTY_BOX, ax, ay))
                 object_manager.add_object(server.tiles[-1], L.TILESETS)
 
     def empty(self):
@@ -181,7 +186,7 @@ class Brick(TileSet):
     def __init__(self, x, y):
         super().__init__(TID.BREAKABLE_BRICK, x, y)
 
-        self.min_y, self.max_y = y, y+20
+        self.min_y, self.max_y = self.ay, self.ay+20
 
         self.x_direction = DIR.RIGHT
 
