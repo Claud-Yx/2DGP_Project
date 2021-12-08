@@ -43,6 +43,9 @@ def collide_player_to_floor(player: ob_player.Player, tile: ob_tileset.TileSet) 
         if isinstance(tile, ob_tileset.Spike) and not player.is_invincible and not player.is_star_power:
             player.is_damaged = True
 
+        if player.cur_state == ob_player.ClimbState and player.on_wire_mesh is not None:
+            player.on_wire_mesh.got_player = False
+
         return True
 
     else:
@@ -64,17 +67,18 @@ def collide_player_to_ceiling(player: ob_player.Player, tile: ob_tileset.TileSet
                          ptop)
 
         tile: ob_tileset.RandomBox
-        if tile.type_id == TID.RANDOM_BOX and not tile.is_empty:
+        if tile.type_id == TID.RANDOM_BOX and not tile.is_empty and player.cur_state != ob_player.ClimbState:
             tile.is_hit = True
 
         tile: ob_tileset.Brick
-        if tile.type_id == TID.BREAKABLE_BRICK:
+        if tile.type_id == TID.BREAKABLE_BRICK and player.cur_state != ob_player.ClimbState:
             tile.hit_by = player.type_id
 
         if isinstance(tile, ob_tileset.Spike) and not player.is_invincible and not player.is_star_power:
             player.is_damaged = True
 
-        elif isinstance(tile, ob_tileset.RandomBox) or isinstance(tile, ob_tileset.Brick):
+        elif (isinstance(tile, ob_tileset.RandomBox) or
+              isinstance(tile, ob_tileset.Brick)) and player.cur_state != ob_player.ClimbState:
             if tile.on_enemy is not None:
                 tile.on_enemy.dead_type = ACTION.DIE_B
 
@@ -324,10 +328,18 @@ def collide_item_to_player(player: ob_player.Player, item: ob_item.Item) -> bool
 def collide_player_to_interactive(player: ob_player.Player, itr: game_object.GameObject) -> bool:
     if collide(player.get_bb(HB.BODY), itr.get_bb(HB.BODY)):
         if isinstance(itr, ob_interactive.WireMesh):
-            itr.got_player = True
-            player.on_wire_mesh = itr
+            if (itr.get_bb(HB.BODY)[POS.LEFT] - player.get_bb_range(HB.BODY)[POS.RIGHT] <=
+                    player.ax <=
+                    itr.get_bb(HB.BODY)[POS.RIGHT] + player.get_bb_range(HB.BODY)[POS.LEFT] and
+                itr.get_bb(HB.BODY)[POS.BOTTOM] - player.get_bb_range(HB.BODY)[POS.TOP] <=
+                    player.ay <=
+                    itr.get_bb(HB.BODY)[POS.TOP]
+            ):
+                player.on_wire_mesh = itr
+        return True
 
     else:
-        if isinstance(itr, ob_interactive.WireMesh):
+        if isinstance(itr, ob_interactive.WireMesh) and not player.is_damaged:
             itr.got_player = False
             player.on_wire_mesh = None
+        return False

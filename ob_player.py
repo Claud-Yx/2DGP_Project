@@ -159,6 +159,8 @@ class Player(game_object.GameObject):
 
         if self.cur_state != SitState:
             if self.on_wire_mesh is not None and event == EVENT.UP_DOWN:
+                self.ay += 1
+                self.on_wire_mesh.got_player = True
                 self.y_direction += DIR.UP
                 self.pressed_key_jump = False
                 self.add_event(EVENT.HANGING)
@@ -480,14 +482,13 @@ class Player(game_object.GameObject):
         self.cur_state.draw(self)
 
         debug_print_2 = load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 26)
-        # debug_print_2.draw(6, gs_framework.canvas_height - 16,
-        #                    # "stage.x/y: (%.2f / %.2f) / player.ap: (%.2f, %.2f) rp: (%.2f, %.2f)" %
-        #                    # (server.stage.x, server.stage.y,
-        #                    #  self.ax, self.ay, self.rx, self.ry),
-        #                    "boo action: %s / facing: %s / frame: %d | %d" %
-        #                    (server.enemies[0].action, server.enemies[0].facing,
-        #                     server.enemies[0].frame, server.enemies[0].frame_count - 1),
-        #                    (0, 255, 0))
+        debug_print_2.draw(6, gs_framework.canvas_height - 16,
+                           # "stage.x/y: (%.2f / %.2f) / player.ap: (%.2f, %.2f) rp: (%.2f, %.2f)" %
+                           # (server.stage.x, server.stage.y,
+                           #  self.ax, self.ay, self.rx, self.ry),
+                           "ACTION: %s / on_wire: %s / cur_state: %s" %
+                           (self.action, self.on_wire_mesh, self.cur_state.__name__),
+                           (0, 255, 0))
 
         if self.show_bb:
             self.draw_bb()
@@ -763,25 +764,29 @@ class ClimbState:
         player.ay += player.jump_power * gs_framework.frame_time
 
         if player.on_wire_mesh is None:
+            player.y_direction = DIR.NONE
+
+            if player.x_direction == DIR.NONE:
+                player.add_event(EVENT.STAYING)
+            else:
+                player.add_event(EVENT.WALKING)
             return
 
         player.on_wire_mesh: ob_interactive.WireMesh
 
-        x_min = player.on_wire_mesh.get_bb(HB.BODY)[POS.LEFT] + player.get_bb_range(HB.BODY)[POS.LEFT]
-        x_max = player.on_wire_mesh.get_bb(HB.BODY)[POS.RIGHT] - player.get_bb_range(HB.BODY)[POS.RIGHT]
+        x_min = player.on_wire_mesh.get_bb(HB.BODY)[POS.LEFT] - player.get_bb_range(HB.BODY)[POS.RIGHT]
+        x_max = player.on_wire_mesh.get_bb(HB.BODY)[POS.RIGHT] + player.get_bb_range(HB.BODY)[POS.LEFT]
 
-        y_min = player.on_wire_mesh.get_bb(HB.BODY)[POS.BOTTOM]
-        y_max = player.on_wire_mesh.get_bb(HB.BODY)[POS.TOP] - player.get_bb_range(HB.BODY)[POS.TOP]
-
-        player.ax = clamp(x_min, player.ax, x_max)
-        if player.ax <= x_min or player.ax >= x_max:
-            player.velocity = 0
+        y_min = player.on_wire_mesh.get_bb(HB.BODY)[POS.BOTTOM] - player.get_bb_range(HB.BODY)[POS.TOP]
+        y_max = player.on_wire_mesh.get_bb(HB.BODY)[POS.TOP]
 
         player.ay = clamp(y_min, player.ay, y_max)
         if player.ay >= y_max:
             player.jump_power = 0
 
-        if player.ay <= y_min or player.pressed_key_jump:
+        if (player.ay <= y_min or player.pressed_key_jump or not player.on_wire_mesh.got_player or
+            player.ax <= x_min or player.ax >= x_max
+        ):
             player.y_direction = DIR.NONE
 
             if player.x_direction == DIR.NONE:
@@ -790,6 +795,8 @@ class ClimbState:
                 player.add_event(EVENT.WALKING)
 
             if player.pressed_key_jump:
+                player.on_wire_mesh.got_player = False
+                player.on_wire_mesh = None
                 player.jump_power = MAX_JUMP_POWER
                 player.is_fall = False
                 player.ay += 1

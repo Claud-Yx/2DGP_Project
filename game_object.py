@@ -427,7 +427,7 @@ class GameObject:
             if self.action == ACTION.IDLE and self.facing == DIR.RIGHT:
                 self.set_bb(HB.BODY, [15, 40, 15, 30])
                 self.set_bb(HB.LEFT, [15, 40, -14, 30])
-                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -35])
                 self.set_bb(HB.RIGHT, [-14, 40, 15, 30])
                 self.set_bb(HB.TOP, [15, -29, 15, 30])
 
@@ -435,7 +435,7 @@ class GameObject:
             elif self.action == ACTION.IDLE and self.facing == DIR.LEFT:
                 self.set_bb(HB.BODY, [15, 40, 15, 30])
                 self.set_bb(HB.LEFT, [15, 40, -14, 30])
-                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -35])
                 self.set_bb(HB.RIGHT, [-14, 40, 15, 30])
                 self.set_bb(HB.TOP, [15, -29, 15, 30])
 
@@ -443,7 +443,7 @@ class GameObject:
             elif self.action == ACTION.WALK and self.facing == DIR.RIGHT:
                 self.set_bb(HB.BODY, [15, 40, 15, 30])
                 self.set_bb(HB.LEFT, [15, 40, -14, 30])
-                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -35])
                 self.set_bb(HB.RIGHT, [-14, 40, 15, 30])
                 self.set_bb(HB.TOP, [15, -29, 15, 30])
 
@@ -451,7 +451,7 @@ class GameObject:
             elif self.action == ACTION.WALK and self.facing == DIR.LEFT:
                 self.set_bb(HB.BODY, [15, 40, 15, 30])
                 self.set_bb(HB.LEFT, [15, 40, -14, 30])
-                self.set_bb(HB.BOTTOM, [15, 40, 15, -39])
+                self.set_bb(HB.BOTTOM, [15, 40, 15, -35])
                 self.set_bb(HB.RIGHT, [-14, 40, 15, 30])
                 self.set_bb(HB.TOP, [15, -29, 15, 30])
 
@@ -459,7 +459,7 @@ class GameObject:
             elif self.action == ACTION.RUN and self.facing == DIR.RIGHT:
                 self.set_bb(HB.BODY, [25, 40, 25, 20])
                 self.set_bb(HB.LEFT, [15, 40, -14, 20])
-                self.set_bb(HB.BOTTOM, [25, 40, 25, -39])
+                self.set_bb(HB.BOTTOM, [25, 40, 25, -35])
                 self.set_bb(HB.RIGHT, [-14, 40, 15, 20])
                 self.set_bb(HB.TOP, [25, -19, 25, 20])
 
@@ -467,7 +467,7 @@ class GameObject:
             elif self.action == ACTION.RUN and self.facing == DIR.LEFT:
                 self.set_bb(HB.BODY, [25, 40, 25, 20])
                 self.set_bb(HB.LEFT, [15, 40, -14, 20])
-                self.set_bb(HB.BOTTOM, [25, 40, 25, -39])
+                self.set_bb(HB.BOTTOM, [25, 40, 25, -35])
                 self.set_bb(HB.RIGHT, [-14, 40, 15, 20])
                 self.set_bb(HB.TOP, [25, -19, 25, 20])
 

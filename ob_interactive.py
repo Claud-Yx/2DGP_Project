@@ -1,4 +1,4 @@
-
+import gs_framework
 from game_object import *
 
 
@@ -26,31 +26,29 @@ class WireMesh(GameObject, ABC):
 
         super().__init__(TN.INTERACTIVES, TID.WIRE_MESH, x, y)
 
-        self.dst_x = dst_x
-        self.dst_y = dst_y
+        self.px, self.py = 0.0, 0.0
+
+        self.dst_x = self.ax + dst_x * 50
+        self.dst_y = self.ay + dst_y * 50
         self.stp_x = self.ax
         self.stp_y = self.ay
 
-        if self.dst_x == 0:
+
+        if dst_x == 0:
             self.is_move_x = False
-            self.x_direction = DIR.NONE
+            self.max_x_t = 0.0
         else:
             self.is_move_x = True
-            if self.dst_x > 0:
-                self.x_direction = DIR.RIGHT
-            else:
-                self.x_direction = DIR.LEFT
+            self.max_x_t = abs(self.dst_x - self.stp_x) // 50 / 2
 
-        if self.dst_y == 0:
+        if dst_y == 0:
             self.is_move_y = False
-            self.y_direction = DIR.NONE
+            self.max_y_t = 0.0
         else:
             self.is_move_y = True
-            if self.dst_y > 0:
-                self.y_direction = DIR.UP
-            else:
-                self.y_direction = DIR.DOWN
+            self.max_y_t = abs(self.dst_y - self.stp_y) // 50 / 2
 
+        self.timer_move_x, self.timer_move_y = self.max_x_t, self.max_y_t
 
         self.tile = [[ACTION.PIECE_M for y in range(self.index_y)] for x in range(self.index_x)]
 
@@ -84,6 +82,20 @@ class WireMesh(GameObject, ABC):
 
         self.init_bb()
         self.set_bb_size()
+
+        if self.is_move_x:
+            if self.timer_move_x == 0:
+                self.timer_move_x = self.max_x_t
+                self.dst_x, self.stp_x = self.stp_x, self.dst_x
+
+            self.px = self.ax
+            self.ax = self.timer_move_x/self.max_x_t * self.stp_x + (1 - self.timer_move_x/self.max_x_t) * self.dst_x
+            self.timer_move_x -= gs_framework.frame_time
+            if self.timer_move_x <= 0:
+                self.timer_move_x = 0
+            if self.got_player:
+                server.player.ax += (self.ax - self.px)
+
 
     def draw(self):
         server.move_camera(self)

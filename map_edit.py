@@ -64,10 +64,10 @@ def create_map():
     object_manager.add_objects(server.items, L.ITEMS)
 
     # enemy
-    server.enemies.append(ob_enemy.Boo(0, 77))
-    server.enemies.append(ob_enemy.Boo(24, 65))
-    server.enemies.append(ob_enemy.Boo(0, 59))
-    server.enemies.append(ob_enemy.Boo(24, 53))
+    # server.enemies.append(ob_enemy.Boo(0, 77))
+    # server.enemies.append(ob_enemy.Boo(24, 65))
+    # server.enemies.append(ob_enemy.Boo(0, 59))
+    # server.enemies.append(ob_enemy.Boo(24, 53))
 
     server.enemies.append(ob_enemy.Goomba(2, 46))
     server.enemies.append(ob_enemy.Goomba(21, 46, DIR.LEFT))
@@ -259,8 +259,8 @@ def create_map():
 
     # Interactives
 
-    server.interactives.append(ob_interactive.WireMesh(14, 70, 21, 59))
-    server.interactives.append(ob_interactive.WireMesh(2, 57, 9, 46))
+    server.interactives.append(ob_interactive.WireMesh(14, 70, 21, 59, dst_x=-12))
+    server.interactives.append(ob_interactive.WireMesh(2, 57, 9, 46, dst_x=12))
     server.interactives.append(ob_interactive.WireMesh(2, 39, 13, 35))
     server.interactives.append(ob_interactive.WireMesh(2, 27, 5, 25))
     server.interactives.append(ob_interactive.WireMesh(2, 16, 7, 13))
