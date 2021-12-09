@@ -1,18 +1,18 @@
 import game_object
+import ob_background
 import ob_player
-from ob_background import *
-from ob_map import *
+import object_manager
 
 from value import *
 
-stage: Map
-player: ob_player.Player
+stage = None
+player = None
 enemies = []
 items = []
 tiles = []
 interactives = []
 foreground = []
-background: Background
+background = None
 
 start_time = 0.0
 current_time = 0.0
@@ -39,12 +39,13 @@ def stop_time(stop, *exceptob: Tuple[int, int]):
 def init():
     global start_time, current_time
     global time_stopper, time_stop
-
     start_time = 0.0
     current_time = 0.0
 
     time_stopper = []
     time_stop = False
+
+    object_manager.objects = [[], [], [], [], []]
 
 
 def destroy():
@@ -72,3 +73,13 @@ def move_camera(self: game_object.GameObject):
 
     self.rx = self.ax + stage.x
     self.ry = self.ay + stage.y
+
+
+def move_bg(self: ob_background.Background):
+    global stage
+
+    self.bx = stage.x * 0.3
+    self.by = stage.y * 0.3
+
+    self.fx = stage.x * 0.8
+    self.fy = stage.y * 0.8

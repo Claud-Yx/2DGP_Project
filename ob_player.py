@@ -1,7 +1,6 @@
 from pico2d import *
 
 import game_object
-import ob_interactive
 import ob_map
 import server
 from value import *
@@ -287,6 +286,7 @@ class Player(game_object.GameObject):
 
     def die(self) -> bool:
         if self.timer_die == 0:
+            self.life -= 1
             self.ax, self.ay = self.rx, self.ry
             server.stop_time(True, (TN.NONE, TID.NONE))
             self.is_fall = False
@@ -372,7 +372,9 @@ class Player(game_object.GameObject):
                     self.set_info()
                     self.is_small = False
                     server.stop_time(False)
-            self.score += 1000
+                    self.score += 1000
+            else:
+                self.score += 1000
 
         elif self.taken_item == (TN.ITEMS, TID.COIN):
             self.coin += 1
@@ -483,14 +485,11 @@ class Player(game_object.GameObject):
     def draw(self):
         self.cur_state.draw(self)
 
-        debug_print_2 = load_font(os.getenv('PICO2D_DATA_PATH') + '/ConsolaMalgun.TTF', 26)
-        debug_print_2.draw(6, gs_framework.canvas_height - 16,
-                           # "stage.x/y: (%.2f / %.2f) / player.ap: (%.2f, %.2f) rp: (%.2f, %.2f)" %
-                           # (server.stage.x, server.stage.y,
-                           #  self.ax, self.ay, self.rx, self.ry),
-                           "ax/ay: (%.2f / %.2f) / rx/ry: (%.2f / %.2f) / velocity: %.2f / acc: %.2f" %
-                           (self.ax, self.ay, self.rx, self.ry, self.velocity, self.x_accel),
-                           (0, 255, 0))
+        # debug_print_2 = load_font('resource\\font\\new_super_mario_font.ttf', 26)
+        # debug_print_2.draw(6, gs_framework.canvas_height - 16,
+        #                    "LIFE: %3d     COIN: %3d                    TIME: %3d" %
+        #                    (self.life, self.coin, int(server.stage.timer_stage)),
+        #                    (255, 255, 255))
 
         if self.show_bb:
             self.draw_bb()
@@ -773,8 +772,6 @@ class ClimbState:
             else:
                 player.add_event(EVENT.WALKING)
             return
-
-        player.on_wire_mesh: ob_interactive.WireMesh
 
         x_min = player.on_wire_mesh.get_bb(HB.BODY)[POS.LEFT] - player.get_bb_range(HB.BODY)[POS.RIGHT]
         x_max = player.on_wire_mesh.get_bb(HB.BODY)[POS.RIGHT] + player.get_bb_range(HB.BODY)[POS.LEFT]

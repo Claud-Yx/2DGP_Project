@@ -7,27 +7,29 @@ from value import *
 # - Stage class contains objects information each stage or map
 
 FILE_PATH = "stage\\"
-FILE_FORMAT = ".txt"
-STAGE_CODE = []
+FILE_FORMAT = ".stg"
 
 current_map: Map
-stage = []
+stage = {}
 
 # editor
 
 class Stage:
-    def __init__(self):
-        self.layer = [[], [], [], [], []]
-        self.map = {"stage": 0, "map": 0, "w": 0, "h": 0}
-        self.player = {"tid": TID.MARIO_SMALL, "x": 0, "y": 0}
-        self.enemies = []
-        self.items = []
-        self.tiles = []
-        self.interactives = []
-        self.foreground = []
-        # self.background =
+    stage_num = 1
+    map_num = 1
 
-    def
+    def __init__(self, file_name):
+        self.objects = None
+        self.map = None
+
+        self.load_stage(file_name)
+
+    def load_stage(self, file_name):
+        import pickle
+        with open(file_name, 'rb') as f:
+            data = pickle.load(f)
+            self.map = data.pop()
+            self.objects = data
 
 
 # test ob_map.py

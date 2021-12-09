@@ -1,9 +1,10 @@
-import object_manager
-
-import ob_background
 import server
 
+import ob_foreground
+import object_manager
 from pico2d import *
+
+import stage_manager as sm
 import test_keyboard
 
 from collision import *
@@ -20,9 +21,32 @@ show_bb = False
 
 
 def enter():
+    import ob_background
     # Initialization:
+    # server.init()
 
     map_edit.create_map()
+
+    # server.stage = sm.stage[sm.Stage.stage_num, sm.Stage.map_num].map
+    # object_manager.objects = sm.stage[sm.Stage.stage_num, sm.Stage.map_num].objects
+    #
+    # for o in object_manager.all_objects():
+    #     if isinstance(o, ob_background.Background):
+    #         server.background = o
+    #     elif isinstance(o, ob_player.Player):
+    #         server.player = o
+    #     elif isinstance(o, ob_enemy.Enemy):
+    #         server.enemies.append(o)
+    #     elif isinstance(o, ob_tileset.TileSet):
+    #         server.tiles.append(o)
+    #     elif isinstance(o, ob_item.Item):
+    #         server.items.append(o)
+    #     elif isinstance(o, ob_interactive.WireMesh):
+    #         server.interactives.append(o)
+    #     elif isinstance(o, ob_foreground.Foreground):
+    #         server.foreground.append(o)
+
+    game_object.init()
 
     test_keyboard.keyboard_init()
 
@@ -249,11 +273,18 @@ def draw():
 
     # Draw
     for obj in object_manager.all_objects():
-        try:
-            obj.draw()
-        except:
-            print(obj.__name__)
-            exit()
+        # try:
+        obj.draw()
+        # except:
+        #     print(obj.__class__.__name__)
+        #     exit()
+
+    debug_print_2 = load_font('resource\\font\\new_super_mario_font.ttf', 26)
+    debug_print_2.draw(6, gs_framework.canvas_height - 16,
+                       "LIFE: %3d           COIN: %3d           SCORE: %.7d                                                                                                           TIME: %3d" %
+                       (server.player.life, server.player.coin, server.player.score,
+                        int(server.stage.timer_stage)),
+                       (255, 255, 255))
 
     # Debug output
     # F2: Tile sets hit box

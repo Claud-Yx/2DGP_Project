@@ -1,5 +1,5 @@
-from pico2d import *
 import gs_framework
+from pico2d import *
 
 import gs_stage_enter
 
@@ -62,6 +62,7 @@ def handle_events():
             elif event.key == SDLK_x:
                 if menu_index == 0:
                     gs_framework.change_state(gs_stage_enter)
+                    return
                 elif menu_index == 1:
                     pass
                 elif menu_index == 2:

@@ -62,6 +62,7 @@ class PowerUp(Item, ABC):
         self.in_box = in_box
 
         self.set_info(ACTION.WALK)
+        self.set_size(0.9, 0.9)
 
         if self.in_box:
             self.switch_bb_all()

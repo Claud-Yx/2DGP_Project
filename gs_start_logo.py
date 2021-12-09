@@ -1,7 +1,7 @@
 import gs_framework
 from pico2d import *
 
-import gs_title
+import gs_loading
 
 name = "StartLogoState"
 
@@ -41,7 +41,9 @@ def update():
 
     if (logo_time > 3.0):
         logo_time = 0
-        gs_framework.change_state(gs_title)
+        gs_framework.change_state(gs_loading)
+        gs_framework.stack[-1].update()
+        return
     delay(0.01)
     logo_time += 0.01
 

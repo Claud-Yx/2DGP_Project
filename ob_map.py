@@ -11,7 +11,7 @@ TILE_WIDTH = 50
 
 
 class Map:
-    def __init__(self, stage, map, w, h):
+    def __init__(self, stage, map, w, h, timer=200):
         self.stage = stage
         self.map = map
 
@@ -20,6 +20,8 @@ class Map:
 
         self.size_width = 0
         self.size_height = 0
+
+        self.timer_stage = timer
 
         # Game object index, 3D list
         self.object_index = [[]]
@@ -118,6 +120,13 @@ class Map:
     def update(self):
         if server.time_stop:
             return
+
+        self.timer_stage -= gs_framework.frame_time
+        if self.timer_stage <= 0:
+            server.player.is_small = True
+            server.player.type_id = TID.MARIO_SMALL
+            server.player.is_damaged = True
+
         self.clear_index()
         self.update_index()
 

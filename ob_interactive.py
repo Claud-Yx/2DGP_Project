@@ -1,8 +1,13 @@
+from abc import ABC
+
+import game_object
 import gs_framework
-from game_object import *
+import ob_map
+import server
+from value import TID, TN, ACTION
 
 
-class WireMesh(GameObject, ABC):
+class WireMesh(game_object.GameObject, ABC):
     def __init__(self, lt_x, lt_y, rb_x, rb_y, dst_x=0, dst_y=0):
 
         lt_x = lt_x * 50 + 25
@@ -107,7 +112,7 @@ class WireMesh(GameObject, ABC):
                 #     self.frame = 0
 
                 self.set_clip(self.tile[x][y])
-                GameObject.image[self.type_name, self.type_id].clip_draw(
+                game_object.GameObject.image[self.type_name, self.type_id].clip_draw(
                     int(self.frame_begin) * self.l, self.b, self.w, self.h,
                     self.rx + x * ob_map.TILE_WIDTH, self.ry + y * ob_map.TILE_HEIGHT
                 )

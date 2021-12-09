@@ -6,38 +6,41 @@ from abc import *
 from bounding_box import *
 
 
+def init():
+    if None == GameObject.image:
+        GameObject.image = {
+            (TN.PLAYER, TID.MARIO_SMALL): load_image('resource\\characters\\mario_small.png'),
+            (TN.PLAYER, TID.MARIO_SUPER): load_image('resource\\characters\\mario_super.png'),
+            (TN.TILESETS, TID.CASTLE_BLOCK_50X50): load_image('resource\\tileset\\block50x50.png'),
+            (TN.TILESETS, TID.CASTLE_BLOCK_50X100): load_image('resource\\tileset\\block50x100.png'),
+            (TN.TILESETS, TID.CASTLE_BLOCK_100X50): load_image('resource\\tileset\\block100x50.png'),
+            (TN.TILESETS, TID.CASTLE_BLOCK_100X100): load_image('resource\\tileset\\block100x100.png'),
+            (TN.TILESETS, TID.EMPTY_BOX): load_image('resource\\tileset\\empty_box50x50.png'),
+            (TN.TILESETS, TID.BREAKABLE_BRICK): load_image('resource\\tileset\\breakable_brick50x50.png'),
+            (TN.TILESETS, TID.RANDOM_BOX): load_image('resource\\tileset\\random_box50x50.png'),
+            (TN.TILESETS, TID.SPIKE): load_image('resource\\tileset\\spike50x50.png'),
+            (TN.ENEMIES, TID.GOOMBA): load_image('resource\\characters\\goomba.png'),
+            (TN.ENEMIES, TID.DRY_BONES): load_image('resource\\characters\\dry_bones.png'),
+            (TN.ENEMIES, TID.BOO): load_image('resource\\characters\\boo.png'),
+            (TN.ENEMIES, TID.PIRANHA_PLANT): load_image('resource\\characters\\piranha_plant.png'),
+            (TN.ENEMIES, TID.SPINNING_SPIKE): load_image('resource\\characters\\spinning_spike.png'),
+            (TN.ITEMS, TID.COIN): load_image('resource\\items\\coin.png'),
+            (TN.ITEMS, TID.FIRE_FLOWER): load_image('resource\\items\\fire_flower.png'),
+            (TN.ITEMS, TID.LIFE_MUSHROOM): load_image('resource\\items\\life_mushroom.png'),
+            (TN.ITEMS, TID.STAR_COIN): load_image('resource\\items\\starcoin.png'),
+            (TN.ITEMS, TID.SUPER_MUSHROOM): load_image('resource\\items\\super_mushroom.png'),
+            (TN.ITEMS, TID.SUPER_STAR): load_image('resource\\items\\super_star.png'),
+            (TN.INTERACTIVES, TID.WIRE_MESH): load_image('resource\\interactives\\wire_mesh150x150.png'),
+            (TN.FOREGROUND, TID.BRICK_PIECE): load_image('resource\\foreground\\brick_piece25x25.png'),
+            TID.NONE: load_image('resource\\no_image.png')
+        }
+
 class GameObject:
     image = None
 
     def __init__(self, type_name, type_id, x=0, y=0):  # x, y are index size / ax, ay are
         # Image initialization
-        if None == GameObject.image:
-            GameObject.image = {
-                (TN.PLAYER, TID.MARIO_SMALL): load_image('resource\\characters\\mario_small.png'),
-                (TN.PLAYER, TID.MARIO_SUPER): load_image('resource\\characters\\mario_super.png'),
-                (TN.TILESETS, TID.CASTLE_BLOCK_50X50): load_image('resource\\tileset\\block50x50.png'),
-                (TN.TILESETS, TID.CASTLE_BLOCK_50X100): load_image('resource\\tileset\\block50x100.png'),
-                (TN.TILESETS, TID.CASTLE_BLOCK_100X50): load_image('resource\\tileset\\block100x50.png'),
-                (TN.TILESETS, TID.CASTLE_BLOCK_100X100): load_image('resource\\tileset\\block100x100.png'),
-                (TN.TILESETS, TID.EMPTY_BOX): load_image('resource\\tileset\\empty_box50x50.png'),
-                (TN.TILESETS, TID.BREAKABLE_BRICK): load_image('resource\\tileset\\breakable_brick50x50.png'),
-                (TN.TILESETS, TID.RANDOM_BOX): load_image('resource\\tileset\\random_box50x50.png'),
-                (TN.TILESETS, TID.SPIKE): load_image('resource\\tileset\\spike50x50.png'),
-                (TN.ENEMIES, TID.GOOMBA): load_image('resource\\characters\\goomba.png'),
-                (TN.ENEMIES, TID.DRY_BONES): load_image('resource\\characters\\dry_bones.png'),
-                (TN.ENEMIES, TID.BOO): load_image('resource\\characters\\boo.png'),
-                (TN.ENEMIES, TID.PIRANHA_PLANT): load_image('resource\\characters\\piranha_plant.png'),
-                (TN.ENEMIES, TID.SPINNING_SPIKE): load_image('resource\\characters\\spinning_spike.png'),
-                (TN.ITEMS, TID.COIN): load_image('resource\\items\\coin.png'),
-                (TN.ITEMS, TID.FIRE_FLOWER): load_image('resource\\items\\fire_flower.png'),
-                (TN.ITEMS, TID.LIFE_MUSHROOM): load_image('resource\\items\\life_mushroom.png'),
-                (TN.ITEMS, TID.STAR_COIN): load_image('resource\\items\\starcoin.png'),
-                (TN.ITEMS, TID.SUPER_MUSHROOM): load_image('resource\\items\\super_mushroom.png'),
-                (TN.ITEMS, TID.SUPER_STAR): load_image('resource\\items\\super_star.png'),
-                (TN.INTERACTIVES, TID.WIRE_MESH): load_image('resource\\interactives\\wire_mesh150x150.png'),
-                (TN.FOREGROUND, TID.BRICK_PIECE): load_image('resource\\foreground\\brick_piece25x25.png'),
-                TID.NONE: load_image('resource\\no_image.png')
-            }
+        init()
 
         # Object location point
         self.ax, self.ay = x, y

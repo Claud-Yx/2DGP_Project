@@ -254,7 +254,7 @@ def collide_item_to_floor(item: ob_item.Item, floor: ob_tileset.TileSet) -> bool
 
         if item.get_bb(HB.BOTTOM)[POS.BOTTOM] < floor.get_bb(HB.TOP)[POS.TOP]:
             item.ay = (item.get_bb_range(HB.BOTTOM)[POS.BOTTOM] +
-                       floor.get_bb(HB.TOP)[POS.TOP]) + 1
+                       floor.get_bb(HB.TOP)[POS.TOP])
 
         if item.type_id == TID.SUPER_STAR:
             item.is_jump = True
@@ -287,8 +287,8 @@ def collide_item_to_ceiling(item: ob_item.PowerUp, tile: ob_tileset.TileSet) -> 
 
 
 def collide_item_to_wall(item: ob_item.Item, tile: ob_tileset.TileSet) -> bool:
-    if ((collide(item.get_bb(HB.RIGHT), tile.get_bb(HB.LEFT)) or
-         collide(item.get_bb(HB.LEFT), tile.get_bb(HB.RIGHT))) and
+    if ((collide(item.get_bb(HB.RIGHT), tile.get_bb(HB.BODY)) or
+         collide(item.get_bb(HB.LEFT), tile.get_bb(HB.BODY))) and
             item.get_bb(HB.BOTTOM)[POS.BOTTOM] < tile.get_bb(HB.TOP)[POS.TOP]
     ):
 
