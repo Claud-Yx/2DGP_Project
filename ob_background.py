@@ -25,6 +25,8 @@ class Background:
         self.bx, self.by = 0, 0
         self.fx, self.fy = 0, 0
 
+        server.move_bg(self)
+
     def update(self):
         server.move_bg(self)
 

@@ -28,6 +28,11 @@ class Map:
 
         self.set_size(w, h)
 
+        self.bgm = load_music('resource\\bgm\\castle.mp3')
+        self.bgm.set_volume(40)
+        self.bgm.repeat_play()
+        self.bgm_puase = False
+
     def set_range(self):
         self.range[POS.LEFT] = self.x
         self.range[POS.BOTTOM] = self.y
@@ -119,7 +124,15 @@ class Map:
 
     def update(self):
         if server.time_stop:
+            if server.player.is_die:
+                self.bgm.stop()
+            else:
+                self.bgm_puase = True
+                self.bgm.pause()
             return
+
+        if self.bgm_puase:
+            self.bgm.resume()
 
         self.timer_stage -= gs_framework.frame_time
         if self.timer_stage <= 0:

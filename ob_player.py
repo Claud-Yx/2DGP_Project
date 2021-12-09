@@ -88,6 +88,8 @@ class Player(game_object.GameObject):
         if server.stage.y <= gs_framework.canvas_height:
             self.ry += server.stage.y
 
+        self.sfx = None
+
         # Player inventory
         self.coin = 0
         self.score = 0
@@ -125,6 +127,8 @@ class Player(game_object.GameObject):
         self.is_damaged = False
         self.is_invincible = False
         self.is_star_power = False
+
+        self.is_die = False
 
         self.on_wire_mesh = None
 
@@ -293,6 +297,10 @@ class Player(game_object.GameObject):
             self.jump_power = MAX_JUMP_POWER
             self.timer_die = MAX_TIMER_DIE
             self.set_info(ACTION.DIE_A)
+            self.sfx = load_wav('resource\\bgm\\death.wav')
+            self.sfx.set_volume(64)
+            self.sfx.play()
+            self.is_die = True
 
         self.timer_die -= gs_framework.frame_time
 
@@ -378,10 +386,21 @@ class Player(game_object.GameObject):
 
         elif self.taken_item == (TN.ITEMS, TID.COIN):
             self.coin += 1
+            self.sfx = load_wav('resource\\sfx\\coin.wav')
+            self.sfx.set_volume(32)
+            self.sfx.play()
+            if self.coin == 100:
+                self.life += 1
+                self.sfx = load_wav('resource\\sfx\\1-up.wav')
+                self.sfx.set_volume(32)
+                self.sfx.play()
             self.score += 200
 
         elif self.taken_item == (TN.ITEMS, TID.LIFE_MUSHROOM):
             self.life += 1
+            self.sfx = load_wav('resource\\sfx\\1-up.wav')
+            self.sfx.set_volume(32)
+            self.sfx.play()
             self.score += 1000
 
         elif self.taken_item == (TN.ITEMS, TID.SUPER_STAR):
@@ -500,6 +519,10 @@ class Player(game_object.GameObject):
             if ((key_event == EVENT.DOWN_DOWN or key_event == EVENT.DOWN_UP) and
                     self.is_small and self.cur_state != ClimbState):
                 return
+            if key_event == EVENT.X_DOWN:
+                self.sfx = load_wav('resource\\sfx\\jump.wav')
+                self.sfx.set_volume(32)
+                self.sfx.play()
             self.add_event(key_event)
 
 

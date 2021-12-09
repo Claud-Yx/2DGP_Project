@@ -36,7 +36,7 @@ def create_map():
     object_manager.add_object(server.background, L.BACKGROUND)
 
     # player ===========================================================================================================
-    server.player = ob_player.Player(x=7, y=2)
+    server.player = ob_player.Player(x=7, y=12)
     object_manager.add_object(server.player, object_manager.OL_CHARACTER)
 
     # Interactives =====================================================================================================
@@ -102,6 +102,8 @@ def create_map():
     for y in range(0, 80, 2):
         server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 0, y))
         server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X100, 22, y))
+
+    server.tiles.append(ob_tileset.RandomBox(11, 73, item=TID.SUPER_STAR))
 
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X50, 10, 70))
     server.tiles.append(ob_tileset.TileSet(TID.CASTLE_BLOCK_100X50, 12, 70))

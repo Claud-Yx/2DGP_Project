@@ -25,11 +25,11 @@ def handle_events():
             gs_framework.quit()
 
 def update():
-    stage_manager.stage = {(1,1): stage_manager.Stage(
-        "%ss%.2d%.2d%s" % (stage_manager.FILE_PATH, 1, 1, stage_manager.FILE_FORMAT))
-    }
-    print("sm update")
-
+    # stage_manager.stage = {(1,1): stage_manager.Stage(
+    #     "%ss%.2d%.2d%s" % (stage_manager.FILE_PATH, 1, 1, stage_manager.FILE_FORMAT))
+    # }
+    # print("sm update")
+    pass
 
 def draw():
     global bg, loading
